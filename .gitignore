@@ -1,3 +1,7 @@
+# stackery
+.aws-sam
+.stackery
+
 # Logs
 logs
 *.log

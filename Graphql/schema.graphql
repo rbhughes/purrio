@@ -1,0 +1,25 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Job {
+  id: ID!
+  asset: [Asset]
+  repo: String
+}
+
+type Query {
+  getJob(id: ID!): Job
+  listJobs: [Job]
+}
+
+type Mutation {
+  putJob(asset: [Asset], repo: String): Job 
+}
+
+enum Asset {
+  AAA
+  BBB
+  CCC
+}

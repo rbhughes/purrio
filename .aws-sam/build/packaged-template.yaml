@@ -1,0 +1,423 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Outputs:
+  DeploymentHistoryTag:
+    Description: Stackery Deployment History Tag
+    Value: BKMAZP
+Parameters:
+  DeploymentTimestamp:
+    Default: '1578798732644'
+    Description: Deployment preparation timestamp in milliseconds Since Epoch (injected
+      by Stackery at deployment time)
+    Type: Number
+  EnvironmentTagName:
+    Default: dev
+    Description: Environment Name (injected by Stackery at deployment time)
+    Type: String
+  StackTagName:
+    Default: purrio
+    Description: Stack Name (injected by Stackery at deployment time)
+    Type: String
+Resources:
+  CDN:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          Compress: true
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          TargetOriginId: StackeryCDN
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        Origins:
+        - DomainName:
+            Fn::GetAtt:
+            - SiteBucket
+            - DomainName
+          Id: StackeryCDN
+          S3OriginConfig:
+            OriginAccessIdentity:
+              Fn::Sub:
+              - origin-access-identity/cloudfront/${OriginAccessIdentity}
+              - OriginAccessIdentity:
+                  Ref: CDNOriginAccessIdentity
+        PriceClass: PriceClass_100
+    Type: AWS::CloudFront::Distribution
+  CDNBucketPolicy:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      Bucket:
+        Ref: SiteBucket
+      PolicyDocument:
+        Statement:
+        - Action: s3:GetObject
+          Effect: Allow
+          Principal:
+            AWS:
+              Fn::Sub: arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity
+                ${CDNOriginAccessIdentity}
+          Resource:
+            Fn::Sub:
+            - ${BucketArn}/*
+            - BucketArn:
+                Fn::GetAtt:
+                - SiteBucket
+                - Arn
+    Type: AWS::S3::BucketPolicy
+  CDNOriginAccessIdentity:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Stackery
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+  DeploymentMarkerTagBKMAZP:
+    Type: AWS::CloudFormation::WaitConditionHandle
+  KittyBox:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName:
+        Fn::Sub: ${AWS::StackName}-KittyBox
+    Type: AWS::DynamoDB::Table
+  PurrioGQL:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      AuthenticationType: AWS_IAM
+      LogConfig:
+        CloudWatchLogsRoleArn:
+          Fn::GetAtt:
+          - PurrioGQLLogsRole
+          - Arn
+        FieldLogLevel: ERROR
+      Name:
+        Fn::Sub:
+        - ${ResourceName} From Stack ${StackTagName} Environment ${EnvironmentTagName}
+        - ResourceName: PurrioGQL
+    Type: AWS::AppSync::GraphQLApi
+  PurrioGQLLogsRole:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: appsync.amazonaws.com
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+            - Fn::Sub: arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*
+            - Fn::Sub: arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*:log-stream:*
+          Version: '2012-10-17'
+        PolicyName: Log
+      RoleName:
+        Fn::Sub: ${AWS::StackName}-PurrioGQL-logs
+    Type: AWS::IAM::Role
+  PurrioGQLMutationputJobResolver:
+    DependsOn:
+    - PurrioGQLSchema
+    - DeploymentMarkerTagBKMAZP
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - PurrioGQL
+        - ApiId
+      DataSourceName:
+        Fn::GetAtt:
+        - PurrioGQLToKittyBoxDataSource
+        - Name
+      FieldName: putJob
+      RequestMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/c0d6a4855b7cfda9fc64a2b25f35f01b
+      ResponseMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/ddd38b411533bb36511ce90e972db0de
+      TypeName: Mutation
+    Type: AWS::AppSync::Resolver
+  PurrioGQLQuerygetJobResolver:
+    DependsOn:
+    - PurrioGQLSchema
+    - DeploymentMarkerTagBKMAZP
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - PurrioGQL
+        - ApiId
+      DataSourceName:
+        Fn::GetAtt:
+        - PurrioGQLToKittyBoxDataSource
+        - Name
+      FieldName: getJob
+      RequestMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/c0d6a4855b7cfda9fc64a2b25f35f01b
+      ResponseMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/ddd38b411533bb36511ce90e972db0de
+      TypeName: Query
+    Type: AWS::AppSync::Resolver
+  PurrioGQLQuerylistJobsResolver:
+    DependsOn:
+    - PurrioGQLSchema
+    - DeploymentMarkerTagBKMAZP
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - PurrioGQL
+        - ApiId
+      DataSourceName:
+        Fn::GetAtt:
+        - PurrioGQLToKittyBoxDataSource
+        - Name
+      FieldName: listJobs
+      RequestMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/c0d6a4855b7cfda9fc64a2b25f35f01b
+      ResponseMappingTemplateS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/ddd38b411533bb36511ce90e972db0de
+      TypeName: Query
+    Type: AWS::AppSync::Resolver
+  PurrioGQLSchema:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - PurrioGQL
+        - ApiId
+      DefinitionS3Location: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/aa1aeeb4a5fb2e88a0b549502409467d
+    Type: AWS::AppSync::GraphQLSchema
+  PurrioGQLToKittyBoxAccessRole:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: appsync.amazonaws.com
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:UpdateItem
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:BatchGetItem
+            - dynamodb:BatchWriteItem
+            Effect: Allow
+            Resource:
+            - Fn::GetAtt:
+              - KittyBox
+              - Arn
+            - Fn::Sub: ${KittyBox.Arn}/index/*
+          Version: '2012-10-17'
+        PolicyName: Access
+      RoleName:
+        Fn::Sub: ${AWS::StackName}-PurrioGQL-to-KittyBox
+    Type: AWS::IAM::Role
+  PurrioGQLToKittyBoxDataSource:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - PurrioGQL
+        - ApiId
+      DynamoDBConfig:
+        AwsRegion:
+          Ref: AWS::Region
+        TableName:
+          Ref: KittyBox
+      Name: KittyBox
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - PurrioGQLToKittyBoxAccessRole
+        - Arn
+      Type: AMAZON_DYNAMODB
+    Type: AWS::AppSync::DataSource
+  Queue:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      QueueName:
+        Fn::Sub: ${AWS::StackName}-Queue
+    Type: AWS::SQS::Queue
+  SiteBucket:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-sitebucke-${AWS::AccountId}
+      WebsiteConfiguration:
+        IndexDocument: index.html
+    Type: AWS::S3::Bucket
+  UserPool:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      LambdaConfig:
+        CustomMessage:
+          Fn::GetAtt:
+          - cognitoTriggered
+          - Arn
+        PostAuthentication:
+          Fn::GetAtt:
+          - cognitoTriggered
+          - Arn
+        PostConfirmation:
+          Fn::GetAtt:
+          - cognitoTriggered
+          - Arn
+        PreAuthentication:
+          Fn::GetAtt:
+          - cognitoTriggered
+          - Arn
+        PreSignUp:
+          Fn::GetAtt:
+          - cognitoTriggered
+          - Arn
+      UserPoolName:
+        Fn::Sub: ${AWS::StackName}-UserPool
+      UsernameAttributes:
+      - email
+    Type: AWS::Cognito::UserPool
+  UserPoolClient:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      ClientName: clowder
+      ExplicitAuthFlows:
+      - ADMIN_NO_SRP_AUTH
+      GenerateSecret: false
+      UserPoolId:
+        Ref: UserPool
+    Type: AWS::Cognito::UserPoolClient
+  UserPoolTocognitoTriggeredPermission:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+        - cognitoTriggered
+        - Arn
+      Principal: cognito-idp.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+        - UserPool
+        - Arn
+    Type: AWS::Lambda::Permission
+  authenticator:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      CodeUri: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/8c8ade98083f6fbde52a393ce50a2504
+      Description:
+        Fn::Sub:
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: authenticator
+      Environment:
+        Variables:
+          USER_POOL_ARN:
+            Fn::GetAtt:
+            - UserPool
+            - Arn
+          USER_POOL_CLIENT_ID:
+            Ref: UserPoolClient
+          USER_POOL_ID:
+            Ref: UserPool
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-authenticator
+      Handler: index.handler
+      MemorySize: 3008
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - Statement:
+        - Action:
+          - cognito-idp:Admin*
+          - cognito-idp:DescribeIdentityProvider
+          - cognito-idp:DescribeResourceServer
+          - cognito-idp:DescribeUserPool
+          - cognito-idp:DescribeUserPoolClient
+          - cognito-idp:DescribeUserPoolDomain
+          - cognito-idp:GetGroup
+          - cognito-idp:ListGroups
+          - cognito-idp:ListUserPoolClients
+          - cognito-idp:ListUsers
+          - cognito-idp:ListUsersInGroup
+          - cognito-idp:UpdateGroup
+          Effect: Allow
+          Resource:
+            Fn::GetAtt:
+            - UserPool
+            - Arn
+      Runtime: nodejs12.x
+      Timeout: 30
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  cognitoTriggered:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      CodeUri: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/e464145bdaf97623e476d59e0eac26d7
+      Description:
+        Fn::Sub:
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: cognitoTriggered
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-cognitoTriggered
+      Handler: index.handler
+      MemorySize: 3008
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      Runtime: nodejs12.x
+      Timeout: 30
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  deployer:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      CodeUri: s3://stackery-assetsbucket-1q3xrj51dc51w/deployments/dev/purrio/functions/87922c14b78f8a6eaf6a44f7734a8fc8
+      Description:
+        Fn::Sub:
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: deployer
+      Environment:
+        Variables:
+          BUCKET_ARN:
+            Fn::GetAtt:
+            - SiteBucket
+            - Arn
+          BUCKET_NAME:
+            Ref: SiteBucket
+          XDG_CONFIG_HOME: /tmp/.config
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-deployer
+      Handler: index.handler
+      MemorySize: 3008
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - S3CrudPolicy:
+          BucketName:
+            Ref: SiteBucket
+      Runtime: nodejs12.x
+      Timeout: 300
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  deployerDeployTrigger:
+    DependsOn: DeploymentMarkerTagBKMAZP
+    Properties:
+      DeploymentTimestamp:
+        Ref: DeploymentTimestamp
+      ServiceToken:
+        Fn::GetAtt:
+        - deployer
+        - Arn
+    Type: Custom::FunctionDeployTrigger
+Transform: AWS::Serverless-2016-10-31

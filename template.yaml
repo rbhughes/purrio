@@ -23,6 +23,26 @@ Resources:
       UserPoolId: !Ref UserPool
       ExplicitAuthFlows:
         - ADMIN_NO_SRP_AUTH
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowUnauthenticatedIdentities: false
+      AllowClassicFlow: false
+      IdentityPoolName: !Sub ${AWS::StackName}-IdentityPool
+      CognitoIdentityProviders:
+        - ClientId: !Ref UserPoolClient
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - region: !Ref AWS::Region
+              client: !Ref UserPool
+  IdentityPoolRoleMap:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        unauthenticated: !GetAtt UnauthRole.Arn
+        authenticated: !GetAtt AuthRole.Arn
+    DependsOn: IdentityPool
   CDN:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -132,10 +152,6 @@ Resources:
       BucketName: !Sub ${AWS::StackName}-sitebucke-${AWS::AccountId}
       WebsiteConfiguration:
         IndexDocument: index.html
-  Queue:
-    Type: AWS::SQS::Queue
-    Properties:
-      QueueName: !Sub ${AWS::StackName}-Queue
   KittyBox:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -149,114 +165,6 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: !Sub ${AWS::StackName}-KittyBox
-  PurrioGQL:
-    Type: AWS::AppSync::GraphQLApi
-    Properties:
-      Name: !Sub
-        - ${ResourceName} From Stack ${StackTagName} Environment ${EnvironmentTagName}
-        - ResourceName: PurrioGQL
-      AuthenticationType: AWS_IAM
-      LogConfig:
-        FieldLogLevel: ERROR
-        CloudWatchLogsRoleArn: !GetAtt PurrioGQLLogsRole.Arn
-  PurrioGQLSchema:
-    Type: AWS::AppSync::GraphQLSchema
-    Properties:
-      ApiId: !GetAtt PurrioGQL.ApiId
-      DefinitionS3Location: Graphql/schema.graphql
-  PurrioGQLLogsRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Effect: Allow
-          Principal:
-            Service: appsync.amazonaws.com
-          Action: sts:AssumeRole
-      RoleName: !Sub ${AWS::StackName}-PurrioGQL-logs
-      Policies:
-        - PolicyName: Log
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource:
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*
-                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*:log-stream:*
-  PurrioGQLQuerygetJobResolver:
-    Type: AWS::AppSync::Resolver
-    Properties:
-      TypeName: Query
-      DataSourceName: !GetAtt PurrioGQLToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-getJob-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-getJob-response.vm
-      ApiId: !GetAtt PurrioGQL.ApiId
-      FieldName: getJob
-    DependsOn: PurrioGQLSchema
-  PurrioGQLQuerylistJobsResolver:
-    Type: AWS::AppSync::Resolver
-    Properties:
-      TypeName: Query
-      DataSourceName: !GetAtt PurrioGQLToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-listJobs-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-listJobs-response.vm
-      ApiId: !GetAtt PurrioGQL.ApiId
-      FieldName: listJobs
-    DependsOn: PurrioGQLSchema
-  PurrioGQLMutationputJobResolver:
-    Type: AWS::AppSync::Resolver
-    Properties:
-      TypeName: Mutation
-      DataSourceName: !GetAtt PurrioGQLToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Mutation-putJob-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Mutation-putJob-response.vm
-      ApiId: !GetAtt PurrioGQL.ApiId
-      FieldName: putJob
-    DependsOn: PurrioGQLSchema
-  PurrioGQLToKittyBoxDataSource:
-    Type: AWS::AppSync::DataSource
-    Properties:
-      Type: AMAZON_DYNAMODB
-      ServiceRoleArn: !GetAtt PurrioGQLToKittyBoxAccessRole.Arn
-      ApiId: !GetAtt PurrioGQL.ApiId
-      Name: KittyBox
-      DynamoDBConfig:
-        TableName: !Ref KittyBox
-        AwsRegion: !Ref AWS::Region
-  PurrioGQLToKittyBoxAccessRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Effect: Allow
-          Principal:
-            Service: appsync.amazonaws.com
-          Action: sts:AssumeRole
-      RoleName: !Sub ${AWS::StackName}-PurrioGQL-to-KittyBox
-      Policies:
-        - PolicyName: Access
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:DeleteItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:Query
-                  - dynamodb:Scan
-                  - dynamodb:BatchGetItem
-                  - dynamodb:BatchWriteItem
-                Resource:
-                  - !GetAtt KittyBox.Arn
-                  - !Sub ${KittyBox.Arn}/index/*
   cognitoTriggered:
     Type: AWS::Serverless::Function
     Properties:
@@ -279,6 +187,164 @@ Resources:
       Principal: cognito-idp.amazonaws.com
       Action: lambda:InvokeFunction
       SourceArn: !GetAtt UserPool.Arn
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${AWS::StackName}-Queue
+  QueuePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-QueuePolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - sqs:DeleteMessage
+              - sqs:GetQueueUrl
+              - sqs:PurgeQueue
+              - sqs:ReceiveMessage
+              - sqs:SendMessage
+              - sqs:SendMessageBatch
+            Resource: !GetAtt Queue.Arn
+      Roles:
+        - Cognito_purrio_id_poolAuth_Role
+  API:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: !Sub
+        - ${AWS::StackName}-API
+        - ResourceName: API
+      AuthenticationType: AWS_IAM
+      LogConfig:
+        FieldLogLevel: ERROR
+        CloudWatchLogsRoleArn: !GetAtt APILogsRole.Arn
+  APISchema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !GetAtt API.ApiId
+      DefinitionS3Location: Graphql/schema.graphql
+  APIToKittyBoxDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      Type: AMAZON_DYNAMODB
+      ServiceRoleArn: !GetAtt APIToKittyBoxAccessRole.Arn
+      ApiId: !GetAtt API.ApiId
+      Name: KittyBox
+      DynamoDBConfig:
+        TableName: !Ref KittyBox
+        AwsRegion: !Ref AWS::Region
+  APIToKittyBoxAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: appsync.amazonaws.com
+          Action: sts:AssumeRole
+      RoleName: !Sub ${AWS::StackName}-API-to-KittyBox
+      Policies:
+        - PolicyName: Access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !GetAtt KittyBox.Arn
+                  - !Sub ${KittyBox.Arn}/index/*
+  APILogsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: appsync.amazonaws.com
+          Action: sts:AssumeRole
+      RoleName: !Sub ${AWS::StackName}-API-logs
+      Policies:
+        - PolicyName: Log
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*:log-stream:*
+  APIQuerygetJobResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Query
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Query-getJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-getJob-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: getJob
+    DependsOn: APISchema
+  APIQuerylistJobsResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Query
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Query-listJobs-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-listJobs-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: listJobs
+    DependsOn: APISchema
+  APIMutationputJobResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Mutation
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      ApiId: !GetAtt API.ApiId
+      FieldName: putJob
+      RequestMappingTemplate: |-
+        {
+          "version": "2017-02-28",
+          "payload": $util.parseJson($context.arguments.body)
+        }
+      ResponseMappingTemplate: $utils.toJson($context.result)
+    DependsOn: APISchema
+  AuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-AuthRole
+      ManagedPolicyArns:
+        - !Ref APIPolicy
+  UnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-UnauthRole
+  APIPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-APIPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: appsync:*
+            Resource:
+              - !GetAtt API.Arn
+              - arn:aws:appsync:*:apis/*/types/*/fields/*
+      Roles:
+        - !Ref AuthRole
 Parameters:
   StackTagName:
     Type: String

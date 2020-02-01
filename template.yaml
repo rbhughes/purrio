@@ -325,12 +325,38 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub ${AWS::StackName}-AuthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': authenticated
       ManagedPolicyArns:
         - !Ref APIPolicy
   UnauthRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub ${AWS::StackName}-UnauthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: 'sts:AssumeRoleWithWebIdentity'
+            Condition:
+              StringEquals:
+                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
+              'ForAnyValue:StringLike':
+                'cognito-identity.amazonaws.com:amr': unauthenticated
+      ManagedPolicyArns:
+        - !Ref APIPolicy
   APIPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -340,11 +366,9 @@ Resources:
         Statement:
           - Effect: Allow
             Action: appsync:*
-            Resource:
-              - !GetAtt API.Arn
-              - arn:aws:appsync:*:apis/*/types/*/fields/*
-      Roles:
-        - !Ref AuthRole
+            Resource: !Sub
+              - ${apiarn}/*
+              - { apiarn: !GetAtt API.Arn }
 Parameters:
   StackTagName:
     Type: String

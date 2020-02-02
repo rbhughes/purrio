@@ -207,8 +207,6 @@ Resources:
               - sqs:SendMessage
               - sqs:SendMessageBatch
             Resource: !GetAtt Queue.Arn
-      Roles:
-        - Cognito_purrio_id_poolAuth_Role
   API:
     Type: AWS::AppSync::GraphQLApi
     Properties:
@@ -339,6 +337,7 @@ Resources:
                 'cognito-identity.amazonaws.com:amr': authenticated
       ManagedPolicyArns:
         - !Ref APIPolicy
+        - !Ref QueuePolicy
   UnauthRole:
     Type: AWS::IAM::Role
     Properties:
@@ -355,8 +354,7 @@ Resources:
                 'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
               'ForAnyValue:StringLike':
                 'cognito-identity.amazonaws.com:amr': unauthenticated
-      ManagedPolicyArns:
-        - !Ref APIPolicy
+      ManagedPolicyArns: []
   APIPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:

@@ -9,5 +9,7 @@ aws cognito-idp list-user-pool-clients --user-pool-id 'us-east-2_irFOCM8ob' --pr
 
 
 aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API")'
+# aws_user_pools_web_client_id
 aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API") | .apiId'
+# aws_appsync_graphqlEndpoint
 aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API") | .uris.GRAPHQL'

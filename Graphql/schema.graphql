@@ -1,25 +1,39 @@
-schema {
-  query: Query
-  mutation: Mutation
-}
-
-type Job {
-  id: ID!
-  asset: [Asset]
-  repo: String
-}
-
-type Query {
-  getJob(id: ID!): Job
-  listJobs: [Job]
-}
-
-type Mutation {
-  putJob(asset: [Asset], repo: String): Job 
+enum App {
+	GEOGRAPHIX
+	KINGDOM
+	PETRA
 }
 
 enum Asset {
-  AAA
-  BBB
-  CCC
+	BUSINESS_ASSOCIATE
+	DIGITAL_LOG
+	DIRECTIONAL_SURVEY
+	FORMATION_TOP
+	LEGAL_DESCRIPTION
+	PRODUCTION
+	RASTER_LOG
+	STRAT_COLUMN
+	WELL_HEADER
+}
+
+type Job {
+	id: ID!
+	app: App!
+	asset: [Asset]
+	repo: String
+}
+
+type Mutation {
+	putJob(app: App, asset: [Asset], repo: String): Job
+}
+
+type Query {
+	getJob(id: ID!): Job
+	listJobs: [Job]
+	listJobsByApp(app: App): [Job]
+}
+
+schema {
+	query: Query
+	mutation: Mutation
 }

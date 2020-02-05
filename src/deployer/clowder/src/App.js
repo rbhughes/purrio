@@ -1,0 +1,122 @@
+import React from 'react'
+
+import {
+  BrowserRouter as Router,
+  Route,
+  NavLink,
+  Switch
+} from 'react-router-dom'
+import Amplify, { Auth } from 'aws-amplify'
+import { withAuthenticator } from 'aws-amplify-react'
+import { Menu } from 'semantic-ui-react'
+
+import 'semantic-ui-css/semantic.min.css'
+
+import GeoGraphix from './components/GeoGraphix'
+import Kingdom from './components/Kingdom'
+import Petra from './components/Petra'
+import Config from './components/Config'
+
+import JobList from './components/JobList'
+
+const awsmobile = {
+  aws_project_region: 'us-east-2',
+  aws_cognito_identity_pool_id:
+    'us-east-2:9cc34e7f-f413-4fc2-bccf-4ce5f97111a0',
+  aws_cognito_region: 'us-east-2',
+  aws_user_pools_id: 'us-east-2_fDr9zmm5X',
+  aws_user_pools_web_client_id: '2ohociqlgdvc290jkmcdsqglde',
+  aws_appsync_graphqlEndpoint:
+    'https://6c2n6nmq6vhndpp24w57ocgbf4.appsync-api.us-east-2.amazonaws.com/graphql',
+  aws_appsync_region: 'us-east-2',
+  aws_appsync_authenticationType: 'AWS_IAM'
+}
+
+Amplify.configure(awsmobile)
+
+const Home = () => <h1>Home stuff goes here</h1>
+const NotFound = () => (
+  <h1>
+    Not a valid route: <code>{window.location.pathname}</code>
+  </h1>
+)
+//const GeoGraphix = () => <h1>GeoGraphix stuff goes here</h1>
+//const Kingdom = () => <h1>Kingdom stuff goes here</h1>
+//const Petra = () => <h1>Petra stuff goes here</h1>
+//const Config = () => <h1>Config</h1>
+
+const handleSignOut = async e => {
+  e.preventDefault()
+  try {
+    let data = await Auth.signOut()
+    console.log(data)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const HeaderBar = () => {
+  return (
+    <Router>
+      <Menu className="ui">
+        <Menu.Item
+          className="item"
+          exact={true}
+          as={NavLink}
+          to="/"
+          content="Home"
+        />
+        <Menu.Item
+          className="item"
+          as={NavLink}
+          to="/geographix"
+          content="GeoGraphix"
+        />
+        <Menu.Item
+          className="item"
+          as={NavLink}
+          to="/kingdom"
+          content="Kingdom"
+        />
+        <Menu.Item className="item" as={NavLink} to="/petra" content="Petra" />
+        <Menu.Item
+          className="item"
+          as={NavLink}
+          to="/config"
+          content="Config"
+        />
+        <Menu.Item
+          className="item"
+          as={NavLink}
+          to="signout"
+          content="Sign Out"
+          onClick={handleSignOut}
+          position="right"
+        />
+      </Menu>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route
+          path="/geographix"
+          render={props => <JobList {...props} app="geographix" />}
+        />
+        <Route
+          path="/kingdom"
+          render={props => <Kingdom {...props} app="kingdom" />}
+        />
+        <Route
+          path="/petra"
+          render={props => <Petra {...props} app="petra" />}
+        />
+        <Route path="/config" component={Config} />
+        <Route component={NotFound} />
+      </Switch>
+    </Router>
+  )
+}
+
+const App = () => {
+  return <HeaderBar />
+}
+
+export default withAuthenticator(App)

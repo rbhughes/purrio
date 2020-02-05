@@ -10,11 +10,11 @@ const s3 = new AWS.S3()
 exports.handler = async message => {
   console.log(message)
   try {
-    const tmpDir = `/tmp/front-end${process.pid}`
+    const tmpDir = `/tmp/clowder${process.pid}`
 
     const npm = 'npm'
     await spawnPromise('rm', ['-rf', tmpDir])
-    await spawnPromise('cp', ['-R', 'react-front-end/', tmpDir])
+    await spawnPromise('cp', ['-R', 'clowder/', tmpDir])
     await spawnPromise(
       npm,
       [

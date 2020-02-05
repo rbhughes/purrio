@@ -158,10 +158,14 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
+        - AttributeName: range_key
+          AttributeType: S
       BillingMode: PAY_PER_REQUEST
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+        - AttributeName: range_key
+          KeyType: RANGE
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: !Sub ${AWS::StackName}-KittyBox
@@ -285,16 +289,54 @@ Resources:
                 Resource:
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*
                   - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*:log-stream:*
-  APIQuerygetJobResolver:
-    Type: AWS::AppSync::Resolver
+  AuthRole:
+    Type: AWS::IAM::Role
     Properties:
-      TypeName: Query
-      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-getJob-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-getJob-response.vm
-      ApiId: !GetAtt API.ApiId
-      FieldName: getJob
-    DependsOn: APISchema
+      RoleName: !Sub ${AWS::StackName}-AuthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: authenticated
+      ManagedPolicyArns:
+        - !Ref APIPolicy
+        - !Ref QueuePolicy
+  UnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-UnauthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                cognito-identity.amazonaws.com:aud: !Ref IdentityPool
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: unauthenticated
+      ManagedPolicyArns: []
+  APIPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-APIPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: appsync:*
+            Resource: !Sub
+              - ${apiarn}/*
+              - apiarn: !GetAtt API.Arn
   APIQuerylistJobsResolver:
     Type: AWS::AppSync::Resolver
     Properties:
@@ -310,63 +352,21 @@ Resources:
     Properties:
       TypeName: Mutation
       DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Mutation-putJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-putJob-response.vm
       ApiId: !GetAtt API.ApiId
       FieldName: putJob
-      RequestMappingTemplate: |-
-        {
-          "version": "2017-02-28",
-          "payload": $util.parseJson($context.arguments.body)
-        }
-      ResponseMappingTemplate: $utils.toJson($context.result)
     DependsOn: APISchema
-  AuthRole:
-    Type: AWS::IAM::Role
+  APIQuerygetJobResolver:
+    Type: AWS::AppSync::Resolver
     Properties:
-      RoleName: !Sub ${AWS::StackName}-AuthRole
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Federated: cognito-identity.amazonaws.com
-            Action: 'sts:AssumeRoleWithWebIdentity'
-            Condition:
-              StringEquals:
-                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
-              'ForAnyValue:StringLike':
-                'cognito-identity.amazonaws.com:amr': authenticated
-      ManagedPolicyArns:
-        - !Ref APIPolicy
-        - !Ref QueuePolicy
-  UnauthRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub ${AWS::StackName}-UnauthRole
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Principal:
-              Federated: cognito-identity.amazonaws.com
-            Action: 'sts:AssumeRoleWithWebIdentity'
-            Condition:
-              StringEquals:
-                'cognito-identity.amazonaws.com:aud': !Ref IdentityPool
-              'ForAnyValue:StringLike':
-                'cognito-identity.amazonaws.com:amr': unauthenticated
-      ManagedPolicyArns: []
-  APIPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: !Sub ${AWS::StackName}-APIPolicy
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: appsync:*
-            Resource: !Sub
-              - ${apiarn}/*
-              - { apiarn: !GetAtt API.Arn }
+      TypeName: Query
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Query-getJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-getJob-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: getJob
+    DependsOn: APISchema
 Parameters:
   StackTagName:
     Type: String

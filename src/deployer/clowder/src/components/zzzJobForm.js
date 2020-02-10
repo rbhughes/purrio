@@ -9,8 +9,8 @@ class JobForm extends Component {
       app: this.props.app.toUpperCase() || '',
       assets: [],
       label: '',
-      repo: '',
-      auxiliary: ''
+      repo: ''
+      //auxiliary: ''
       //status: 'PENDING'
     }
   }

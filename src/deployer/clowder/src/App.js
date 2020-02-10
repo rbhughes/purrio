@@ -12,24 +12,22 @@ import { Menu } from 'semantic-ui-react'
 
 import 'semantic-ui-css/semantic.min.css'
 
-import GeoGraphix from './components/GeoGraphix'
-import Kingdom from './components/Kingdom'
-import Petra from './components/Petra'
 import Config from './components/Config'
 
 import JobList from './components/JobList'
 
+//////////////////////////// move this stuff
 const awsmobile = {
   aws_project_region: 'us-east-2',
-  aws_cognito_identity_pool_id:
-    'us-east-2:9cc34e7f-f413-4fc2-bccf-4ce5f97111a0',
   aws_cognito_region: 'us-east-2',
-  aws_user_pools_id: 'us-east-2_fDr9zmm5X',
-  aws_user_pools_web_client_id: '2ohociqlgdvc290jkmcdsqglde',
-  aws_appsync_graphqlEndpoint:
-    'https://6c2n6nmq6vhndpp24w57ocgbf4.appsync-api.us-east-2.amazonaws.com/graphql',
   aws_appsync_region: 'us-east-2',
-  aws_appsync_authenticationType: 'AWS_IAM'
+  aws_appsync_authenticationType: 'AWS_IAM',
+  aws_user_pools_id: 'us-east-2_bteTsn2nr',
+  aws_user_pools_web_client_id: '7dsl41vmtkpsp859e1vdclr34g',
+  aws_cognito_identity_pool_id:
+    'us-east-2:c9c99ae4-6091-478e-84de-c532c2f05484',
+  aws_appsync_graphqlEndpoint:
+    'https://mupetkhoizhm5dqb6wxplr4vi4.appsync-api.us-east-2.amazonaws.com/graphql'
 }
 
 Amplify.configure(awsmobile)
@@ -40,10 +38,6 @@ const NotFound = () => (
     Not a valid route: <code>{window.location.pathname}</code>
   </h1>
 )
-//const GeoGraphix = () => <h1>GeoGraphix stuff goes here</h1>
-//const Kingdom = () => <h1>Kingdom stuff goes here</h1>
-//const Petra = () => <h1>Petra stuff goes here</h1>
-//const Config = () => <h1>Config</h1>
 
 const handleSignOut = async e => {
   e.preventDefault()
@@ -54,6 +48,8 @@ const handleSignOut = async e => {
     console.log(error)
   }
 }
+
+//TODO move asset list here, pass to JobList (memoize)
 
 const HeaderBar = () => {
   return (
@@ -102,11 +98,11 @@ const HeaderBar = () => {
         />
         <Route
           path="/kingdom"
-          render={props => <Kingdom {...props} app="kingdom" />}
+          render={props => <JobList {...props} app="kingdom" />}
         />
         <Route
           path="/petra"
-          render={props => <Petra {...props} app="petra" />}
+          render={props => <JobList {...props} app="petra" />}
         />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />

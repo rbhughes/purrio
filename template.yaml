@@ -158,17 +158,26 @@ Resources:
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
-        - AttributeName: range_key
+        - AttributeName: rk
+          AttributeType: S
+        - AttributeName: app
           AttributeType: S
       BillingMode: PAY_PER_REQUEST
       KeySchema:
         - AttributeName: id
           KeyType: HASH
-        - AttributeName: range_key
+        - AttributeName: rk
           KeyType: RANGE
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
       TableName: !Sub ${AWS::StackName}-KittyBox
+      GlobalSecondaryIndexes:
+        - IndexName: appIndex
+          KeySchema:
+            - AttributeName: app
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
   cognitoTriggered:
     Type: AWS::Serverless::Function
     Properties:

@@ -1,4 +1,10 @@
 {
-  "version": "2017-02-28",
-  "payload": $util.parseJson($context.arguments.body)
+    "version" : "2017-02-28",
+    "operation" : "PutItem",
+    "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($ctx.args.id),
+        "rk": $util.dynamodb.toDynamoDBJson($ctx.args.rk),
+        "updated": $util.time.nowEpochMilliSeconds()
+    },
+    "attributeValues" : $util.dynamodb.toMapValuesJson($ctx.args)
 }

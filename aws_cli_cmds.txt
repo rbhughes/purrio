@@ -5,10 +5,10 @@ aws cognito-identity list-identity-pools --max-results 10 --profile ampule | jq 
 aws cognito-idp list-user-pools --max-results 10 --profile ampule | jq -r '.UserPools[] | select(.Name|test("purrio-dev")) | .Id'
 
 # aws_user_pools_web_client_id (maybe just get from appsync?)
-aws cognito-idp list-user-pool-clients --user-pool-id 'us-east-2_irFOCM8ob' --profile ampule | jq -r '.UserPoolClients[] | .ClientId'
+aws cognito-idp list-user-pool-clients --user-pool-id 'us-east-2_bteTsn2nr' --profile ampule | jq -r '.UserPoolClients[] | .ClientId'
 
 
-aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API")'
+#aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API")'
 # aws_user_pools_web_client_id
 aws appsync list-graphql-apis --profile ampule | jq -r '.graphqlApis[] | select(.name == "purrio-dev-API") | .apiId'
 # aws_appsync_graphqlEndpoint

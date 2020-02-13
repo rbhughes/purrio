@@ -24,44 +24,34 @@ const listJobsByApp = `query ListJobsByApp($app: App) {
   }
 }`
 
-const assetChoice = `query metaStuff {
-  __type(name: "Asset"){
-    enumValues {
-      name
-    }
-  }
-}`
+const formatJobsForForm = data => {
+  console.log('--------data---------')
+  console.log(data)
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = props => {
   const [jobs, setJobs] = useState([])
-  const [assets, setAssets] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setIsLoading(true)
+  const fetchJobs = async app => {
+    setIsLoading(true)
 
-      try {
-        let resApps = await API.graphql(graphqlOperation(assetChoice))
-        let assets = resApps.data.__type.enumValues.map(o => ({
-          key: o.name,
-          text: o.name,
-          value: o.name
-        }))
-
-        let resJobs = await API.graphql(
-          graphqlOperation(listJobsByApp, { app: props.app.toUpperCase() })
-        )
-        let jobs = resJobs.data.listJobsByApp
-        setAssets(assets)
-        setJobs(jobs)
-      } catch (error) {
-        console.error(error)
-      }
-      setIsLoading(false)
+    try {
+      let resJobs = await API.graphql(
+        graphqlOperation(listJobsByApp, { app: app.toUpperCase() })
+      )
+      //console.log('-------raw--------')
+      formatJobsForForm(resJobs.data.listJobsByApp)
+      setJobs(resJobs.data.listJobsByApp)
+    } catch (error) {
+      console.error(error)
     }
-    fetchJobs()
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    fetchJobs(props.app)
   }, [props.app])
 
   return isLoading ? (
@@ -69,7 +59,7 @@ const JobList = props => {
   ) : (
     <div>
       {jobs.map(job => (
-        <Job key={`${job.id}-${job.rk}`} job={job} assets={assets} />
+        <Job key={`${job.id}-${job.rk}`} job={job} assets={props.assets} />
       ))}
     </div>
   )

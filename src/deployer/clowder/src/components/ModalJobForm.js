@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import {
   Button,
@@ -6,13 +6,16 @@ import {
   Modal,
   Header,
   Form,
-  Divider,
-  Input
+  Divider
 } from 'semantic-ui-react'
+import { AssetContext } from './AssetContext'
 
 // https://github.com/react-hook-form/react-hook-form/issues/85
 // https://codesandbox.io/s/semantic-ui-react-form-hooks-vnyjh?from-embed
+// asset must use <select>, not semantic's <Dropdown>
+// filter must use <input>, not semantic's <Input>
 const ModalJobForm = props => {
+  const assetList = useContext(AssetContext)
   const {
     control,
     register,
@@ -25,8 +28,14 @@ const ModalJobForm = props => {
       app: props.job.app,
       label: props.job.label,
       repo: props.job.repo,
-      assets: [{ asset: 'WELL_HEADER', filter: 'useFieldArray' }]
+      //assets: [{ asset: props.job.assets[0].name, filter: useFieldArray }]
+      assets: [{ asset: '', filter: '*' }]
     }
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'assets'
   })
 
   useEffect(() => {
@@ -35,14 +44,13 @@ const ModalJobForm = props => {
     register({ name: 'assets' }, { required: true })
   }, [register])
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'assets'
-  })
+  /////////////
 
+  const formatSubmission = data => {
+    console.log(data)
+  }
   /////////////
-  /////////////
-  const onSubmit = data => console.log(data)
+  const onSubmit = data => formatSubmission(data)
   /////////////
   /////////////
 
@@ -91,25 +99,21 @@ const ModalJobForm = props => {
 
           <Divider />
 
-          {fields.map((item, index) => {
+          {fields.map((field, index) => {
             return (
-              <Container key={item.id} fluid>
+              <Container key={field.id} fluid>
                 <Form.Group widths="equal">
                   <Form.Field>
                     {index === 0 && <label>asset</label>}
                     <select name={`assets[${index}].asset`} ref={register}>
-                      {props.assets.map(x => {
+                      {assetList.map(x => {
                         return <option key={x.key}>{x.value}</option>
                       })}
                     </select>
                   </Form.Field>
                   <Form.Field>
                     {index === 0 && <label>filter</label>}
-                    <Input
-                      name={`assets[${index}].filter`}
-                      ref={register}
-                      placeholder="(leave blank top 10)"
-                    />
+                    <input name={`assets[${index}].filter`} ref={register} />
                   </Form.Field>
 
                   <Form.Field>

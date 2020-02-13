@@ -2,8 +2,8 @@ import React from 'react'
 
 import {
   BrowserRouter as Router,
-  Route,
   NavLink,
+  Route,
   Switch
 } from 'react-router-dom'
 import Amplify, { Auth } from 'aws-amplify'
@@ -13,8 +13,9 @@ import { Menu } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
 import Config from './components/Config'
-
 import JobList from './components/JobList'
+
+//////////////////////////// move this stuff
 
 //////////////////////////// move this stuff
 const awsmobile = {
@@ -49,9 +50,7 @@ const handleSignOut = async e => {
   }
 }
 
-//TODO move asset list here, pass to JobList (memoize)
-
-const HeaderBar = () => {
+const HeaderBar = props => {
   return (
     <Router>
       <Menu className="ui">
@@ -94,15 +93,17 @@ const HeaderBar = () => {
         <Route path="/" exact component={Home} />
         <Route
           path="/geographix"
-          render={props => <JobList {...props} app="geographix" />}
+          render={p => (
+            <JobList {...p} app="geographix" assets={props.assets} />
+          )}
         />
         <Route
           path="/kingdom"
-          render={props => <JobList {...props} app="kingdom" />}
+          render={p => <JobList {...p} app="kingdom" assets={props.assets} />}
         />
         <Route
           path="/petra"
-          render={props => <JobList {...props} app="petra" />}
+          render={p => <JobList {...p} app="petra" assets={props.assets} />}
         />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />
@@ -111,8 +112,37 @@ const HeaderBar = () => {
   )
 }
 
+// assets gets passed: HeaderBar -> JobList -> Job -> ModalJobForm
 const App = () => {
-  return <HeaderBar />
+  //const foo = useContext(AssetContext)
+  //console.log('foooooooo')
+  //console.log(foo)
+  /*
+  const [assets, setAssets] = useState([])
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        let resApps = await API.graphql(graphqlOperation(assetChoice))
+        let assets = resApps.data.__type.enumValues.map(o => ({
+          key: o.name,
+          text: o.name,
+          value: o.name
+        }))
+        setAssets(assets)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+    fetchAssets()
+  }, [])
+  */
+  //return <HeaderBar assets={assets} />
+  //let ass = useContext(AssetContext)
+  //console.log('=========')
+  //console.log(ass)
+
+  //return <HeaderBar assets={[]} />
+  return <HeaderBar assets={[]} />
 }
 
 export default withAuthenticator(App)

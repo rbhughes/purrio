@@ -13,6 +13,8 @@ import {
 import ModalJobForm from './ModalJobForm'
 
 const Job = props => {
+  console.log('-----------Job-----------')
+  console.log(props.job)
   const [visible, setVisible] = useState(false)
 
   return (

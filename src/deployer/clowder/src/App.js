@@ -13,11 +13,11 @@ import { Menu } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
 import Config from './components/Config'
-import JobList from './components/JobList'
+import ClumpList from './components/ClumpList'
 
-//////////////////////////// move this stuff
-
-//////////////////////////// move this stuff
+/////
+/////
+/////
 const awsmobile = {
   aws_project_region: 'us-east-2',
   aws_cognito_region: 'us-east-2',
@@ -30,6 +30,9 @@ const awsmobile = {
   aws_appsync_graphqlEndpoint:
     'https://mupetkhoizhm5dqb6wxplr4vi4.appsync-api.us-east-2.amazonaws.com/graphql'
 }
+/////
+/////
+/////
 
 Amplify.configure(awsmobile)
 
@@ -93,17 +96,15 @@ const HeaderBar = props => {
         <Route path="/" exact component={Home} />
         <Route
           path="/geographix"
-          render={p => (
-            <JobList {...p} app="geographix" assets={props.assets} />
-          )}
+          render={props => <ClumpList {...props} app="geographix" />}
         />
         <Route
           path="/kingdom"
-          render={p => <JobList {...p} app="kingdom" assets={props.assets} />}
+          render={props => <ClumpList {...props} app="kingdom" />}
         />
         <Route
           path="/petra"
-          render={p => <JobList {...p} app="petra" assets={props.assets} />}
+          render={props => <ClumpList {...props} app="petra" />}
         />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />
@@ -112,37 +113,8 @@ const HeaderBar = props => {
   )
 }
 
-// assets gets passed: HeaderBar -> JobList -> Job -> ModalJobForm
 const App = () => {
-  //const foo = useContext(AssetContext)
-  //console.log('foooooooo')
-  //console.log(foo)
-  /*
-  const [assets, setAssets] = useState([])
-  useEffect(() => {
-    const fetchAssets = async () => {
-      try {
-        let resApps = await API.graphql(graphqlOperation(assetChoice))
-        let assets = resApps.data.__type.enumValues.map(o => ({
-          key: o.name,
-          text: o.name,
-          value: o.name
-        }))
-        setAssets(assets)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-    fetchAssets()
-  }, [])
-  */
-  //return <HeaderBar assets={assets} />
-  //let ass = useContext(AssetContext)
-  //console.log('=========')
-  //console.log(ass)
-
-  //return <HeaderBar assets={[]} />
-  return <HeaderBar assets={[]} />
+  return <HeaderBar />
 }
 
 export default withAuthenticator(App)

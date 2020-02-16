@@ -10,11 +10,12 @@ import {
   List
 } from 'semantic-ui-react'
 
-import ModalJobForm from './ModalJobForm'
+import ModalClumpForm from './ModalClumpForm'
 
-const Job = props => {
-  console.log('-----------Job-----------')
-  console.log(props.job)
+const Clump = props => {
+  //console.log('----------Clump -- props-----------')
+  //console.log(props)
+
   const [visible, setVisible] = useState(false)
 
   return (
@@ -24,16 +25,16 @@ const Job = props => {
           <Grid.Column width={12}>
             <List divided horizontal size="huge">
               <List.Item>
-                <code>{props.job.repo}</code>
+                <code>{props.clump.repo}</code>
               </List.Item>
               <List.Item>
-                <Label tag>{props.job.label}</Label>
+                <Label tag>{props.clump.label}</Label>
               </List.Item>
             </List>
           </Grid.Column>
           <Grid.Column>
             <Button.Group>
-              <ModalJobForm job={props.job} assets={props.assets} />
+              <ModalClumpForm clump={props.clump} />
               <Button
                 content={visible ? 'Hide' : 'Show'}
                 onClick={() => {
@@ -77,4 +78,4 @@ const Job = props => {
   )
 }
 
-export default Job
+export default Clump

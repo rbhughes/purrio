@@ -1,5 +1,5 @@
 const util = require('util')
-data = [
+dataZ = [
   {
     id: 'GEOGRAPHIX--(repo path)--Blue',
     rk: 'PRODUCTION_/filterA/',
@@ -38,23 +38,51 @@ data = [
   }
 ]
 
+const data = {
+  label: 'Blue',
+  repo: '\\\\server\\share\\place\\longname',
+  assets: [
+    {
+      asset: 'PRODUCTION',
+      filter: 'PotatoSalad!'
+    },
+    {
+      asset: 'WELL_HEADER',
+      filter: '/an_update/'
+    },
+    {
+      asset: 'DIRECTIONAL_SURVEY',
+      filter: '/an_update/'
+    }
+  ]
+}
+
 const reformat = data => {
+  const jobs = []
+  for (const a of data.assets) {
+    jobs.push({
+      id: `app - ${data.repo} - ${data.label}`,
+      rk: `${a.asset} - ${a.filter}`,
+      asset: a.asset,
+      label: data.label,
+      filter: a.filter,
+      repo: data.repo
+    })
+  }
+
+  console.log(util.inspect(jobs, false, null, true))
+}
+
+// This "compresses" rows with unique id+rk to just unique id so that we can
+// display multiple asset + filter entries per job id.
+const reformatZ = data => {
   const a = []
-  const h = {}
 
   for (const o of data) {
     if (a.some(e => e.id === o.id)) {
       let x = a.filter(e => e.id === o.id)[0]
       x.assets.push({ asset: o.asset, filter: o.filter })
-
-      // a contains this job id?
-      //let x = a.filter((e, i) => {
-      //  if (e.id === o.id) {
-      //  }
-      //})
-      //x.repo = o.repo
     } else {
-      // push "stub" job object to a
       a.push({
         id: o.id,
         repo: o.repo,
@@ -63,7 +91,6 @@ const reformat = data => {
       })
     }
   }
-
   console.log(util.inspect(a, false, null, true))
 }
 

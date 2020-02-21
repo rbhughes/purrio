@@ -5,9 +5,9 @@ import {
   Grid,
   Image,
   Label,
+  List,
   Segment,
-  Transition,
-  List
+  Transition
 } from 'semantic-ui-react'
 
 import ModalClumpForm from './ModalClumpForm'
@@ -41,6 +41,13 @@ const Clump = props => {
                   setVisible(!visible)
                 }}
               />
+              <Button
+                onClick={() => {
+                  props.clump.handleClumpDelete(props.clump)
+                }}
+              >
+                Delete
+              </Button>
               <Button>Enqueue</Button>
             </Button.Group>
           </Grid.Column>

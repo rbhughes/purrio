@@ -3,19 +3,34 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import {
   Button,
   Container,
-  Modal,
-  Header,
+  Divider,
   Form,
-  Divider
+  Icon,
+  Modal
 } from 'semantic-ui-react'
 import { AssetContext } from './AssetContext'
+import { VendorContext } from './VendorContext'
 
-// TODO: add validation?
+/*
+const setFormHeader = app => {
+  const vendors = useContext(VendorContext)
+  return (
+    <Modal.Header>
+      <Icon name="vendors[app].icon" />
+      {vendors[app].longName}
+    </Modal.Header>
+  )
+}
+*/
+
+// TODO: form validation?
 const ModalClumpForm = props => {
   //console.log('----------ModalClumpForm -- props-----------')
   //console.log(props)
 
   const assetList = useContext(AssetContext)
+  const vendor = useContext(VendorContext)(props.clump.app)
+
   const { control, register, handleSubmit } = useForm({
     defaultValues: {
       app: props.clump.app,
@@ -30,37 +45,47 @@ const ModalClumpForm = props => {
     name: 'assets'
   })
 
-  const onSubmit = data => props.clump.submission(data)
+  const onSubmit = data => props.clump.handleFormSubmit(data)
+
+  //console.log('______mcf props_____')
+  //console.log(props)
 
   // https://react-hook-form.com/api#useFieldArray
   return (
-    <Modal trigger={<Button>Edit</Button>}>
-      <Modal.Header>{props.clump.id}</Modal.Header>
+    <Modal size="large" trigger={<Button>Edit</Button>}>
+      <Modal.Header>
+        <Icon name={vendor.icon} />
+        {vendor.longName}
+      </Modal.Header>
       <Modal.Content>
-        <Modal.Description>
-          <Header>Create or Edit</Header>
-        </Modal.Description>
+        <Modal.Description>{vendor.formInstructions}</Modal.Description>
+      </Modal.Content>
 
+      <Modal.Content>
         <Form onSubmit={handleSubmit(onSubmit)}>
-          <Form.Group widths="equal">
-            <Form.Field>
-              <input
-                name={'app'}
-                ref={register({})}
-                value={props.clump.app}
-                hidden
-                readOnly
-              />
-            </Form.Field>
-            <Form.Field>
+          <Form.Group>
+            <input
+              name={'app'}
+              ref={register({})}
+              value={props.clump.app}
+              hidden
+              readOnly
+            />
+            <Form.Field width={12}>
+              <label>repo</label>
               <input name={'repo'} ref={register({})} />
             </Form.Field>
-            <Form.Field>
+            <Form.Field width={4}>
+              <label>label</label>
               <input name={'label'} ref={register({})} />
             </Form.Field>
           </Form.Group>
 
-          <Divider />
+          <Divider hidden />
+          <Divider hidden />
+          <Divider>Asset Collection</Divider>
+          <Divider hidden />
+          <Divider hidden />
 
           {fields.map((field, index) => {
             return (
@@ -112,8 +137,7 @@ const ModalClumpForm = props => {
               </Container>
             )
           })}
-
-          <Divider />
+          <Divider hidden />
 
           <Button type="submit">Submit</Button>
         </Form>

@@ -5,11 +5,14 @@ import App from './App'
 import * as serviceWorker from './serviceWorker'
 
 import { AssetProvider } from './components/AssetContext'
+import { VendorProvider } from './components/VendorContext'
 
 ReactDOM.render(
-  <AssetProvider>
-    <App />
-  </AssetProvider>,
+  <VendorProvider>
+    <AssetProvider>
+      <App />
+    </AssetProvider>
+  </VendorProvider>,
   document.getElementById('root')
 )
 

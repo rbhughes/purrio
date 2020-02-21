@@ -3,11 +3,13 @@ import { Loader } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
 import Clump from './Clump'
 
-// ignores case on Windows
+import ModalClumpForm from './ModalClumpForm'
+
 const Crypto = require('crypto')
 
+// ignores case on Windows
 const hashify = s => {
-  console.log('HASHIFY: ' + s)
+  //console.log('HASHIFY: ' + s)
   const hash = Crypto.createHash('md5')
   hash.update(s.toLowerCase())
   return hash.digest('hex')
@@ -26,10 +28,52 @@ const listJobsByApp = `query ListJobsByApp($app: App) {
   }
 }`
 
-const handleFormSubmit = data => {
-  // format submitted object
-  formatClumpToJobs(data)
-  //write via graphql
+const batchDeleteJobs = `mutation BatchDeleteJobs($pairs: [JobKeyPair]) {
+  batchDeleteJobs(pairs: $pairs) {
+    id
+    rk
+  }
+}`
+
+const batchPutJobs = `mutation BatchPutJobs($jobs: [JobInput]) {
+  batchPutJobs(jobs: $jobs) {
+    id
+    rk
+  }
+}`
+
+const onPutJobs = `subscription OnPutJobs {
+  onPutJobs {
+    id
+    rk
+    repo
+  }
+}`
+
+const handleFormSubmit = async data => {
+  console.log('-----handleFormSubmit-------')
+  try {
+    const jobs = formatClumpToJobs(data)
+    let res = await API.graphql(graphqlOperation(batchPutJobs, { jobs: jobs }))
+    console.log(res)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleClumpDelete = async data => {
+  console.log('---------handleClumpDelete--------')
+  try {
+    const pairs = []
+    for (const a of data.assets) {
+      pairs.push({ id: data.id, rk: `${a.asset}_${hashify(a.filter)}` })
+    }
+    let res = await API.graphql(
+      graphqlOperation(batchDeleteJobs, { pairs: pairs })
+    )
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 // kinda like a GROUP BY asset+filter
@@ -39,14 +83,14 @@ const formatClumpToJobs = data => {
     jobs.push({
       app: data.app,
       id: hashify(`${data.app}_${data.repo}_${data.label}`),
-      rk: hashify(`${a.asset}_${a.filter}`),
+      rk: `${a.asset}_${hashify(a.filter)}`,
       asset: a.asset,
       label: data.label,
       filter: a.filter,
       repo: data.repo
     })
   }
-  console.log(jobs)
+  return jobs
 }
 
 // This "compresses" rows with unique id+rk to just unique id so that we can
@@ -64,7 +108,8 @@ const formatJobsToClumps = data => {
         repo: o.repo,
         label: o.label,
         assets: [{ asset: o.asset, filter: o.filter }],
-        submission: handleFormSubmit
+        handleFormSubmit: handleFormSubmit,
+        handleClumpDelete: handleClumpDelete
       })
     }
   }
@@ -78,6 +123,15 @@ const ClumpList = props => {
 
   const [clumps, setClumps] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+
+  const emptyClump = {
+    app: props.app.toUpperCase(),
+    repo: '',
+    label: '',
+    assets: [{ asset: '', filter: '' }],
+    handleFormSubmit: handleFormSubmit,
+    handleClumpDelete: handleClumpDelete
+  }
 
   const fetchClumps = async app => {
     setIsLoading(true)
@@ -98,6 +152,26 @@ const ClumpList = props => {
     fetchClumps(props.app)
   }, [props.app])
 
+  ///
+  useEffect(() => {
+    try {
+      const subscription = API.graphql(graphqlOperation(onPutJobs)).subscribe({
+        next: data => {
+          console.log('sssssssssssssssss')
+          console.log(data)
+          //const { value: { data: { onCreateTalk } }} = data
+          //const talkData = [...talks, onCreateTalk]
+          //updateTalks(talkData)
+        }
+      })
+
+      return () => subscription.unsubscribe()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+  ///
+
   return isLoading ? (
     <Loader>loading</Loader>
   ) : (
@@ -105,6 +179,8 @@ const ClumpList = props => {
       {clumps.map(clump => (
         <Clump key={clump.id} clump={clump} />
       ))}
+      <hr></hr>
+      <ModalClumpForm clump={emptyClump} />
     </div>
   )
 }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Loader } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
-import Clump from './Clump'
+import Job from './Job'
 
-import ModalClumpForm from './ModalClumpForm'
+import ModalJobForm from './ModalJobForm'
 
 const Crypto = require('crypto')
 
@@ -21,10 +21,17 @@ const listJobsByApp = `query ListJobsByApp($app: App) {
     id
     rk
     app
-    asset
+    assets
+    aux
     label
-    filter
     repo
+  }
+}`
+
+const putJob = `mutation PutJob($job: JobInput) {
+  putJob(job: $job) {
+    id
+    rk
   }
 }`
 
@@ -35,13 +42,16 @@ const batchDeleteJobs = `mutation BatchDeleteJobs($pairs: [JobKeyPair]) {
   }
 }`
 
+/*
 const batchPutJobs = `mutation BatchPutJobs($jobs: [JobInput]) {
   batchPutJobs(jobs: $jobs) {
     id
     rk
   }
 }`
+*/
 
+/*
 const onPutJobs = `subscription OnPutJobs {
   onPutJobs {
     id
@@ -49,20 +59,51 @@ const onPutJobs = `subscription OnPutJobs {
     repo
   }
 }`
+*/
+
+const formJobToDB = data => {
+  const job = {
+    id: hashify(`${data.app}_${data.repo}_${data.label}`),
+    rk: data.repo.toLowerCase(),
+    app: data.app,
+    assets: JSON.stringify(data.assets) || null,
+    aux: data.aux || null,
+    label: data.label || 'unlabeled',
+    repo: data.repo
+  }
+  return job
+}
+
+//TODO rename
+const dbToList = data => {
+  const jobs = []
+  for (const o of data) {
+    jobs.push({
+      id: o.id,
+      app: o.app,
+      assets: JSON.parse(o.assets),
+      aux: o.aux,
+      label: o.label,
+      repo: o.repo,
+      handleFormSubmit: handleFormSubmit,
+      handleJobDelete: handleJobDelete
+    })
+  }
+  return jobs
+}
 
 const handleFormSubmit = async data => {
   console.log('-----handleFormSubmit-------')
   try {
-    const jobs = formatClumpToJobs(data)
-    let res = await API.graphql(graphqlOperation(batchPutJobs, { jobs: jobs }))
-    console.log(res)
+    const job = formJobToDB(data)
+    await API.graphql(graphqlOperation(putJob, { job: job }))
   } catch (error) {
     console.error(error)
   }
 }
 
-const handleClumpDelete = async data => {
-  console.log('---------handleClumpDelete--------')
+const handleJobDelete = async data => {
+  console.log('---------handleJobDelete--------')
   try {
     const pairs = []
     for (const a of data.assets) {
@@ -77,6 +118,7 @@ const handleClumpDelete = async data => {
 }
 
 // kinda like a GROUP BY asset+filter
+/*
 const formatClumpToJobs = data => {
   const jobs = []
   for (const a of data.assets) {
@@ -92,9 +134,11 @@ const formatClumpToJobs = data => {
   }
   return jobs
 }
+*/
 
 // This "compresses" rows with unique id+rk to just unique id so that we can
 // display multiple asset + filter pairs per job id.
+/*
 const formatJobsToClumps = data => {
   const a = []
   for (const o of data) {
@@ -115,33 +159,36 @@ const formatJobsToClumps = data => {
   }
   return a
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////////
-const ClumpList = props => {
+const JobList = props => {
   //console.log('-------ClumpList props-------')
   //console.log(props)
 
-  const [clumps, setClumps] = useState([])
+  const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const emptyClump = {
+  const emptyJob = {
     app: props.app.toUpperCase(),
     repo: '',
     label: '',
     assets: [{ asset: '', filter: '' }],
     handleFormSubmit: handleFormSubmit,
-    handleClumpDelete: handleClumpDelete
+    handleJobDelete: handleJobDelete
   }
 
-  const fetchClumps = async app => {
+  const fetchJobs = async app => {
     setIsLoading(true)
 
     try {
-      let resClumps = await API.graphql(
+      const dbJobs = await API.graphql(
         graphqlOperation(listJobsByApp, { app: app.toUpperCase() })
       )
-      let clumps = formatJobsToClumps(resClumps.data.listJobsByApp)
-      setClumps(clumps)
+      let jobs = dbToList(dbJobs.data.listJobsByApp)
+
+      //let clumps = formatJobsToClumps(resClumps.data.listJobsByApp)
+      setJobs(jobs)
     } catch (error) {
       console.error(error)
     }
@@ -149,10 +196,11 @@ const ClumpList = props => {
   }
 
   useEffect(() => {
-    fetchClumps(props.app)
+    fetchJobs(props.app)
   }, [props.app])
 
   ///
+  /*
   useEffect(() => {
     try {
       const subscription = API.graphql(graphqlOperation(onPutJobs)).subscribe({
@@ -170,19 +218,20 @@ const ClumpList = props => {
       console.error(error)
     }
   }, [])
+  */
   ///
 
   return isLoading ? (
     <Loader>loading</Loader>
   ) : (
     <div>
-      {clumps.map(clump => (
-        <Clump key={clump.id} clump={clump} />
+      {jobs.map(job => (
+        <Job key={job.id} job={job} />
       ))}
       <hr></hr>
-      <ModalClumpForm clump={emptyClump} />
+      <ModalJobForm job={emptyJob} />
     </div>
   )
 }
 
-export default ClumpList
+export default JobList

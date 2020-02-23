@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useState, useContext } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import {
   Button,
@@ -24,19 +24,21 @@ const setFormHeader = app => {
 */
 
 // TODO: form validation?
-const ModalClumpForm = props => {
+const ModalJobForm = props => {
   //console.log('----------ModalClumpForm -- props-----------')
   //console.log(props)
 
+  const [visible, setVisible] = useState(false)
+
   const assetList = useContext(AssetContext)
-  const vendor = useContext(VendorContext)(props.clump.app)
+  const vendor = useContext(VendorContext)(props.job.app)
 
   const { control, register, handleSubmit } = useForm({
     defaultValues: {
-      app: props.clump.app,
-      repo: props.clump.repo,
-      label: props.clump.label,
-      assets: props.clump.assets
+      app: props.job.app,
+      repo: props.job.repo,
+      label: props.job.label,
+      assets: props.job.assets
     }
   })
 
@@ -45,14 +47,30 @@ const ModalClumpForm = props => {
     name: 'assets'
   })
 
-  const onSubmit = data => props.clump.handleFormSubmit(data)
+  const onSubmit = data => {
+    console.log('MODAL FORM SUBMITTED')
+    props.job.handleFormSubmit(data)
+    setVisible(!visible)
+  }
 
   //console.log('______mcf props_____')
   //console.log(props)
 
   // https://react-hook-form.com/api#useFieldArray
   return (
-    <Modal size="large" trigger={<Button>Edit</Button>}>
+    <Modal
+      open={visible}
+      size="large"
+      trigger={
+        <Button
+          onClick={() => {
+            setVisible(!visible)
+          }}
+        >
+          {props.job.id ? 'Edit' : 'New Job'}
+        </Button>
+      }
+    >
       <Modal.Header>
         <Icon name={vendor.icon} />
         {vendor.longName}
@@ -67,7 +85,7 @@ const ModalClumpForm = props => {
             <input
               name={'app'}
               ref={register({})}
-              value={props.clump.app}
+              value={props.job.app}
               hidden
               readOnly
             />
@@ -81,10 +99,12 @@ const ModalClumpForm = props => {
             </Form.Field>
           </Form.Group>
 
+          {/*
           <Divider hidden />
           <Divider hidden />
           <Divider>Asset Collection</Divider>
           <Divider hidden />
+          */}
           <Divider hidden />
 
           {fields.map((field, index) => {
@@ -140,10 +160,17 @@ const ModalClumpForm = props => {
           <Divider hidden />
 
           <Button type="submit">Submit</Button>
+          <Button
+            onClick={() => {
+              setVisible(!visible)
+            }}
+          >
+            Cancel
+          </Button>
         </Form>
       </Modal.Content>
     </Modal>
   )
 }
 
-export default ModalClumpForm
+export default ModalJobForm

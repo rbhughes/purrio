@@ -10,9 +10,9 @@ import {
   Transition
 } from 'semantic-ui-react'
 
-import ModalClumpForm from './ModalClumpForm'
+import ModalJobForm from './ModalJobForm'
 
-const Clump = props => {
+const Job = props => {
   //console.log('----------Clump -- props-----------')
   //console.log(props)
 
@@ -25,16 +25,16 @@ const Clump = props => {
           <Grid.Column width={12}>
             <List divided horizontal size="huge">
               <List.Item>
-                <code>{props.clump.repo}</code>
+                <code>{props.job.repo}</code>
               </List.Item>
               <List.Item>
-                <Label tag>{props.clump.label}</Label>
+                <Label tag>{props.job.label}</Label>
               </List.Item>
             </List>
           </Grid.Column>
           <Grid.Column>
             <Button.Group>
-              <ModalClumpForm clump={props.clump} />
+              <ModalJobForm job={props.job} />
               <Button
                 content={visible ? 'Hide' : 'Show'}
                 onClick={() => {
@@ -43,7 +43,7 @@ const Clump = props => {
               />
               <Button
                 onClick={() => {
-                  props.clump.handleClumpDelete(props.clump)
+                  props.job.handleJobDelete(props.job)
                 }}
               >
                 Delete
@@ -85,4 +85,4 @@ const Clump = props => {
   )
 }
 
-export default Clump
+export default Job

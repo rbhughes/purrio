@@ -13,7 +13,7 @@ import { Menu } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
 
 import Config from './components/Config'
-import ClumpList from './components/ClumpList'
+import JobList from './components/JobList'
 
 /////
 /////
@@ -96,15 +96,15 @@ const HeaderBar = props => {
         <Route path="/" exact component={Home} />
         <Route
           path="/geographix"
-          render={props => <ClumpList {...props} app="geographix" />}
+          render={props => <JobList {...props} app="geographix" />}
         />
         <Route
           path="/kingdom"
-          render={props => <ClumpList {...props} app="kingdom" />}
+          render={props => <JobList {...props} app="kingdom" />}
         />
         <Route
           path="/petra"
-          render={props => <ClumpList {...props} app="petra" />}
+          render={props => <JobList {...props} app="petra" />}
         />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />

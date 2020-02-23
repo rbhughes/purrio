@@ -42,6 +42,13 @@ const batchDeleteJobs = `mutation BatchDeleteJobs($pairs: [JobKeyPair]) {
   }
 }`
 
+const deleteJob = `mutation DeleteJob($pair: JobKeyPair) {
+  deleteJob(pair: $pair) {
+    id
+    rk
+  }
+}`
+
 /*
 const batchPutJobs = `mutation BatchPutJobs($jobs: [JobInput]) {
   batchPutJobs(jobs: $jobs) {
@@ -104,14 +111,16 @@ const handleFormSubmit = async data => {
 
 const handleJobDelete = async data => {
   console.log('---------handleJobDelete--------')
+  console.log(data)
   try {
-    const pairs = []
-    for (const a of data.assets) {
-      pairs.push({ id: data.id, rk: `${a.asset}_${hashify(a.filter)}` })
-    }
+    //const pairs = []
+    //for (const a of data.assets) {
+    //  pairs.push({ id: data.id, rk: `${a.asset}_${hashify(a.filter)}` })
+    //}
     let res = await API.graphql(
-      graphqlOperation(batchDeleteJobs, { pairs: pairs })
+      graphqlOperation(deleteJob, { pair: { id: data.id, rk: data.repo } })
     )
+    console.log(res)
   } catch (error) {
     console.error(error)
   }

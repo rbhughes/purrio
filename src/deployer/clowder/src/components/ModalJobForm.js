@@ -11,29 +11,14 @@ import {
 import { AssetContext } from './AssetContext'
 import { VendorContext } from './VendorContext'
 
-/*
-const setFormHeader = app => {
-  const vendors = useContext(VendorContext)
-  return (
-    <Modal.Header>
-      <Icon name="vendors[app].icon" />
-      {vendors[app].longName}
-    </Modal.Header>
-  )
-}
-*/
-
 // TODO: form validation?
 const ModalJobForm = props => {
-  //console.log('----------ModalClumpForm -- props-----------')
-  //console.log(props)
-
   const [visible, setVisible] = useState(false)
 
   const assetList = useContext(AssetContext)
   const vendor = useContext(VendorContext)(props.job.app)
 
-  const { control, register, handleSubmit } = useForm({
+  const { control, register, handleSubmit, reset } = useForm({
     defaultValues: {
       app: props.job.app,
       repo: props.job.repo,
@@ -48,13 +33,10 @@ const ModalJobForm = props => {
   })
 
   const onSubmit = data => {
-    console.log('MODAL FORM SUBMITTED')
     props.job.handleFormSubmit(data)
+    reset()
     setVisible(!visible)
   }
-
-  //console.log('______mcf props_____')
-  //console.log(props)
 
   // https://react-hook-form.com/api#useFieldArray
   return (
@@ -67,7 +49,7 @@ const ModalJobForm = props => {
             setVisible(!visible)
           }}
         >
-          {props.job.id ? 'Edit' : 'New Job'}
+          {props.job.id ? 'Edit' : 'Create Job'}
         </Button>
       }
     >
@@ -162,6 +144,7 @@ const ModalJobForm = props => {
           <Button type="submit">Submit</Button>
           <Button
             onClick={() => {
+              reset()
               setVisible(!visible)
             }}
           >

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Loader } from 'semantic-ui-react'
+import { Loader, Divider } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
 import Job from './Job'
 
@@ -28,17 +28,15 @@ const listJobsByApp = `query ListJobsByApp($app: App) {
   }
 }`
 
-const putJob = `mutation PutJob($job: JobInput) {
-  putJob(job: $job) {
+const createJob = `mutation CreateJob($job: JobInput) {
+  createJob(job: $job) {
     id
     rk
-  }
-}`
-
-const batchDeleteJobs = `mutation BatchDeleteJobs($pairs: [JobKeyPair]) {
-  batchDeleteJobs(pairs: $pairs) {
-    id
-    rk
+    app
+    assets
+    aux
+    label
+    repo
   }
 }`
 
@@ -49,24 +47,24 @@ const deleteJob = `mutation DeleteJob($pair: JobKeyPair) {
   }
 }`
 
-/*
-const batchPutJobs = `mutation BatchPutJobs($jobs: [JobInput]) {
-  batchPutJobs(jobs: $jobs) {
+const onCreateJob = `subscription OnCreateJob {
+  onCreateJob{
     id
     rk
-  }
-}`
-*/
-
-/*
-const onPutJobs = `subscription OnPutJobs {
-  onPutJobs {
-    id
-    rk
+    app
+    assets
+    aux
+    label
     repo
   }
 }`
-*/
+
+const onDeleteJob = `subscription OnDeleteJob {
+  onDeleteJob{
+    id
+    rk
+  }
+}`
 
 const formJobToDB = data => {
   const job = {
@@ -81,8 +79,7 @@ const formJobToDB = data => {
   return job
 }
 
-//TODO rename
-const dbToList = data => {
+const deserializeJobs = data => {
   const jobs = []
   for (const o of data) {
     jobs.push({
@@ -100,81 +97,25 @@ const dbToList = data => {
 }
 
 const handleFormSubmit = async data => {
-  console.log('-----handleFormSubmit-------')
   try {
     const job = formJobToDB(data)
-    await API.graphql(graphqlOperation(putJob, { job: job }))
+    await API.graphql(graphqlOperation(createJob, { job: job }))
   } catch (error) {
     console.error(error)
   }
 }
 
 const handleJobDelete = async data => {
-  console.log('---------handleJobDelete--------')
-  console.log(data)
   try {
-    //const pairs = []
-    //for (const a of data.assets) {
-    //  pairs.push({ id: data.id, rk: `${a.asset}_${hashify(a.filter)}` })
-    //}
-    let res = await API.graphql(
-      graphqlOperation(deleteJob, { pair: { id: data.id, rk: data.repo } })
-    )
-    console.log(res)
+    const pair = { id: data.id, rk: data.repo }
+    await API.graphql(graphqlOperation(deleteJob, { pair: pair }))
   } catch (error) {
     console.error(error)
   }
 }
 
-// kinda like a GROUP BY asset+filter
-/*
-const formatClumpToJobs = data => {
-  const jobs = []
-  for (const a of data.assets) {
-    jobs.push({
-      app: data.app,
-      id: hashify(`${data.app}_${data.repo}_${data.label}`),
-      rk: `${a.asset}_${hashify(a.filter)}`,
-      asset: a.asset,
-      label: data.label,
-      filter: a.filter,
-      repo: data.repo
-    })
-  }
-  return jobs
-}
-*/
-
-// This "compresses" rows with unique id+rk to just unique id so that we can
-// display multiple asset + filter pairs per job id.
-/*
-const formatJobsToClumps = data => {
-  const a = []
-  for (const o of data) {
-    if (a.some(e => e.id === o.id)) {
-      let x = a.filter(e => e.id === o.id)[0]
-      x.assets.push({ asset: o.asset, filter: o.filter })
-    } else {
-      a.push({
-        app: o.app,
-        id: o.id,
-        repo: o.repo,
-        label: o.label,
-        assets: [{ asset: o.asset, filter: o.filter }],
-        handleFormSubmit: handleFormSubmit,
-        handleClumpDelete: handleClumpDelete
-      })
-    }
-  }
-  return a
-}
-*/
-
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = props => {
-  //console.log('-------ClumpList props-------')
-  //console.log(props)
-
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -194,9 +135,8 @@ const JobList = props => {
       const dbJobs = await API.graphql(
         graphqlOperation(listJobsByApp, { app: app.toUpperCase() })
       )
-      let jobs = dbToList(dbJobs.data.listJobsByApp)
+      let jobs = deserializeJobs(dbJobs.data.listJobsByApp)
 
-      //let clumps = formatJobsToClumps(resClumps.data.listJobsByApp)
       setJobs(jobs)
     } catch (error) {
       console.error(error)
@@ -209,25 +149,46 @@ const JobList = props => {
   }, [props.app])
 
   ///
-  /*
   useEffect(() => {
     try {
-      const subscription = API.graphql(graphqlOperation(onPutJobs)).subscribe({
-        next: data => {
-          console.log('sssssssssssssssss')
-          console.log(data)
-          //const { value: { data: { onCreateTalk } }} = data
-          //const talkData = [...talks, onCreateTalk]
-          //updateTalks(talkData)
+      const subscription = API.graphql(graphqlOperation(onCreateJob)).subscribe(
+        {
+          next: res => {
+            console.log('__________onCreateJob')
+            const createdJob = res.value.data.onCreateJob
+            const j = deserializeJobs([createdJob]) //assumes input is an array
+            const updatedJobs = jobs.concat(j)
+            setJobs(updatedJobs)
+          }
         }
-      })
+      )
 
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [])
-  */
+  }, [jobs])
+
+  useEffect(() => {
+    try {
+      const subscription = API.graphql(graphqlOperation(onDeleteJob)).subscribe(
+        {
+          next: res => {
+            console.log('__________onDeleteJob')
+            const deletedJob = res.value.data.onDeleteJob
+
+            const fewerJobs = jobs.filter(
+              job => job.id !== deletedJob.id && job.rk !== deletedJob.rk
+            )
+            setJobs(fewerJobs)
+          }
+        }
+      )
+      return () => subscription.unsubscribe()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [jobs])
   ///
 
   return isLoading ? (
@@ -237,7 +198,7 @@ const JobList = props => {
       {jobs.map(job => (
         <Job key={job.id} job={job} />
       ))}
-      <hr></hr>
+      <Divider />
       <ModalJobForm job={emptyJob} />
     </div>
   )

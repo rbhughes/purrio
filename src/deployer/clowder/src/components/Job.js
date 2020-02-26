@@ -13,9 +13,6 @@ import {
 import ModalJobForm from './ModalJobForm'
 
 const Job = props => {
-  //console.log('----------Clump -- props-----------')
-  //console.log(props)
-
   const [visible, setVisible] = useState(false)
 
   return (

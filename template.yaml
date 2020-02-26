@@ -346,35 +346,45 @@ Resources:
             Resource: !Sub
               - ${apiarn}/*
               - apiarn: !GetAtt API.Arn
-  APIQuerylistJobsResolver:
+  APIQuerylistJobsByAppResolver:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Query
       DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-listJobs-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-listJobs-response.vm
+      RequestMappingTemplateS3Location: Graphql/Query-listJobsByApp-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-listJobsByApp-response.vm
       ApiId: !GetAtt API.ApiId
-      FieldName: listJobs
+      FieldName: listJobsByApp
     DependsOn: APISchema
-  APIMutationputJobResolver:
+  APIQuerylistJobsByPartitionKeyResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Query
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Query-listJobsByPartitionKey-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-listJobsByPartitionKey-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: listJobsByPartitionKey
+    DependsOn: APISchema
+  APIMutationcreateJobResolver:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Mutation
       DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Mutation-putJob-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Mutation-putJob-response.vm
+      RequestMappingTemplateS3Location: Graphql/Mutation-createJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-createJob-response.vm
       ApiId: !GetAtt API.ApiId
-      FieldName: putJob
+      FieldName: createJob
     DependsOn: APISchema
-  APIQuerygetJobResolver:
+  APIMutationdeleteJobResolver:
     Type: AWS::AppSync::Resolver
     Properties:
-      TypeName: Query
+      TypeName: Mutation
       DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-getJob-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-getJob-response.vm
+      RequestMappingTemplateS3Location: Graphql/Mutation-deleteJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-deleteJob-response.vm
       ApiId: !GetAtt API.ApiId
-      FieldName: getJob
+      FieldName: deleteJob
     DependsOn: APISchema
 Parameters:
   StackTagName:

@@ -18,22 +18,43 @@ enum Asset {
 
 type Job {
 	id: ID!
+	rk: String
 	app: App!
-	asset: [Asset]
+	assets: String
+	aux: String
+	label: String
+	repo: String!
+}
+
+input JobInput {
+	id: ID
+	rk: String
+	app: App
+	assets: String
+	aux: String
+	label: String
 	repo: String
 }
 
+input JobKeyPair {
+	id: ID!
+	rk: String
+}
+
 type Mutation {
-	putJob(app: App, asset: [Asset], repo: String): Job
+	createJob(job: JobInput): Job
+	deleteJob(pair: JobKeyPair): Job
 }
 
 type Query {
-	getJob(id: ID!): Job
 	listJobs: [Job]
 	listJobsByApp(app: App): [Job]
+	listJobsByPartitionKey(id: ID): [Job]
 }
 
-schema {
-	query: Query
-	mutation: Mutation
+type Subscription {
+	onCreateJob(job: JobInput): Job
+		@aws_subscribe(mutations: ["createJob"])
+	onDeleteJob(job: JobInput): Job
+		@aws_subscribe(mutations: ["deleteJob"])
 }

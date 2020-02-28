@@ -47,6 +47,11 @@ Resources:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
+        CustomErrorResponses:
+          - ErrorCachingMinTTL: 86400
+            ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: '/index.html'
         DefaultCacheBehavior:
           Compress: true
           ForwardedValues:

@@ -18,18 +18,6 @@ import JobList from './components/JobList'
 /////
 /////
 /////
-const awsmobileOLD = {
-  aws_project_region: 'us-east-2',
-  aws_cognito_region: 'us-east-2',
-  aws_appsync_region: 'us-east-2',
-  aws_appsync_authenticationType: 'AWS_IAM',
-  aws_user_pools_id: 'us-east-2_bteTsn2nr',
-  aws_user_pools_web_client_id: '7dsl41vmtkpsp859e1vdclr34g',
-  aws_cognito_identity_pool_id:
-    'us-east-2:c9c99ae4-6091-478e-84de-c532c2f05484',
-  aws_appsync_graphqlEndpoint:
-    'https://mupetkhoizhm5dqb6wxplr4vi4.appsync-api.us-east-2.amazonaws.com/graphql'
-}
 
 const awsmobile = {
   aws_project_region: 'us-east-2',

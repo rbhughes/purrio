@@ -5,15 +5,7 @@ import Job from './Job'
 
 import ModalJobForm from './ModalJobForm'
 
-const Crypto = require('crypto')
-
-// ignores case on Windows
-const hashify = s => {
-  //console.log('HASHIFY: ' + s)
-  const hash = Crypto.createHash('md5')
-  hash.update(s.toLowerCase())
-  return hash.digest('hex')
-}
+const hashify = require('../util').hashify
 
 ///////////////////////////////////////////////////////////////////////////////
 const listJobsByApp = `query ListJobsByApp($app: App) {
@@ -25,6 +17,7 @@ const listJobsByApp = `query ListJobsByApp($app: App) {
     aux
     label
     repo
+    modified
   }
 }`
 
@@ -40,7 +33,7 @@ const createJob = `mutation CreateJob($job: JobInput) {
   }
 }`
 
-const deleteJob = `mutation DeleteJob($pair: JobKeyPair) {
+const deleteJob = `mutation DeleteJob($pair: KeyPair) {
   deleteJob(pair: $pair) {
     id
     rk
@@ -135,9 +128,9 @@ const JobList = props => {
       const dbJobs = await API.graphql(
         graphqlOperation(listJobsByApp, { app: app.toUpperCase() })
       )
-      let jobs = deserializeJobs(dbJobs.data.listJobsByApp)
+      let jobz = deserializeJobs(dbJobs.data.listJobsByApp)
 
-      setJobs(jobs)
+      setJobs(jobz)
     } catch (error) {
       console.error(error)
     }

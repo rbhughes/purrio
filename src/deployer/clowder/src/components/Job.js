@@ -11,46 +11,10 @@ import {
 
 import { API, graphqlOperation } from 'aws-amplify'
 import ModalJobForm from './ModalJobForm'
+import * as mutations from '../graphql/mutations'
+import * as queries from '../graphql/queries'
+import * as subscriptions from '../graphql/subscriptions'
 const hashify = require('../util').hashify
-
-const listNotesByPKey = `query ListNotesByPKey($id: ID) {
-  listNotesByPKey(id: $id) {
-    id
-    rk
-    asset
-    message
-    modified
-  }
-}`
-
-const onCreateNote = `subscription OnCreateNote {
-  onCreateNote {
-    id
-    rk
-    asset
-    message
-    modified
-  }
-}`
-
-const createNote = `mutation CreateNote($note: NoteInput ) {
-  createNote(note: $note) {
-    id
-    rk
-    asset
-    message
-  }
-}`
-
-const batchDeleteNotes = `mutation BatchDeleteNotes($pairs: [KeyPair]) {
-  batchDeleteNotes(pairs: $pairs) {
-    id
-    rk
-    asset
-    message
-    modified
-  }
-}`
 
 const MessageListItem = props => {
   return (
@@ -73,25 +37,9 @@ const handleFakeMessage = async job => {
       asset: 'PRODUCTION',
       message: `${job.id} --- howdy from a fake message ${Date.now()}`
     }
-    await API.graphql(graphqlOperation(createNote, { note: fake }))
+    await API.graphql(graphqlOperation(mutations.createNote, { note: fake }))
   } catch (error) {
     console.error(error)
-  }
-}
-
-const handleBatchDeleteNotes = async job => {
-  try {
-    let allNotes = await API.graphql(
-      graphqlOperation(listNotesByPKey, { id: job.id })
-    )
-    const pairs = allNotes.data.listNotesByPKey.map(o => {
-      return { id: o.id, rk: o.rk }
-    })
-    await API.graphql(graphqlOperation(batchDeleteNotes, { pairs: pairs }))
-    return true
-  } catch (error) {
-    console.log(error)
-    return false
   }
 }
 
@@ -104,14 +52,9 @@ const Job = props => {
 
     try {
       const dbNotes = await API.graphql(
-        graphqlOperation(listNotesByPKey, { id: id })
+        graphqlOperation(queries.listNotesByPKey, { id: id })
       )
-      //let jobs = deserializeJobs(dbJobs.data.listJobsByApp)
-      let notez = dbNotes.data.listNotesByPKey
-      //console.log('nnnnnnnnnnnnnn')
-      //console.log(notez)
-
-      setNotes(notez)
+      setNotes(dbNotes.data.listNotesByPKey)
     } catch (error) {
       console.error(error)
     }
@@ -125,7 +68,7 @@ const Job = props => {
   useEffect(() => {
     try {
       const subscription = API.graphql(
-        graphqlOperation(onCreateNote)
+        graphqlOperation(subscriptions.onCreateNote)
       ).subscribe({
         next: res => {
           console.log('__________onCreateNote')
@@ -195,7 +138,7 @@ const Job = props => {
                 </Button>
                 <Button
                   onClick={() => {
-                    let deleted = handleBatchDeleteNotes(props.job)
+                    let deleted = props.job.handleNotesDelete(props.job)
                     if (deleted) {
                       setNotes([])
                     }

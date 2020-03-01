@@ -4,61 +4,12 @@ import { API, graphqlOperation } from 'aws-amplify'
 import Job from './Job'
 
 import ModalJobForm from './ModalJobForm'
+import * as mutations from '../graphql/mutations'
+import * as queries from '../graphql/queries'
+import * as subscriptions from '../graphql/subscriptions'
 
 const hashify = require('../util').hashify
 const stripToAlphaNum = require('../util').stripToAlphaNum
-
-///////////////////////////////////////////////////////////////////////////////
-const listJobsByApp = `query ListJobsByApp($app: App) {
-  listJobsByApp(app: $app){
-    id
-    rk
-    app
-    assets
-    aux
-    label
-    repo
-    modified
-  }
-}`
-
-const createJob = `mutation CreateJob($job: JobInput) {
-  createJob(job: $job) {
-    id
-    rk
-    app
-    assets
-    aux
-    label
-    repo
-  }
-}`
-
-const deleteJob = `mutation DeleteJob($pair: KeyPair) {
-  deleteJob(pair: $pair) {
-    id
-    rk
-  }
-}`
-
-const onCreateJob = `subscription OnCreateJob {
-  onCreateJob{
-    id
-    rk
-    app
-    assets
-    aux
-    label
-    repo
-  }
-}`
-
-const onDeleteJob = `subscription OnDeleteJob {
-  onDeleteJob{
-    id
-    rk
-  }
-}`
 
 const formJobToDB = data => {
   const job = {
@@ -83,43 +34,64 @@ const deserializeJobs = data => {
       aux: o.aux,
       label: o.label,
       repo: o.repo,
-      handleFormSubmit: handleFormSubmit,
-      handleJobDelete: handleJobDelete
+      handleJobCreate: handleJobCreate,
+      handleJobDelete: handleJobDelete,
+      handleNotesDelete: handleNotesDelete
     })
   }
   return jobs
 }
 
-const handleFormSubmit = async data => {
+const handleJobCreate = async data => {
   try {
     const job = formJobToDB(data)
-    await API.graphql(graphqlOperation(createJob, { job: job }))
+    await API.graphql(graphqlOperation(mutations.createJob, { job: job }))
   } catch (error) {
     console.error(error)
   }
 }
 
-const handleJobDelete = async data => {
+const handleJobDelete = async job => {
   try {
-    const pair = { id: data.id, rk: stripToAlphaNum(data.repo) }
-    await API.graphql(graphqlOperation(deleteJob, { pair: pair }))
+    const pair = { id: job.id, rk: stripToAlphaNum(job.repo) }
+    await API.graphql(graphqlOperation(mutations.deleteJob, { pair: pair }))
+    await handleNotesDelete(job)
   } catch (error) {
     console.error(error)
+  }
+}
+
+const handleNotesDelete = async job => {
+  try {
+    let allNotes = await API.graphql(
+      graphqlOperation(queries.listNotesByPKey, { id: job.id })
+    )
+    const pairs = allNotes.data.listNotesByPKey.map(o => {
+      return { id: o.id, rk: o.rk }
+    })
+    await API.graphql(
+      graphqlOperation(mutations.batchDeleteNotes, { pairs: pairs })
+    )
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = props => {
   const [jobs, setJobs] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const emptyJob = {
     app: props.app.toUpperCase(),
     repo: '',
     label: '',
     assets: [{ asset: '', filter: '' }],
-    handleFormSubmit: handleFormSubmit,
-    handleJobDelete: handleJobDelete
+    handleJobCreate: handleJobCreate,
+    handleJobDelete: handleJobDelete,
+    handleNotesDelete: handleNotesDelete
   }
 
   const fetchJobs = async app => {
@@ -127,11 +99,9 @@ const JobList = props => {
 
     try {
       const dbJobs = await API.graphql(
-        graphqlOperation(listJobsByApp, { app: app.toUpperCase() })
+        graphqlOperation(queries.listJobsByApp, { app: app.toUpperCase() })
       )
-      let jobz = deserializeJobs(dbJobs.data.listJobsByApp)
-
-      setJobs(jobz)
+      setJobs(deserializeJobs(dbJobs.data.listJobsByApp))
     } catch (error) {
       console.error(error)
     }
@@ -142,20 +112,18 @@ const JobList = props => {
     fetchJobs(props.app)
   }, [props.app])
 
-  ///
   useEffect(() => {
     try {
-      const subscription = API.graphql(graphqlOperation(onCreateJob)).subscribe(
-        {
-          next: res => {
-            console.log('__________onCreateJob')
-            const createdJob = res.value.data.onCreateJob
-            const j = deserializeJobs([createdJob]) //assumes input is an array
-            const updatedJobs = jobs.concat(j)
-            setJobs(updatedJobs)
-          }
+      const subscription = API.graphql(
+        graphqlOperation(subscriptions.onCreateJob)
+      ).subscribe({
+        next: res => {
+          const createdJob = res.value.data.onCreateJob
+          const job = deserializeJobs([createdJob]) //assumes input is an array
+          const updatedJobs = jobs.concat(job)
+          setJobs(updatedJobs)
         }
-      )
+      })
 
       return () => subscription.unsubscribe()
     } catch (error) {
@@ -165,25 +133,23 @@ const JobList = props => {
 
   useEffect(() => {
     try {
-      const subscription = API.graphql(graphqlOperation(onDeleteJob)).subscribe(
-        {
-          next: res => {
-            console.log('__________onDeleteJob')
-            const deletedJob = res.value.data.onDeleteJob
+      const subscription = API.graphql(
+        graphqlOperation(subscriptions.onDeleteJob)
+      ).subscribe({
+        next: res => {
+          const deletedJob = res.value.data.onDeleteJob
 
-            const fewerJobs = jobs.filter(
-              job => job.id !== deletedJob.id && job.rk !== deletedJob.rk
-            )
-            setJobs(fewerJobs)
-          }
+          const fewerJobs = jobs.filter(
+            job => job.id !== deletedJob.id && job.rk !== deletedJob.rk
+          )
+          setJobs(fewerJobs)
         }
-      )
+      })
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
   }, [jobs])
-  ///
 
   return isLoading ? (
     <Loader>loading</Loader>

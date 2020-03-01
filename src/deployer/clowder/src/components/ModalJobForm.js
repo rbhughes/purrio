@@ -33,7 +33,7 @@ const ModalJobForm = props => {
   })
 
   const onSubmit = data => {
-    props.job.handleFormSubmit(data)
+    props.job.handleJobCreate(data)
     reset()
     setVisible(!visible)
   }

@@ -24,7 +24,26 @@ const listNotesByPKey = `query ListNotesByPKey($id: ID) {
 }`
 
 const onCreateNote = `subscription OnCreateNote {
-  onCreateNote{
+  onCreateNote {
+    id
+    rk
+    asset
+    message
+    modified
+  }
+}`
+
+const createNote = `mutation CreateNote($note: NoteInput ) {
+  createNote(note: $note) {
+    id
+    rk
+    asset
+    message
+  }
+}`
+
+const batchDeleteNotes = `mutation BatchDeleteNotes($pairs: [KeyPair]) {
+  batchDeleteNotes(pairs: $pairs) {
     id
     rk
     asset
@@ -45,9 +64,35 @@ const MessageListItem = props => {
   )
 }
 
-const handleFakeMessage = e => {
-  console.log('HELLO FAKE MESSAGE')
-  console.log(e)
+const handleFakeMessage = async job => {
+  console.log(job)
+  try {
+    const fake = {
+      id: job.id,
+      rk: Date.now().toString(),
+      asset: 'PRODUCTION',
+      message: `${job.id} --- howdy from a fake message ${Date.now()}`
+    }
+    await API.graphql(graphqlOperation(createNote, { note: fake }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleBatchDeleteNotes = async job => {
+  try {
+    let allNotes = await API.graphql(
+      graphqlOperation(listNotesByPKey, { id: job.id })
+    )
+    const pairs = allNotes.data.listNotesByPKey.map(o => {
+      return { id: o.id, rk: o.rk }
+    })
+    await API.graphql(graphqlOperation(batchDeleteNotes, { pairs: pairs }))
+    return true
+  } catch (error) {
+    console.log(error)
+    return false
+  }
 }
 
 const Job = props => {
@@ -85,16 +130,17 @@ const Job = props => {
         next: res => {
           console.log('__________onCreateNote')
           const createdNote = res.value.data.onCreateNote
-          //const j = deserializeJobs([createdJob]) //assumes input is an array
-          const updatedNotes = notes.concat(createdNote)
-          setNotes(updatedNotes)
+          if (props.job.id === createdNote.id) {
+            const updatedNotes = notes.concat(createdNote)
+            setNotes(updatedNotes)
+          }
         }
       })
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [notes])
+  }, [notes, props.job.id])
 
   return (
     <Segment>
@@ -142,10 +188,20 @@ const Job = props => {
               <Card fluid>
                 <Button
                   onClick={() => {
-                    handleFakeMessage(props.job.id)
+                    handleFakeMessage(props.job)
                   }}
                 >
                   make fake message
+                </Button>
+                <Button
+                  onClick={() => {
+                    let deleted = handleBatchDeleteNotes(props.job)
+                    if (deleted) {
+                      setNotes([])
+                    }
+                  }}
+                >
+                  clear messages
                 </Button>
               </Card>
             </Grid.Column>

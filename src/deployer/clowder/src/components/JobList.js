@@ -6,6 +6,7 @@ import Job from './Job'
 import ModalJobForm from './ModalJobForm'
 
 const hashify = require('../util').hashify
+const stripToAlphaNum = require('../util').stripToAlphaNum
 
 ///////////////////////////////////////////////////////////////////////////////
 const listJobsByApp = `query ListJobsByApp($app: App) {
@@ -62,7 +63,7 @@ const onDeleteJob = `subscription OnDeleteJob {
 const formJobToDB = data => {
   const job = {
     id: hashify(`${data.app}_${data.repo}_${data.label}`),
-    rk: data.repo.toLowerCase(),
+    rk: stripToAlphaNum(data.repo),
     app: data.app,
     assets: JSON.stringify(data.assets) || null,
     aux: data.aux || null,
@@ -100,7 +101,7 @@ const handleFormSubmit = async data => {
 
 const handleJobDelete = async data => {
   try {
-    const pair = { id: data.id, rk: data.repo }
+    const pair = { id: data.id, rk: stripToAlphaNum(data.repo) }
     await API.graphql(graphqlOperation(deleteJob, { pair: pair }))
   } catch (error) {
     console.error(error)

@@ -29,7 +29,6 @@ const MessageListItem = props => {
 }
 
 const handleFakeMessage = async job => {
-  console.log(job)
   try {
     const fake = {
       id: job.id,
@@ -109,13 +108,19 @@ const Job = props => {
                 }}
               />
               <Button
-                onClick={() => {
-                  props.job.handleJobDelete(props.job)
+                onClick={e => {
+                  props.job.handleJobDelete(e, props.job)
                 }}
               >
                 Delete
               </Button>
-              <Button>Enqueue</Button>
+              <Button
+                onClick={e => {
+                  props.job.handleEnqueue(e, props.job)
+                }}
+              >
+                Enqueue
+              </Button>
             </Button.Group>
           </Grid.Column>
         </Grid.Row>
@@ -137,8 +142,8 @@ const Job = props => {
                   make fake message
                 </Button>
                 <Button
-                  onClick={() => {
-                    let deleted = props.job.handleNotesDelete(props.job)
+                  onClick={e => {
+                    let deleted = props.job.handleNotesDelete(e, props.job)
                     if (deleted) {
                       setNotes([])
                     }

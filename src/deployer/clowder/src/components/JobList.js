@@ -7,9 +7,20 @@ import ModalJobForm from './ModalJobForm'
 import * as mutations from '../graphql/mutations'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
+import { Auth } from 'aws-amplify'
 
 const hashify = require('../util').hashify
 const stripToAlphaNum = require('../util').stripToAlphaNum
+
+const loadingSpin = (event, spin) => {
+  event.preventDefault()
+  event.persist()
+  if (spin) {
+    event.target.className += ' loading'
+  } else {
+    event.target.className = event.target.className.replace(/ loading/g, '')
+  }
+}
 
 const formJobToDB = data => {
   const job = {
@@ -27,17 +38,15 @@ const formJobToDB = data => {
 const deserializeJobs = data => {
   const jobs = []
   for (const o of data) {
-    jobs.push({
+    const job = {
       id: o.id,
       app: o.app,
       assets: JSON.parse(o.assets),
       aux: o.aux,
       label: o.label,
-      repo: o.repo,
-      handleJobCreate: handleJobCreate,
-      handleJobDelete: handleJobDelete,
-      handleNotesDelete: handleNotesDelete
-    })
+      repo: o.repo
+    }
+    jobs.push(attachJobHandlers(job))
   }
   return jobs
 }
@@ -51,48 +60,77 @@ const handleJobCreate = async data => {
   }
 }
 
-const handleJobDelete = async job => {
+const handleJobDelete = async (event, job) => {
   try {
+    loadingSpin(event, true)
     const pair = { id: job.id, rk: stripToAlphaNum(job.repo) }
     await API.graphql(graphqlOperation(mutations.deleteJob, { pair: pair }))
-    await handleNotesDelete(job)
+    await handleNotesDelete(event, job)
+    loadingSpin(event, false)
   } catch (error) {
     console.error(error)
   }
 }
 
-const handleNotesDelete = async job => {
+const handleNotesDelete = async (event, job) => {
   try {
+    loadingSpin(event, true)
     let allNotes = await API.graphql(
       graphqlOperation(queries.listNotesByPKey, { id: job.id })
     )
-    const pairs = allNotes.data.listNotesByPKey.map(o => {
-      return { id: o.id, rk: o.rk }
-    })
-    await API.graphql(
-      graphqlOperation(mutations.batchDeleteNotes, { pairs: pairs })
-    )
+    if (allNotes.data.listNotesByPKey.length > 0) {
+      const pairs = allNotes.data.listNotesByPKey.map(o => {
+        return { id: o.id, rk: o.rk }
+      })
+      await API.graphql(
+        graphqlOperation(mutations.batchDeleteNotes, { pairs: pairs })
+      )
+    }
+    loadingSpin(event, false)
     return true
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return false
   }
 }
 
+const handleEnqueue = async (event, job) => {
+  try {
+    loadingSpin(event, true)
+    const currCred = await Auth.currentCredentials()
+    const cred = Auth.essentialCredentials(currCred)
+    cred.region = 'us-east-2'
+    console.log(cred)
+
+    loadingSpin(event, false)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const emptyJob = app => {
+  const job = {
+    app: app.toUpperCase(),
+    repo: '',
+    label: '',
+    assets: [{ asset: '', filter: '' }]
+  }
+  return attachJobHandlers(job)
+}
+
+const attachJobHandlers = job => {
+  const handlers = {
+    handleJobCreate: handleJobCreate,
+    handleJobDelete: handleJobDelete,
+    handleNotesDelete: handleNotesDelete,
+    handleEnqueue: handleEnqueue
+  }
+  return Object.assign(job, handlers)
+}
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = props => {
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-
-  const emptyJob = {
-    app: props.app.toUpperCase(),
-    repo: '',
-    label: '',
-    assets: [{ asset: '', filter: '' }],
-    handleJobCreate: handleJobCreate,
-    handleJobDelete: handleJobDelete,
-    handleNotesDelete: handleNotesDelete
-  }
 
   const fetchJobs = async app => {
     setIsLoading(true)
@@ -152,14 +190,14 @@ const JobList = props => {
   }, [jobs])
 
   return isLoading ? (
-    <Loader>loading</Loader>
+    <Loader active={true} size="massive" />
   ) : (
     <div>
       {jobs.map(job => (
         <Job key={job.id} job={job} />
       ))}
       <Divider />
-      <ModalJobForm job={emptyJob} />
+      <ModalJobForm job={emptyJob(props.app)} />
     </div>
   )
 }

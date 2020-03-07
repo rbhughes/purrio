@@ -8,9 +8,38 @@ import * as mutations from '../graphql/mutations'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 import { Auth } from 'aws-amplify'
+import Lambda from 'aws-sdk/clients/lambda'
+//const hashify = require('../util').hashify
+//const stripToAlphaNum = require('../util').stripToAlphaNum
+const utility = require('../utility')
 
-const hashify = require('../util').hashify
-const stripToAlphaNum = require('../util').stripToAlphaNum
+/////
+const getCredentials = async event => {
+  const currCred = await Auth.currentCredentials()
+  const cred = Auth.essentialCredentials(currCred)
+  //TODO put region someplace else
+  cred.region = 'us-east-2'
+  return cred
+}
+
+const lambdaInvoke = async event => {
+  const { cred, name, args } = event
+  const lamb = new Lambda(cred)
+  let params = {
+    FunctionName: name,
+    Payload: JSON.stringify(args)
+  }
+  try {
+    let res = await lamb.invoke(params).promise()
+    let payload = JSON.parse(res.Payload)
+    payload.lambda = name
+    return payload
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+/////
 
 const loadingSpin = (event, spin) => {
   event.preventDefault()
@@ -24,8 +53,8 @@ const loadingSpin = (event, spin) => {
 
 const formJobToDB = data => {
   const job = {
-    id: hashify(`${data.app}_${data.repo}_${data.label}`),
-    rk: stripToAlphaNum(data.repo),
+    id: utility.hashify(`${data.app}_${data.repo}_${data.label}`),
+    rk: utility.stripToAlphaNum(data.repo),
     app: data.app,
     assets: JSON.stringify(data.assets) || null,
     aux: data.aux || null,
@@ -63,7 +92,7 @@ const handleJobCreate = async data => {
 const handleJobDelete = async (event, job) => {
   try {
     loadingSpin(event, true)
-    const pair = { id: job.id, rk: stripToAlphaNum(job.repo) }
+    const pair = { id: job.id, rk: utility.stripToAlphaNum(job.repo) }
     await API.graphql(graphqlOperation(mutations.deleteJob, { pair: pair }))
     await handleNotesDelete(event, job)
     loadingSpin(event, false)
@@ -97,10 +126,32 @@ const handleNotesDelete = async (event, job) => {
 const handleEnqueue = async (event, job) => {
   try {
     loadingSpin(event, true)
-    const currCred = await Auth.currentCredentials()
-    const cred = Auth.essentialCredentials(currCred)
-    cred.region = 'us-east-2'
+    const cred = await getCredentials()
     console.log(cred)
+
+    let x = utility.ggxDBConn({ host: 'TODO', repo: job.repo })
+    console.log(x)
+
+    //1 remove DBConnect from stackery
+    //2. do a lambda
+
+    console.log(job)
+    for (const o of job.assets) {
+      console.log(job.app, o.asset, o.filter)
+      let payload = await lambdaInvoke({
+        cred: cred,
+        name: 'purrio-dev-Enqueue',
+        args: {
+          attr_app: job.app,
+          attr_target: 'database',
+          attr_directive: 'batcher',
+          asset: o.asset,
+          label: job.label,
+          id: job.id
+        }
+      })
+      console.log(payload)
+    }
 
     loadingSpin(event, false)
   } catch (error) {

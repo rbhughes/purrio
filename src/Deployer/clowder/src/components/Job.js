@@ -14,7 +14,8 @@ import ModalJobForm from './ModalJobForm'
 import * as mutations from '../graphql/mutations'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
-const hashify = require('../util').hashify
+//const hashify = require('../util').hashify
+const utility = require('../utility')
 
 const MessageListItem = props => {
   return (
@@ -157,7 +158,10 @@ const Job = props => {
               <Card fluid>
                 <List>
                   {notes.map(note => (
-                    <MessageListItem key={hashify(note.rk)} note={note} />
+                    <MessageListItem
+                      key={utility.hashify(note.rk)}
+                      note={note}
+                    />
                   ))}
                 </List>
               </Card>

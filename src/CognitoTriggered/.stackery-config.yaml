@@ -1,2 +1,2 @@
-function-id: DBConnect
+function-id: CognitoTriggered
 template-path: ../../template.yaml

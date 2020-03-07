@@ -10,11 +10,11 @@ Resources:
       UsernameAttributes:
         - email
       LambdaConfig:
-        PreAuthentication: !GetAtt cognitoTriggered.Arn
-        PostConfirmation: !GetAtt cognitoTriggered.Arn
-        PostAuthentication: !GetAtt cognitoTriggered.Arn
-        CustomMessage: !GetAtt cognitoTriggered.Arn
-        PreSignUp: !GetAtt cognitoTriggered.Arn
+        PreAuthentication: !GetAtt CognitoTriggered.Arn
+        PostConfirmation: !GetAtt CognitoTriggered.Arn
+        PostAuthentication: !GetAtt CognitoTriggered.Arn
+        CustomMessage: !GetAtt CognitoTriggered.Arn
+        PreSignUp: !GetAtt CognitoTriggered.Arn
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
@@ -88,69 +88,6 @@ Resources:
             Resource: !Sub
               - ${BucketArn}/*
               - BucketArn: !GetAtt SiteBucket.Arn
-  deployer:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-deployer
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: deployer
-      CodeUri: src/deployer
-      Handler: index.handler
-      Runtime: nodejs12.x
-      MemorySize: 3008
-      Timeout: 300
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-        - S3CrudPolicy:
-            BucketName: !Ref SiteBucket
-      Environment:
-        Variables:
-          BUCKET_NAME: !Ref SiteBucket
-          BUCKET_ARN: !GetAtt SiteBucket.Arn
-          XDG_CONFIG_HOME: /tmp/.config
-  deployerDeployTrigger:
-    Type: Custom::FunctionDeployTrigger
-    Properties:
-      ServiceToken: !GetAtt deployer.Arn
-      DeploymentTimestamp: !Ref DeploymentTimestamp
-  authenticator:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-authenticator
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: authenticator
-      CodeUri: src/authenticator
-      Handler: index.handler
-      Runtime: nodejs12.x
-      MemorySize: 3008
-      Timeout: 30
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-        - Statement:
-            - Effect: Allow
-              Action:
-                - cognito-idp:Admin*
-                - cognito-idp:DescribeIdentityProvider
-                - cognito-idp:DescribeResourceServer
-                - cognito-idp:DescribeUserPool
-                - cognito-idp:DescribeUserPoolClient
-                - cognito-idp:DescribeUserPoolDomain
-                - cognito-idp:GetGroup
-                - cognito-idp:ListGroups
-                - cognito-idp:ListUserPoolClients
-                - cognito-idp:ListUsers
-                - cognito-idp:ListUsersInGroup
-                - cognito-idp:UpdateGroup
-              Resource: !GetAtt UserPool.Arn
-      Environment:
-        Variables:
-          USER_POOL_CLIENT_ID: !Ref UserPoolClient
-          USER_POOL_ID: !Ref UserPool
-          USER_POOL_ARN: !GetAtt UserPool.Arn
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -183,28 +120,6 @@ Resources:
               KeyType: HASH
           Projection:
             ProjectionType: ALL
-  cognitoTriggered:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-cognitoTriggered
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: cognitoTriggered
-      CodeUri: src/cognitoTriggered
-      Handler: index.handler
-      Runtime: nodejs12.x
-      MemorySize: 3008
-      Timeout: 30
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-  UserPoolTocognitoTriggeredPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt cognitoTriggered.Arn
-      Principal: cognito-idp.amazonaws.com
-      Action: lambda:InvokeFunction
-      SourceArn: !GetAtt UserPool.Arn
   Queue:
     Type: AWS::SQS::Queue
     Properties:
@@ -321,6 +236,8 @@ Resources:
                 cognito-identity.amazonaws.com:amr: authenticated
       ManagedPolicyArns:
         - !Ref APIPolicy
+        - !Ref BatcherPolicy
+        - !Ref EnqueuePolicy
         - !Ref QueuePolicy
   UnauthRole:
     Type: AWS::IAM::Role
@@ -427,14 +344,41 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
-  DBConnect:
+  Deployer:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-DBConnect
+      FunctionName: !Sub ${AWS::StackName}-Deployer
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: DBConnect
-      CodeUri: src/DBConnect
+        - ResourceName: Deployer
+      CodeUri: src/Deployer
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - S3CrudPolicy:
+            BucketName: !Ref SiteBucket
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref SiteBucket
+          BUCKET_ARN: !GetAtt SiteBucket.Arn
+          XDG_CONFIG_HOME: /tmp/.config
+  DeployerDeployTrigger:
+    Type: Custom::FunctionDeployTrigger
+    Properties:
+      ServiceToken: !GetAtt Deployer.Arn
+      DeploymentTimestamp: !Ref DeploymentTimestamp
+  Authenticator:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-Authenticator
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: Authenticator
+      CodeUri: src/Authenticator
       Handler: index.handler
       Runtime: nodejs12.x
       MemorySize: 3008
@@ -442,6 +386,103 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:Admin*
+                - cognito-idp:DescribeIdentityProvider
+                - cognito-idp:DescribeResourceServer
+                - cognito-idp:DescribeUserPool
+                - cognito-idp:DescribeUserPoolClient
+                - cognito-idp:DescribeUserPoolDomain
+                - cognito-idp:GetGroup
+                - cognito-idp:ListGroups
+                - cognito-idp:ListUserPoolClients
+                - cognito-idp:ListUsers
+                - cognito-idp:ListUsersInGroup
+                - cognito-idp:UpdateGroup
+              Resource: !GetAtt UserPool.Arn
+      Environment:
+        Variables:
+          USER_POOL_CLIENT_ID: !Ref UserPoolClient
+          USER_POOL_ID: !Ref UserPool
+          USER_POOL_ARN: !GetAtt UserPool.Arn
+  CognitoTriggered:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-CognitoTriggered
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: CognitoTriggered
+      CodeUri: src/CognitoTriggered
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  UserPoolToCognitoTriggeredPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt CognitoTriggered.Arn
+      Principal: cognito-idp.amazonaws.com
+      Action: lambda:InvokeFunction
+      SourceArn: !GetAtt UserPool.Arn
+  BatcherPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-BatcherPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: lambda:invokeFunction
+            Resource: !Sub
+              - ${batcherarn}
+              - batcherarn: !GetAtt Batcher.Arn
+  EnqueuePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-EnqueuePolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: lambda:invokeFunction
+            Resource: !Sub
+              - ${enqueuearn}
+              - enqueuearn: !GetAtt Enqueue.Arn
+  WorkerGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Sub ${AWS::StackName}-WorkerGroup
+  WorkerUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub ${AWS::StackName}-WorkerUser
+  WorkerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-WorkerPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: lambda:invokeFunction
+            Resource:
+              - !GetAtt Batcher.Arn
+              - !GetAtt Enqueue.Arn
+  WorkerUserToGroup:
+    Type: AWS::IAM::UserToGroupAddition
+    Properties:
+      GroupName: !Ref WorkerGroup
+      Users:
+        - !Ref WorkerUser
+  WorkerUserKeys:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref WorkerUser
 Parameters:
   StackTagName:
     Type: String
@@ -452,3 +493,10 @@ Parameters:
   DeploymentTimestamp:
     Type: Number
     Description: Deployment preparation timestamp in milliseconds Since Epoch (injected by Stackery at deployment time)
+Outputs:
+  AccessKey:
+    Value: !Ref 'WorkerUserKeys'
+    Description: AWSAccessKeyId
+  SecretKey:
+    Value: !GetAtt [WorkerUserKeys, SecretAccessKey]
+    Description: AWSSecretAccessKey

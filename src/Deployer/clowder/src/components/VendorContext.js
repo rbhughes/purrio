@@ -1,7 +1,5 @@
 import React from 'react'
 
-//TODO also store database credential form info here
-
 const VendorContext = React.createContext()
 
 const vendors = app => {

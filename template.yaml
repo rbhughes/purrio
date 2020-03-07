@@ -457,6 +457,9 @@ Resources:
     Type: AWS::IAM::Group
     Properties:
       GroupName: !Sub ${AWS::StackName}-WorkerGroup
+      ManagedPolicyArns:
+        - !Ref WorkerPolicy
+        - !Ref QueuePolicy
   WorkerUser:
     Type: AWS::IAM::User
     Properties:

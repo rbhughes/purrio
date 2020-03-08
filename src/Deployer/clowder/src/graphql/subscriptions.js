@@ -7,6 +7,20 @@ export const onCreateJob = `subscription OnCreateJob {
     aux
     label
     repo
+    modified
+  }
+}`
+
+export const onUpdateJob = `subscription OnUpdateJob {
+  onUpdateJob{
+    id
+    rk
+    app
+    assets
+    aux
+    label
+    repo
+    modified
   }
 }`
 

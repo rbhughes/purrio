@@ -33,7 +33,13 @@ const ModalJobForm = props => {
   })
 
   const onSubmit = data => {
-    props.job.handleJobCreate(data)
+    if (props.job.id) {
+      console.log('THERE IS AN ID: ' + props.job.id)
+      props.job.handleJobUpdate(data)
+    } else {
+      console.log('NO ID !!!')
+      props.job.handleJobCreate(data)
+    }
     reset()
     setVisible(!visible)
   }

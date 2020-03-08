@@ -9,8 +9,7 @@ import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 import { Auth } from 'aws-amplify'
 import Lambda from 'aws-sdk/clients/lambda'
-//const hashify = require('../util').hashify
-//const stripToAlphaNum = require('../util').stripToAlphaNum
+
 const utility = require('../utility')
 
 /////
@@ -84,6 +83,16 @@ const handleJobCreate = async data => {
   try {
     const job = formJobToDB(data)
     await API.graphql(graphqlOperation(mutations.createJob, { job: job }))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const handleJobUpdate = async data => {
+  console.log('SO THIS UPDATE THING HAPPENED')
+  try {
+    const job = formJobToDB(data)
+    await API.graphql(graphqlOperation(mutations.updateJob, { job: job }))
   } catch (error) {
     console.error(error)
   }
@@ -172,6 +181,7 @@ const emptyJob = app => {
 const attachJobHandlers = job => {
   const handlers = {
     handleJobCreate: handleJobCreate,
+    handleJobUpdate: handleJobUpdate,
     handleJobDelete: handleJobDelete,
     handleNotesDelete: handleNotesDelete,
     handleEnqueue: handleEnqueue
@@ -209,8 +219,30 @@ const JobList = props => {
         next: res => {
           const createdJob = res.value.data.onCreateJob
           const job = deserializeJobs([createdJob]) //assumes input is an array
+          //TODO rename "update" to avoid confusion
           const updatedJobs = jobs.concat(job)
           setJobs(updatedJobs)
+        }
+      })
+
+      return () => subscription.unsubscribe()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [jobs])
+
+  useEffect(() => {
+    try {
+      const subscription = API.graphql(
+        graphqlOperation(subscriptions.onUpdateJob)
+      ).subscribe({
+        next: res => {
+          const updatedJob = res.value.data.onUpdateJob
+          const job = deserializeJobs([updatedJob]) //assumes input is an array
+          //TODO rename "update" to avoid confusion
+          //const updatedJobs = jobs.concat(job)
+          console.log('DO FANCY UPDATE OF jobs HERE')
+          //setJobs(updatedJobs)
         }
       })
 

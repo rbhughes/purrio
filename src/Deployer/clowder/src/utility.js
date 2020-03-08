@@ -1,9 +1,8 @@
 const Crypto = require('crypto')
 const Path = require('path')
 
-// ignores case on Windows
+// NOTE: ignores case on Windows
 const hashify = s => {
-  //console.log('HASHIFY: ' + s)
   const hash = Crypto.createHash('md5')
   hash.update(s.toLowerCase())
   return hash.digest('hex')

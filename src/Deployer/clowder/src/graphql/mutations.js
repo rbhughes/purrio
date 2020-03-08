@@ -10,6 +10,18 @@ export const createJob = `mutation CreateJob($job: JobInput) {
   }
 }`
 
+export const updateJob = `mutation UpdateJob($job: JobInput) {
+  updateJob(job: $job) {
+    id
+    rk
+    app
+    assets
+    aux
+    label
+    repo
+  }
+}`
+
 export const deleteJob = `mutation DeleteJob($pair: KeyPair) {
   deleteJob(pair: $pair) {
     id

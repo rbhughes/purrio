@@ -1,12 +1,12 @@
 const AWS = require('aws-sdk')
-const SQS_URL = '$QUEUE_URL'
-const SQS_REGION = 'us-east-2'
+//const SQS_URL = '$QUEUE_URL'
+//const SQS_REGION = 'us-east-2'
 
 const initSQS = async () => {
   try {
     return new AWS.SQS({
       apiVersion: '2012-11-05',
-      region: SQS_REGION
+      region: process.env.QUEUE_REGION
     })
   } catch (error) {
     console.error(error)
@@ -21,6 +21,8 @@ const formatForQueue = o => {
 exports.handler = async (event, context) => {
   console.log('^^^^^^^^^')
   console.log(event)
+  console.log('^^^^^^^^^')
+  console.log(process.env)
   console.log('^^^^^^^^^')
 
   const attr_app = event.attr_app
@@ -55,7 +57,7 @@ exports.handler = async (event, context) => {
         StringValue: attr_porg
       }
     },
-    QueueUrl: SQS_URL
+    QueueUrl: process.env.QUEUE_URL
   }
 
   try {

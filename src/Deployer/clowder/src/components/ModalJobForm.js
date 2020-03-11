@@ -34,10 +34,8 @@ const ModalJobForm = props => {
 
   const onSubmit = data => {
     if (props.job.id) {
-      console.log('THERE IS AN ID: ' + props.job.id)
       props.job.handleJobUpdate(data)
     } else {
-      console.log('NO ID !!!')
       props.job.handleJobCreate(data)
     }
     reset()

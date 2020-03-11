@@ -323,12 +323,20 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt Queue.QueueName
       Events:
         Queue:
           Type: SQS
           Properties:
             Queue: !GetAtt Queue.Arn
             BatchSize: 1
+      Environment:
+        Variables:
+          QUEUE_NAME: !GetAtt Queue.QueueName
+          QUEUE_ARN: !GetAtt Queue.Arn
+          QUEUE_URL: !Ref Queue
+          QUEUE_REGION: !Ref AWS::Region
   Batcher:
     Type: AWS::Serverless::Function
     Properties:
@@ -498,8 +506,8 @@ Parameters:
     Description: Deployment preparation timestamp in milliseconds Since Epoch (injected by Stackery at deployment time)
 Outputs:
   AccessKey:
-    Value: !Ref 'WorkerUserKeys'
+    Value: !Ref WorkerUserKeys
     Description: AWSAccessKeyId
   SecretKey:
-    Value: !GetAtt [WorkerUserKeys, SecretAccessKey]
+    Value: !GetAtt WorkerUserKeys.SecretAccessKey
     Description: AWSSecretAccessKey

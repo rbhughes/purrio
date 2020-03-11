@@ -89,7 +89,6 @@ const handleJobCreate = async data => {
 }
 
 const handleJobUpdate = async data => {
-  console.log('SO THIS UPDATE THING HAPPENED')
   try {
     const job = formJobToDB(data)
     await API.graphql(graphqlOperation(mutations.updateJob, { job: job }))
@@ -193,22 +192,21 @@ const JobList = props => {
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchJobs = async app => {
-    setIsLoading(true)
-
-    try {
-      const dbJobs = await API.graphql(
-        graphqlOperation(queries.listJobsByApp, { app: app.toUpperCase() })
-      )
-      setJobs(deserializeJobs(dbJobs.data.listJobsByApp))
-    } catch (error) {
-      console.error(error)
-    }
-    setIsLoading(false)
-  }
-
   useEffect(() => {
-    fetchJobs(props.app)
+    const fetcher = async app => {
+      setIsLoading(true)
+
+      try {
+        const dbJobs = await API.graphql(
+          graphqlOperation(queries.listJobsByApp, { app: app.toUpperCase() })
+        )
+        setJobs(deserializeJobs(dbJobs.data.listJobsByApp))
+      } catch (error) {
+        console.error(error)
+      }
+      setIsLoading(false)
+    }
+    fetcher(props.app)
   }, [props.app])
 
   useEffect(() => {
@@ -218,18 +216,16 @@ const JobList = props => {
       ).subscribe({
         next: res => {
           const createdJob = res.value.data.onCreateJob
-          const job = deserializeJobs([createdJob]) //assumes input is an array
-          //TODO rename "update" to avoid confusion
-          const updatedJobs = jobs.concat(job)
-          setJobs(updatedJobs)
+          const job = deserializeJobs([createdJob]) // input is an array
+          const refresh = jobs.concat(job)
+          setJobs(refresh)
         }
       })
-
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [jobs])
+  })
 
   useEffect(() => {
     try {
@@ -238,19 +234,22 @@ const JobList = props => {
       ).subscribe({
         next: res => {
           const updatedJob = res.value.data.onUpdateJob
-          const job = deserializeJobs([updatedJob]) //assumes input is an array
-          //TODO rename "update" to avoid confusion
-          //const updatedJobs = jobs.concat(job)
-          console.log('DO FANCY UPDATE OF jobs HERE')
-          //setJobs(updatedJobs)
+          const job = deserializeJobs([updatedJob])[0]
+          let refresh = jobs.map(j => {
+            return j.id === job.id ? job : j
+          })
+          //console.log(refresh)
+          //TODO mutation fires, KittyBox gets updated, React does not refresh
+          // this dumb "double-set" workaround suffices (tried async, etc.)
+          setJobs([])
+          setJobs(refresh)
         }
       })
-
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [jobs])
+  })
 
   useEffect(() => {
     try {
@@ -259,18 +258,17 @@ const JobList = props => {
       ).subscribe({
         next: res => {
           const deletedJob = res.value.data.onDeleteJob
-
-          const fewerJobs = jobs.filter(
+          const refresh = jobs.filter(
             job => job.id !== deletedJob.id && job.rk !== deletedJob.rk
           )
-          setJobs(fewerJobs)
+          setJobs(refresh)
         }
       })
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [jobs])
+  })
 
   return isLoading ? (
     <Loader active={true} size="massive" />

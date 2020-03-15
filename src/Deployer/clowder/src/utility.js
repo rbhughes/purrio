@@ -17,9 +17,9 @@ const stripToAlphaNum = s => {
 // these args get used with SAP's SQLAnywhere
 // React doesn't support Path.win32, no windows-ish normalize and sep
 // switch to forward slash to avoid escaping hell, switch back in dbf below
-//const defineSQLAParams = (host, repo) => {
+// for GGX, aux = ggx server host
 const defineSQLAParams = params => {
-  const { host, repo } = params
+  const { aux, repo } = params
   const repon = repo.replace(/\\/g, '/')
   const home = Path.basename(Path.dirname(repon))
   const proj = Path.basename(repon)
@@ -30,8 +30,8 @@ const defineSQLAParams = params => {
       pwd: 'sql',
       dbf: Path.join(repo, 'gxdb.db').replace(/\//g, '\\'),
       dbn: `${proj.replace(/ /g, '_')}-${home.replace(/ /g, '_')}`,
-      host: host,
-      server: `GGX_${host.toUpperCase()}`,
+      host: aux,
+      server: `GGX_${aux.toUpperCase()}`,
       astart: 'YES'
     },
     home: home,

@@ -16,7 +16,7 @@ const utility = require('../utility')
 const getCredentials = async event => {
   const currCred = await Auth.currentCredentials()
   const cred = Auth.essentialCredentials(currCred)
-  //TODO put region someplace else
+  //TODO store region someplace else
   cred.region = 'us-east-2'
   return cred
 }
@@ -134,18 +134,14 @@ const handleNotesDelete = async (event, job) => {
 const handleEnqueue = async (event, job) => {
   try {
     loadingSpin(event, true)
+
     const cred = await getCredentials()
-    console.log(cred)
 
-    let x = utility.ggxDBConn({ host: 'TODO', repo: job.repo })
-    console.log(x)
+    const conn = utility.ggxDBConn({ aux: job.aux, repo: job.repo })
 
-    //1 remove DBConnect from stackery
-    //2. do a lambda
-
-    console.log(job)
     for (const o of job.assets) {
-      console.log(job.app, o.asset, o.filter)
+      console.log(job.app, o.asset)
+      /*
       let payload = await lambdaInvoke({
         cred: cred,
         name: 'purrio-dev-Enqueue',
@@ -155,10 +151,12 @@ const handleEnqueue = async (event, job) => {
           attr_directive: 'batcher',
           asset: o.asset,
           label: job.label,
-          id: job.id
+          id: job.id,
+          db_params: conn
         }
       })
       console.log(payload)
+      */
     }
 
     loadingSpin(event, false)

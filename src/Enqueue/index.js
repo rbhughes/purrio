@@ -1,6 +1,4 @@
 const AWS = require('aws-sdk')
-//const SQS_URL = '$QUEUE_URL'
-//const SQS_REGION = 'us-east-2'
 
 const initSQS = async () => {
   try {
@@ -13,55 +11,39 @@ const initSQS = async () => {
   }
 }
 
-const formatForQueue = o => {
-  console.log(o)
-  return JSON.stringify(o)
+const parseEvent = event => {
+  const attributes = {
+    app: {
+      DataType: 'String',
+      StringValue: event.attr_app
+    },
+    target: {
+      DataType: 'String',
+      StringValue: event.attr_target
+    },
+    directive: {
+      DataType: 'String',
+      StringValue: event.attr_directive
+    }
+  }
+  delete event.attr_app
+  delete event.attr_target
+  delete event.attr_directive
+  const body = JSON.stringify(event)
+
+  return { body: body, attributes: attributes }
 }
 
 exports.handler = async (event, context) => {
-  console.log('^^^^^^^^^')
-  console.log(event)
-  console.log('^^^^^^^^^')
-  console.log(process.env)
-  console.log('^^^^^^^^^')
-
-  const attr_app = event.attr_app
-  delete event.attr_app
-  const attr_target = event.attr_target
-  delete event.attr_target
-  const attr_directive = event.attr_directive
-  delete event.attr_directive
-  const attr_porg = event.attr_porg
-  delete event.attr_porg
-
   let sqs = await initSQS()
-
+  const { body, attributes } = parseEvent(event)
   const params = {
-    //MessageBody: JSON.stringify(event.job),
-    MessageBody: formatForQueue(event),
-    MessageAttributes: {
-      app: {
-        DataType: 'String',
-        StringValue: attr_app
-      },
-      target: {
-        DataType: 'String',
-        StringValue: attr_target
-      },
-      directive: {
-        DataType: 'String',
-        StringValue: attr_directive
-      },
-      porg: {
-        DataType: 'String',
-        StringValue: attr_porg
-      }
-    },
+    MessageBody: body,
+    MessageAttributes: attributes,
     QueueUrl: process.env.QUEUE_URL
   }
-
   try {
-    let res = await sqs.sendMessage(params).promise()
+    const res = await sqs.sendMessage(params).promise()
     return { Payload: res, event: event, context: context }
   } catch (err) {
     console.log(err)

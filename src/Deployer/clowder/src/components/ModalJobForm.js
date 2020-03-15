@@ -18,14 +18,16 @@ const ModalJobForm = props => {
   const assetList = useContext(AssetContext)
   const vendor = useContext(VendorContext)(props.job.app)
 
-  const { control, register, handleSubmit, reset } = useForm({
+  const { control, register, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
       app: props.job.app,
+      aux: props.job.aux,
       repo: props.job.repo,
       label: props.job.label,
       assets: props.job.assets
     }
   })
+  const watchRepo = watch('repo', props.repo)
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -75,9 +77,14 @@ const ModalJobForm = props => {
               hidden
               readOnly
             />
-            <Form.Field width={12}>
+            <Form.Field width={8}>
               <label>repo</label>
               <input name={'repo'} ref={register({})} />
+            </Form.Field>
+            <Form.Field width={4}>
+              <label>{vendor.aux.label}</label>
+              <input name={'aux'} ref={register({})} />
+              {setValue('aux', vendor.aux.valueSetter(watchRepo))}
             </Form.Field>
             <Form.Field width={4}>
               <label>label</label>

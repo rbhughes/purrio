@@ -325,12 +325,6 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - SQSSendMessagePolicy:
             QueueName: !GetAtt Queue.QueueName
-      Events:
-        Queue:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt Queue.Arn
-            BatchSize: 1
       Environment:
         Variables:
           QUEUE_NAME: !GetAtt Queue.QueueName
@@ -494,6 +488,33 @@ Resources:
     Type: AWS::IAM::AccessKey
     Properties:
       UserName: !Ref WorkerUser
+  AssetGGXWellHeader:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-AssetGGXWellHeader
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: AssetGGXWellHeader
+      CodeUri: src/AssetGGXWellHeader
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXAssetPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub ${AWS::StackName}-GGXAssetPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: lambda:invokeFunction
+            Resource: !Sub
+              - ${ggx_well_header}
+              - ggx_well_header: !GetAtt AssetGGXWellHeader.Arn
 Parameters:
   StackTagName:
     Type: String

@@ -5,6 +5,14 @@ const VendorContext = React.createContext()
 const vendors = app => {
   const v = {
     geographix: {
+      aux: {
+        label: 'server hostname',
+        valueSetter: s => {
+          // matches "server" in a UNC path--usually the GGX server
+          let m = s.match(/\\\\(.+?)\\/)
+          return m ? m[1] : 'localhost'
+        }
+      },
       shortName: 'GeoGraphix',
       longName: 'GeoGraphix Discovery',
       icon: 'home',

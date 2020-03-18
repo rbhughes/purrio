@@ -135,28 +135,53 @@ const handleEnqueue = async (event, job) => {
   try {
     loadingSpin(event, true)
 
+    const batcherLambda = utility.batcherLambdaName()
+    const enqueueLambda = utility.enqueueLambdaName()
     const cred = await getCredentials()
+
+    //TODO: choose conn by app
+    //TODO: figure out how to route filesystem-based stuff
 
     const conn = utility.ggxDBConn({ aux: job.aux, repo: job.repo })
 
     for (const o of job.assets) {
-      console.log(job.app, o.asset)
-      /*
+      const assetLambda = utility.assetLambdaName(job.app, o.asset)
+
+      let assetQ = await lambdaInvoke({
+        cred: cred,
+        name: assetLambda,
+        args: {}
+      })
+
+      // a: attributes of this SQS message for worker routing
+      // f: function names so worker doesn't have to look them up
+      // m: metadata about the job
+      // q: stuff involving queries worker will use
       let payload = await lambdaInvoke({
         cred: cred,
-        name: 'purrio-dev-Enqueue',
+        name: enqueueLambda,
         args: {
-          attr_app: job.app,
-          attr_target: 'database',
-          attr_directive: 'batcher',
-          asset: o.asset,
-          label: job.label,
-          id: job.id,
-          db_params: conn
+          a_app: job.app,
+          a_target: 'database',
+          a_directive: 'batcher',
+          a_org: process.env.REACT_APP_PURR_ORG,
+          a_env: process.env.REACT_APP_PURR_ENV,
+
+          lambda_asset: assetLambda,
+          lambda_batcher: batcherLambda,
+          lambda_enqueue: enqueueLambda,
+
+          m_label: job.label,
+          m_job_id: job.id,
+          m_asset: o.asset,
+
+          q_chunk: assetQ.chunk,
+          q_counter: assetQ.counter,
+          q_selector: assetQ.selector,
+          q_db_params: conn
         }
       })
       console.log(payload)
-      */
     }
 
     loadingSpin(event, false)

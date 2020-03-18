@@ -239,6 +239,7 @@ Resources:
         - !Ref BatcherPolicy
         - !Ref EnqueuePolicy
         - !Ref QueuePolicy
+        - !Ref GGXAssetPolicy
   UnauthRole:
     Type: AWS::IAM::Role
     Properties:

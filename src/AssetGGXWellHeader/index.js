@@ -7,18 +7,6 @@ const selector = () => {
 }
 
 exports.handler = async (event, context) => {
-  //TODO: is SQL override safe or desirable?
-  // supplied sql as an arg overrides the directive
-  let o = {
-    label: event.label,
-    db_params: event.db_params,
-    sql: event.sql ? event.sql : null
-  }
-
-  if (event.directive === 'counter') {
-    o.sql = counter()
-  } else if (event.directive === 'selector') {
-    o.sql = selector()
-  }
-  return o
+  const { chunk = 100 } = event
+  return { chunk: chunk, counter: counter(), selector: selector() }
 }

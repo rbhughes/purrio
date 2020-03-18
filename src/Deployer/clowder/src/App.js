@@ -16,9 +16,8 @@ import Config from './components/Config'
 import JobList from './components/JobList'
 
 /////
-/////
-/////
 
+/*
 const awsmobile = {
   aws_project_region: 'us-east-2',
   aws_cognito_region: 'us-east-2',
@@ -31,12 +30,25 @@ const awsmobile = {
   aws_appsync_graphqlEndpoint:
     'https://xsickjdyxfcghgum62jyhswf4q.appsync-api.us-east-2.amazonaws.com/graphql'
 }
+*/
 
+//Amplify.configure(awsmobile)
+Amplify.configure({
+  aws_project_region: process.env.REACT_APP_AWS_PROJECT_REGION,
+  aws_cognito_region: process.env.REACT_APP_AWS_COGNITO_REGION,
+  aws_appsync_region: process.env.REACT_APP_AWS_APPSYNC_REGION,
+  aws_appsync_authenticationType:
+    process.env.REACT_APP_AWS_APPSYNC_AUTHENTICATIONTYPE,
+  aws_cognito_identity_pool_id:
+    process.env.REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID,
+  aws_user_pools_id: process.env.REACT_APP_AWS_USER_POOLS_ID,
+  aws_user_pools_web_client_id:
+    process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,
+  aws_appsync_graphqlEndpoint: process.env.REACT_APP_AWS_APPSYNC_GRAPHQLENDPOINT
+})
 /////
 /////
 /////
-
-Amplify.configure(awsmobile)
 
 const Home = () => <h1>Home stuff goes here</h1>
 const NotFound = () => (

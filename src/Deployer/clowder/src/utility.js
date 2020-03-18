@@ -40,8 +40,48 @@ const defineSQLAParams = params => {
   }
 }
 
+// Why? Enums in GraphQL are capitalized by convention,
+// Underscores are verboten in Lambda names,
+// GeoGraphix (and other vendors?) have funny capitalization.
+// The naming convention is:
+//   organization-environment-AbbreviatedApp + "Asset" + asset
+// i.e. purrio-dev-AssetGGXWellHeader
+const assetLambdaName = (app, asset) => {
+  const abbv = {
+    GEOGRAPHIX: 'GGX',
+    PETRA: 'PET',
+    KINGDOM: 'TKS',
+    PETREL: 'PTL'
+  }
+  const a = process.env.REACT_APP_PURR_ORG
+  const b = process.env.REACT_APP_PURR_ENV
+  const c = asset
+    .split('_')
+    .map(w => {
+      return w.toLowerCase().replace(/\w/, c => c.toUpperCase())
+    })
+    .join('')
+
+  return `${a}-${b}-Asset${abbv[app]}${c}`
+}
+
+const enqueueLambdaName = () => {
+  const a = process.env.REACT_APP_PURR_ORG
+  const b = process.env.REACT_APP_PURR_ENV
+  return `${a}-${b}-Enqueue`
+}
+
+const batcherLambdaName = () => {
+  const a = process.env.REACT_APP_PURR_ORG
+  const b = process.env.REACT_APP_PURR_ENV
+  return `${a}-${b}-Batcher`
+}
+
 module.exports = {
   hashify: hashify,
   stripToAlphaNum: stripToAlphaNum,
+  assetLambdaName: assetLambdaName,
+  enqueueLambdaName: enqueueLambdaName,
+  batcherLambdaName: batcherLambdaName,
   ggxDBConn: defineSQLAParams
 }

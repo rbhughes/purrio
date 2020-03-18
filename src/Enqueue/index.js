@@ -15,31 +15,43 @@ const parseEvent = event => {
   const attributes = {
     app: {
       DataType: 'String',
-      StringValue: event.attr_app
+      StringValue: event.a_app
     },
     target: {
       DataType: 'String',
-      StringValue: event.attr_target
+      StringValue: event.a_target
     },
     directive: {
       DataType: 'String',
-      StringValue: event.attr_directive
+      StringValue: event.a_directive
+    },
+    org: {
+      DataType: 'String',
+      StringValue: event.a_org
+    },
+    env: {
+      DataType: 'String',
+      StringValue: event.a_env
     }
   }
-  delete event.attr_app
-  delete event.attr_target
-  delete event.attr_directive
+
+  delete event.a_app
+  delete event.a_target
+  delete event.a_directive
+  delete event.a_org
+  delete event.a_env
+
   const body = JSON.stringify(event)
 
-  return { body: body, attributes: attributes }
+  return { body: body, attr: attributes }
 }
 
 exports.handler = async (event, context) => {
   let sqs = await initSQS()
-  const { body, attributes } = parseEvent(event)
+  const { body, attr } = parseEvent(event)
   const params = {
     MessageBody: body,
-    MessageAttributes: attributes,
+    MessageAttributes: attr,
     QueueUrl: process.env.QUEUE_URL
   }
   try {

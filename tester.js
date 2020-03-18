@@ -1,3 +1,30 @@
+const lambdaAssetName = (app, asset) => {
+  const abbv = {
+    GeoGraphix: 'GGX',
+    Petra: 'PET',
+    Kingdom: 'TKS',
+    Petrel: 'PTL'
+  }
+
+  const a = asset
+    .split('_')
+    .map(w => {
+      return w.toLowerCase().replace(/\w/, c => c.toUpperCase())
+    })
+    .join('')
+
+  return `${abbv[app]}${a}`
+}
+
+const x = lambdaAssetName('GeoGraphix', 'WELL_HEADER')
+const y = lambdaAssetName('Petra', 'PRODUCTION')
+const z = lambdaAssetName('GeoGraphix', 'DIRECTIONAL_SURVEY')
+
+console.log(x)
+console.log(y)
+console.log(z)
+
+/*
 const util = require('util')
 dataZ = [
   {
@@ -95,3 +122,4 @@ const reformatZ = data => {
 }
 
 reformat(data)
+*/

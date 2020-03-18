@@ -20,6 +20,10 @@ const vendors = app => {
         'Enter path to a GeoGraphix project. This will usually be a UNC path.'
     },
     kingdom: {
+      aux: {
+        label: 'kingdom thing',
+        valueSetter: s => s
+      },
       shortName: 'Kingdom',
       longName: 'IHS Kingdom',
       icon: 'home',
@@ -27,6 +31,10 @@ const vendors = app => {
         'Enter path to a Kingdom Project folder. For SQL Server projects, enter the credentials.'
     },
     petra: {
+      aux: {
+        label: 'petra thing',
+        valueSetter: s => s
+      },
       shortName: 'Petra',
       longName: 'IHS Petra',
       icon: 'home',

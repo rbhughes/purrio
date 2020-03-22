@@ -15,6 +15,7 @@ import 'semantic-ui-css/semantic.min.css'
 import Config from './components/Config'
 import JobList from './components/JobList'
 
+import purrCfg from './purr-cfg'
 /////
 
 /*
@@ -32,20 +33,34 @@ const awsmobile = {
 }
 */
 
-//Amplify.configure(awsmobile)
+/*
+REACT_APP_AWS_PROJECT_REGION=us-east-2
+REACT_APP_AWS_COGNITO_REGION=us-east-2
+REACT_APP_AWS_APPSYNC_REGION=us-east-2
+REACT_APP_AWS_APPSYNC_AUTHENTICATIONTYPE=AWS_IAM
+REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID=us-east-2:06a52334-6edf-4c80-8e00-51554ec085bf
+REACT_APP_AWS_USER_POOLS_ID=us-east-2_sBPeOqMdE
+REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID=2uo8qr3kf3pdjpb4c7ra8lat2t
+REACT_APP_AWS_APPSYNC_GRAPHQLENDPOINT=https://xsickjdyxfcghgum62jyhswf4q.appsync-api.us-east-2.amazonaws.com/graphql
+REACT_APP_PURR_ORG=purrio
+REACT_APP_PURR_ENV=dev
+*/
+
+Amplify.configure(purrCfg)
+/*
 Amplify.configure({
-  aws_project_region: process.env.REACT_APP_AWS_PROJECT_REGION,
-  aws_cognito_region: process.env.REACT_APP_AWS_COGNITO_REGION,
-  aws_appsync_region: process.env.REACT_APP_AWS_APPSYNC_REGION,
-  aws_appsync_authenticationType:
-    process.env.REACT_APP_AWS_APPSYNC_AUTHENTICATIONTYPE,
+  aws_project_region: 'us-east-2',
+  aws_cognito_region: 'us-east-2',
+  aws_appsync_region: 'us-east-2',
+  aws_appsync_authenticationType: 'AWS_IAM',
   aws_cognito_identity_pool_id:
-    process.env.REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID,
-  aws_user_pools_id: process.env.REACT_APP_AWS_USER_POOLS_ID,
-  aws_user_pools_web_client_id:
-    process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,
-  aws_appsync_graphqlEndpoint: process.env.REACT_APP_AWS_APPSYNC_GRAPHQLENDPOINT
+    'us-east-2:06a52334-6edf-4c80-8e00-51554ec085bf',
+  aws_user_pools_id: 'us-east-2_sBPeOqMdE',
+  aws_user_pools_web_client_id: '2uo8qr3kf3pdjpb4c7ra8lat2t',
+  aws_appsync_graphqlEndpoint:
+    'https://xsickjdyxfcghgum62jyhswf4q.appsync-api.us-east-2.amazonaws.com/graphql'
 })
+*/
 /////
 /////
 /////

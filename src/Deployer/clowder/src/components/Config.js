@@ -2,7 +2,7 @@ import React from 'react'
 
 const Config = props => {
   console.log(process.env)
-  return <h3>hello from config </h3>
+  return <h3>hello from config |{process.env.REACT_APP_BLAH}| </h3>
 }
 export default Config
 

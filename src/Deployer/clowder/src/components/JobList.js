@@ -238,6 +238,7 @@ const JobList = props => {
         graphqlOperation(subscriptions.onCreateJob)
       ).subscribe({
         next: res => {
+          console.log('create sub')
           const createdJob = res.value.data.onCreateJob
           const job = deserializeJobs([createdJob]) // input is an array
           const refresh = jobs.concat(job)
@@ -256,13 +257,25 @@ const JobList = props => {
         graphqlOperation(subscriptions.onUpdateJob)
       ).subscribe({
         next: res => {
+          console.log('update sub')
           const updatedJob = res.value.data.onUpdateJob
           const job = deserializeJobs([updatedJob])[0]
-          let refresh = jobs.map(j => {
-            return j.id === job.id ? job : j
-          })
-          //console.log(refresh)
-          //TODO mutation fires, KittyBox gets updated, React does not refresh
+
+          let refresh = []
+          let idExists = jobs.map(j => j.id).includes(job.id)
+
+          // job.id is based on "app + repo + label", so if any of those fields
+          // changed this should get processed as a Create, not Update
+          if (idExists) {
+            refresh = jobs.map(j => {
+              return j.id === job.id ? job : j
+            })
+          } else {
+            refresh = jobs.concat([job])
+          }
+
+          // TODO revisit this workaround
+          // mutation fires, KittyBox gets updated, React does not refresh
           // this dumb "double-set" workaround suffices (tried async, etc.)
           setJobs([])
           setJobs(refresh)

@@ -1,8 +1,17 @@
 import React from 'react'
+import pcfg from '../purr-cfg'
 
 const Config = props => {
   console.log(process.env)
-  return <h3>hello from config |{process.env.REACT_APP_BLAH}| </h3>
+  return (
+    <h3>
+      <pre>
+        const config = {JSON.stringify(pcfg, null, 2)}
+        <br></br>
+        export default config
+      </pre>
+    </h3>
+  )
 }
 export default Config
 

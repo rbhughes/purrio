@@ -1,5 +1,10 @@
+//import pcfg from './purr-cfg'
 const Crypto = require('crypto')
 const Path = require('path')
+// require pcfg instead of import due to:
+// https://github.com/webpack/webpack/issues/3997
+// (just means we need to add the "default")
+const pcfg = require('./purr-cfg').default
 
 // NOTE: ignores case on Windows
 const hashify = s => {
@@ -53,28 +58,23 @@ const assetLambdaName = (app, asset) => {
     KINGDOM: 'TKS',
     PETREL: 'PTL'
   }
-  const a = process.env.REACT_APP_PURR_ORG
-  const b = process.env.REACT_APP_PURR_ENV
-  const c = asset
+
+  const a = asset
     .split('_')
     .map(w => {
       return w.toLowerCase().replace(/\w/, c => c.toUpperCase())
     })
     .join('')
 
-  return `${a}-${b}-Asset${abbv[app]}${c}`
+  return `${pcfg.purr_org}-${pcfg.purr_env}-Asset${abbv[app]}${a}`
 }
 
 const enqueueLambdaName = () => {
-  const a = process.env.REACT_APP_PURR_ORG
-  const b = process.env.REACT_APP_PURR_ENV
-  return `${a}-${b}-Enqueue`
+  return `${pcfg.purr_org}-${pcfg.purr_env}-Enqueue`
 }
 
 const batcherLambdaName = () => {
-  const a = process.env.REACT_APP_PURR_ORG
-  const b = process.env.REACT_APP_PURR_ENV
-  return `${a}-${b}-Batcher`
+  return `${pcfg.purr_org}-${pcfg.purr_env}-Batcher`
 }
 
 module.exports = {

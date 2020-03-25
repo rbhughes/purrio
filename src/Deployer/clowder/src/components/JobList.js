@@ -9,8 +9,12 @@ import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 import { Auth } from 'aws-amplify'
 import Lambda from 'aws-sdk/clients/lambda'
+import pcfg from '../purr-cfg'
 
 const utility = require('../utility')
+
+console.log('======JobList======')
+console.log(pcfg)
 
 /////
 const getCredentials = async event => {
@@ -152,9 +156,10 @@ const handleEnqueue = async (event, job) => {
         name: assetLambda,
         args: {}
       })
+      console.log(assetQ)
 
       // a: attributes of this SQS message for worker routing
-      // f: function names so worker doesn't have to look them up
+      // f: lambda function names so that the worker needn't look them up
       // m: metadata about the job
       // q: stuff involving queries worker will use
       let payload = await lambdaInvoke({
@@ -164,12 +169,12 @@ const handleEnqueue = async (event, job) => {
           a_app: job.app,
           a_target: 'database',
           a_directive: 'batcher',
-          a_org: process.env.REACT_APP_PURR_ORG,
-          a_env: process.env.REACT_APP_PURR_ENV,
+          a_org: pcfg.purr_org,
+          a_env: pcfg.purr_env,
 
-          lambda_asset: assetLambda,
-          lambda_batcher: batcherLambda,
-          lambda_enqueue: enqueueLambda,
+          f_asset: assetLambda,
+          f_batcher: batcherLambda,
+          f_enqueue: enqueueLambda,
 
           m_label: job.label,
           m_job_id: job.id,

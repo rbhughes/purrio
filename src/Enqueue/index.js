@@ -12,7 +12,7 @@ const initSQS = async () => {
 }
 
 const parseEvent = event => {
-  const attributes = {
+  const attr = {
     app: {
       DataType: 'String',
       StringValue: event.a_app
@@ -43,7 +43,7 @@ const parseEvent = event => {
 
   const body = JSON.stringify(event)
 
-  return { body: body, attr: attributes }
+  return { body: body, attr: attr }
 }
 
 exports.handler = async (event, context) => {

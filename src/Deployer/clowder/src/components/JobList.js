@@ -186,7 +186,6 @@ const handleEnqueue = async (event, job) => {
           q_db_params: conn
         }
       })
-      console.log(payload)
     }
 
     loadingSpin(event, false)

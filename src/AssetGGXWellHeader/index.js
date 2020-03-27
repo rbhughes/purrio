@@ -3,10 +3,20 @@ const counter = () => {
 }
 
 const selector = () => {
-  return 'SELECT * FROM well;'
+  return 'SELECT uwi, well_name, well_number, legal_survey_type, operator, \
+  surface_latitude, surface_longitude FROM well ORDER BY uwi;'
+}
+
+const steps = () => {
+  return [{ query: 'selector' }, { publish: 'stdout' }]
 }
 
 exports.handler = async (event, context) => {
-  const { chunk = 100 } = event
-  return { chunk: chunk, counter: counter(), selector: selector() }
+  const { chunk = 1000 } = event
+  return {
+    chunk: chunk,
+    counter: counter(),
+    selector: selector(),
+    steps: steps()
+  }
 }

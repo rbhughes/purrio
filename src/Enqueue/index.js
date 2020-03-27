@@ -13,33 +13,18 @@ const initSQS = async () => {
 
 const parseEvent = event => {
   const attr = {
-    app: {
+    purr_org: {
       DataType: 'String',
-      StringValue: event.a_app
+      StringValue: event.a_purr_org
     },
-    target: {
+    purr_env: {
       DataType: 'String',
-      StringValue: event.a_target
-    },
-    directive: {
-      DataType: 'String',
-      StringValue: event.a_directive
-    },
-    org: {
-      DataType: 'String',
-      StringValue: event.a_org
-    },
-    env: {
-      DataType: 'String',
-      StringValue: event.a_env
+      StringValue: event.a_purr_env
     }
   }
 
-  delete event.a_app
-  delete event.a_target
-  delete event.a_directive
-  delete event.a_org
-  delete event.a_env
+  delete event.a_purr_org
+  delete event.a_purr_env
 
   const body = JSON.stringify(event)
 

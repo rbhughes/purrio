@@ -30,7 +30,7 @@ const defineSQLAParams = params => {
   const proj = Path.basename(repon)
 
   return {
-    db_params: {
+    params: {
       uid: 'dba',
       pwd: 'sql',
       dbf: Path.join(repo, 'gxdb.db').replace(/\//g, '\\'),

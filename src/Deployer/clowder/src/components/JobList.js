@@ -147,6 +147,7 @@ const handleEnqueue = async (event, job) => {
     //TODO: figure out how to route filesystem-based stuff
 
     const conn = utility.ggxDBConn({ aux: job.aux, repo: job.repo })
+    console.log(conn)
 
     for (const o of job.assets) {
       const assetLambda = utility.assetLambdaName(job.app, o.asset)
@@ -158,19 +159,22 @@ const handleEnqueue = async (event, job) => {
       })
       console.log(assetQ)
 
-      // a: attributes of this SQS message for worker routing
+      // a: attributes of this SQS message for future use (?)
+      // r: routing info for worker
       // f: lambda function names so that the worker needn't look them up
       // m: metadata about the job
       // q: stuff involving queries worker will use
-      let payload = await lambdaInvoke({
+
+      let resEnqueue = await lambdaInvoke({
         cred: cred,
         name: enqueueLambda,
         args: {
-          a_app: job.app,
-          a_target: 'database',
-          a_directive: 'batcher',
-          a_org: pcfg.purr_org,
-          a_env: pcfg.purr_env,
+          a_purr_org: pcfg.purr_org,
+          a_purr_env: pcfg.purr_env,
+
+          r_app: job.app,
+          r_target: 'database',
+          r_directive: 'batcher',
 
           f_asset: assetLambda,
           f_batcher: batcherLambda,
@@ -179,13 +183,17 @@ const handleEnqueue = async (event, job) => {
           m_label: job.label,
           m_job_id: job.id,
           m_asset: o.asset,
+          m_purr_org: pcfg.purr_org,
+          m_purr_env: pcfg.purr_env,
 
           q_chunk: assetQ.chunk,
           q_counter: assetQ.counter,
           q_selector: assetQ.selector,
-          q_db_params: conn
+          q_steps: assetQ.steps,
+          q_conn: conn
         }
       })
+      console.log(resEnqueue)
     }
 
     loadingSpin(event, false)

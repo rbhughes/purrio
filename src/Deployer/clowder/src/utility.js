@@ -50,7 +50,7 @@ const defineSQLAParams = params => {
 // GeoGraphix (and other vendors?) have funny capitalization.
 // The naming convention is:
 //   organization-environment-AbbreviatedApp + "Asset" + asset
-// i.e. purrio-dev-AssetGGXWellHeader
+// i.e. purrio-dev-GGXWellHeader
 const assetLambdaName = (app, asset) => {
   const abbv = {
     GEOGRAPHIX: 'GGX',
@@ -66,7 +66,7 @@ const assetLambdaName = (app, asset) => {
     })
     .join('')
 
-  return `${pcfg.purr_org}-${pcfg.purr_env}-Asset${abbv[app]}${a}`
+  return `${pcfg.purr_org}-${pcfg.purr_env}-${abbv[app]}${a}`
 }
 
 const enqueueLambdaName = () => {

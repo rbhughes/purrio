@@ -3,7 +3,7 @@ const counter = () => {
 }
 
 const selector = () => {
-  return 'SELECT uwi, well_name, well_number, legal_survey_type, operator, \
+  return 'SELECT uwi, well_name, well_number, legal_survey_type, operator,\
   surface_latitude, surface_longitude FROM well ORDER BY uwi;'
 }
 

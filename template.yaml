@@ -489,21 +489,6 @@ Resources:
     Type: AWS::IAM::AccessKey
     Properties:
       UserName: !Ref WorkerUser
-  AssetGGXWellHeader:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub ${AWS::StackName}-AssetGGXWellHeader
-      Description: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
-        - ResourceName: AssetGGXWellHeader
-      CodeUri: src/AssetGGXWellHeader
-      Handler: index.handler
-      Runtime: nodejs12.x
-      MemorySize: 3008
-      Timeout: 30
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
   GGXAssetPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -513,9 +498,151 @@ Resources:
         Statement:
           - Effect: Allow
             Action: lambda:invokeFunction
-            Resource: !Sub
-              - ${ggx_well_header}
-              - ggx_well_header: !GetAtt AssetGGXWellHeader.Arn
+            Resource:
+              - !GetAtt GGXBusinessAssociate.Arn
+              - !GetAtt GGXDigitalLog.Arn
+              - !GetAtt GGXDirectionalSurvey.Arn
+              - !GetAtt GGXFormationTop.Arn
+              - !GetAtt GGXLegalDescription.Arn
+              - !GetAtt GGXProduction.Arn
+              - !GetAtt GGXRasterLog.Arn
+              - !GetAtt GGXStratColumn.Arn
+              - !GetAtt GGXWellHeader.Arn
+  GGXBusinessAssociate:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXBusinessAssociate
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXBusinessAssociate
+      CodeUri: src/assets/geographix/GGXBusinessAssociate
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXWellHeader:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXWellHeader
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXWellHeader
+      CodeUri: src/assets/geographix/GGXWellHeader
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXDigitalLog:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXDigitalLog
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXDigitalLog
+      CodeUri: src/assets/geographix/GGXDigitalLog
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXDirectionalSurvey:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXDirectionalSurvey
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXDirectionalSurvey
+      CodeUri: src/assets/geographix/GGXDirectionalSurvey
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXFormationTop:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXFormationTop
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXFormationTop
+      CodeUri: src/assets/geographix/GGXFormationTop
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXLegalDescription:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXLegalDescription
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXLegalDescription
+      CodeUri: src/assets/geographix/GGXLegalDescription
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXProduction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXProduction
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXProduction
+      CodeUri: src/assets/geographix/GGXProduction
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXRasterLog:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXRasterLog
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXRasterLog
+      CodeUri: src/assets/geographix/GGXRasterLog
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+  GGXStratColumn:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GGXStratColumn
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: GGXStratColumn
+      CodeUri: src/assets/geographix/GGXStratColumn
+      Handler: index.handler
+      Runtime: nodejs12.x
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
 Parameters:
   StackTagName:
     Type: String

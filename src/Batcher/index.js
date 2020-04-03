@@ -49,12 +49,14 @@ const enqueueCollectors = async event => {
     const batches = batchSelector(
       event.q_count,
       event.q_chunk,
-      event.q_selector
+      event.q_selector,
+      event.q_filter
     )
 
     delete event.f_batcher
     delete event.q_chunk
     delete event.q_counter
+    delete event.q_filter
     delete event.q_selector
 
     event.a_purr_org = event.m_purr_org

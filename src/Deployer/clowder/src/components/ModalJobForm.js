@@ -6,7 +6,8 @@ import {
   Divider,
   Form,
   Icon,
-  Modal
+  Modal,
+  Popup
 } from 'semantic-ui-react'
 import { AssetContext } from './AssetContext'
 import { VendorContext } from './VendorContext'
@@ -117,8 +118,16 @@ const ModalJobForm = props => {
                     </select>
                   </Form.Field>
                   <Form.Field>
-                    {index === 0 && <label>filter</label>}
+                    {index === 0 && (
+                      <>
+                        <Popup trigger={<label>filter</label>} wide="very">
+                          Insert some instructions for how to enter filter text
+                        </Popup>
+                      </>
+                    )}
+
                     <input
+                      placeholder={'use commas to separate multiple items'}
                       name={`assets[${index}].filter`}
                       ref={register({})}
                       defaultValue={field.filter}

@@ -11,6 +11,23 @@ const assetChoice = `query metaStuff {
 
 const AssetContext = React.createContext()
 
+// Define what fields we use for filter in the GUI form
+// This would ideally be part of the asset enum in schema.graphql.
+/*
+// TODO: Update this if the Enum changes
+const assetWhereClauseFields = {
+  BUSINESS_ASSOCIATE: ['tbd'],
+  DIGITAL_LOG: ['tbd'],
+  DIRECTIONAL_SURVEY: ['UWI'],
+  FORMATION_TOP: ['tbd'],
+  LEGAL_DESCRIPTION: ['tbd'],
+  PRODUCTION: ['tbd'],
+  RASTER_LOG: ['tbd'],
+  STRAT_COLUMN: ['tbd'],
+  WELL_HEADER: ['tbd']
+}
+*/
+
 const AssetProvider = props => {
   const [assetList, setAssetList] = useState([])
 

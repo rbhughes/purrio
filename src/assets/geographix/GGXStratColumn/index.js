@@ -3,7 +3,7 @@ const counter = () => {
 }
 
 const selector = () => {
-  return 'TBD'
+  return `select 'TBD GGXStratColumn'`
 }
 
 const steps = () => {

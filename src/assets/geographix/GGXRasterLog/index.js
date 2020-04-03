@@ -3,7 +3,7 @@ const counter = () => {
 }
 
 const selector = () => {
-  return 'TBD'
+  return `select 'TBD GGXRasterLog'`
 }
 
 const steps = () => {

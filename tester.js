@@ -1,28 +1,45 @@
-const lambdaAssetName = (app, asset) => {
-  const abbv = {
-    GeoGraphix: 'GGX',
-    Petra: 'PET',
-    Kingdom: 'TKS',
-    Petrel: 'PTL'
+const makeWhereClause = (filter, fields) => {
+  const split = filter.split(',').map(s => s.trim())
+  const a = []
+  for (const s of split) {
+    let x = s.match(/\%|\*/)
+      ? fields.map(f => `${f} LIKE '${s}'`).join(' OR ')
+      : fields.map(f => `${f} = '${s}'`).join(' OR ')
+    a.push(x)
   }
-
-  const a = asset
-    .split('_')
-    .map(w => {
-      return w.toLowerCase().replace(/\w/, c => c.toUpperCase())
-    })
-    .join('')
-
-  return `${abbv[app]}${a}`
+  return `WHERE ${a.join(' OR ')}`
 }
 
-const x = lambdaAssetName('GeoGraphix', 'WELL_HEADER')
-const y = lambdaAssetName('Petra', 'PRODUCTION')
-const z = lambdaAssetName('GeoGraphix', 'DIRECTIONAL_SURVEY')
+const batchSelector = opts => {
+  let { chunk, where, sql, total } = opts
+  const selectors = []
+  const start = 1
+  let x = 0
+  x = start
+  let sqlTail = sql.substring(7) // removes 'SELECT ' from string
+  while ((total - x) * chunk >= 0) {
+    chunk = x + chunk > total ? total - x + start : chunk
+    selectors.push(`SELECT TOP ${chunk} START AT ${x} ${sqlTail} ${where}`)
+    x += chunk
+  }
+  return selectors
+}
 
-console.log(x)
-console.log(y)
-console.log(z)
+const total = 100
+const chunk = 29
+const sql = 'SELECT uwi, operator, well_name FROM well ORDER BY uwi'
+
+const fields = ['uwi', 'well_name', 'operator']
+const raw = '   RED%, BLUE, GR *EEn, *orange%'
+const where = makeWhereClause(raw, fields)
+
+const b = batchSelector({
+  total: total,
+  chunk: chunk,
+  sql: sql,
+  where: where
+})
+console.log(b)
 
 /*
 const util = require('util')

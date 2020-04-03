@@ -14,7 +14,6 @@ import pcfg from '../purr-cfg'
 const utility = require('../utility')
 
 console.log('======JobList======')
-console.log(pcfg)
 
 /////
 const getCredentials = async event => {
@@ -147,7 +146,6 @@ const handleEnqueue = async (event, job) => {
     //TODO: figure out how to route filesystem-based stuff
 
     const conn = utility.ggxDBConn({ aux: job.aux, repo: job.repo })
-    console.log(conn)
 
     for (const o of job.assets) {
       const assetLambda = utility.assetLambdaName(job.app, o.asset)
@@ -155,9 +153,10 @@ const handleEnqueue = async (event, job) => {
       let assetQ = await lambdaInvoke({
         cred: cred,
         name: assetLambda,
-        args: {}
+        args: { q_filter: o.filter }
       })
-      console.log(assetQ)
+      console.log('???????????')
+      console.log(o.filter)
 
       // a: attributes of this SQS message for future use (?)
       // r: routing info for worker

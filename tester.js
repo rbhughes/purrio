@@ -1,43 +1,90 @@
-const makeWhereClause = (filter, fields) => {
-  const split = filter.split(',').map(s => s.trim())
+// replace * with %
+//
+const WHERE_FIELDS = ['a.uwi']
+
+const sanitize = (s) => {
+  return s.replace(/[^-a-z0-9%_\-]+/gi, '')
+}
+
+const sanitizedWhereClause = (filter) => {
   const a = []
-  for (const s of split) {
-    let x = s.match(/\%|\*/)
-      ? fields.map(f => `${f} LIKE '${s}'`).join(' OR ')
-      : fields.map(f => `${f} = '${s}'`).join(' OR ')
-    a.push(x)
+
+  if (filter.trim().length === 0) {
+    return ''
+  }
+  const split = filter.split(',').map((s) => s.trim())
+
+  if (filter.match(/\%|\*/)) {
+    for (const s of split) {
+      const token = sanitize(s.replace(/\*/g, '%'))
+      let x = token.match(/\%/)
+        ? WHERE_FIELDS.map((f) => `${f} LIKE '${token}'`).join(' OR ')
+        : WHERE_FIELDS.map((f) => `${f} = '${token}'`).join(' OR ')
+      a.push(x)
+    }
+  } else {
+    const tokens = split.map((s) => `'${sanitize(s)}'`)
+    for (const f of WHERE_FIELDS) {
+      let x = `${f} IN (${tokens.join(', ')})`
+      a.push(x)
+    }
   }
   return `WHERE ${a.join(' OR ')}`
 }
 
-const batchSelector = opts => {
-  let { chunk, where, sql, total } = opts
+const batchSelector = (opts) => {
+  let { count, chunk, selector, where } = opts
+
   const selectors = []
   const start = 1
   let x = 0
   x = start
-  let sqlTail = sql.substring(7) // removes 'SELECT ' from string
-  while ((total - x) * chunk >= 0) {
-    chunk = x + chunk > total ? total - x + start : chunk
-    selectors.push(`SELECT TOP ${chunk} START AT ${x} ${sqlTail} ${where}`)
+
+  while ((count - x) * chunk >= 0) {
+    chunk = x + chunk > count ? count - x + start : chunk
+
+    const sql =
+      `SELECT TOP ${chunk} START AT ${x} ` +
+      `${selector.select.substring(7)} ` + // removes 'SELECT'
+      `${where} ${selector.order};`
+
+    selectors.push(sql)
+
     x += chunk
   }
   return selectors
 }
 
-const total = 100
-const chunk = 29
-const sql = 'SELECT uwi, operator, well_name FROM well ORDER BY uwi'
+const counter = (where) => {
+  const sql =
+    `SELECT COUNT(DISTINCT(a.uwi)) AS count FROM well_dir_srvy a ` +
+    `JOIN well_dir_srvy_station b ON ` +
+    `a.uwi = b.uwi AND a.source = b.source AND a.survey_id = b.survey_id ` +
+    `${where}`
+  return sql
+}
 
-const fields = ['uwi', 'well_name', 'operator']
-const raw = '   RED%, BLUE, GR *EEn, *orange%'
-const where = makeWhereClause(raw, fields)
+/////////////////////////////////////////////////
+const q_count = 100
+const q_chunk = 29
+
+const q_selector = {
+  select: 'SELECT a.uwi, a.operator, a.well_name FROM well a',
+  where: null,
+  order: 'ORDER BY a.uwi',
+}
+
+const filter = '0505*02340, bbbbb'
+
+const q_where = sanitizedWhereClause(filter)
+
+const q_counter = counter(q_where)
 
 const b = batchSelector({
-  total: total,
-  chunk: chunk,
-  sql: sql,
-  where: where
+  count: q_count,
+  chunk: q_chunk,
+  selector: q_selector,
+  where: q_where,
 })
 console.log(b)
 

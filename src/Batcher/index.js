@@ -1,11 +1,11 @@
 const Lambda = require('aws-sdk').Lambda
 
-const lambdaInvoke = async event => {
+const lambdaInvoke = async (event) => {
   const { cred, name, args } = event
   const lamb = new Lambda(cred)
   let params = {
     FunctionName: name,
-    Payload: JSON.stringify(args)
+    Payload: JSON.stringify(args),
   }
   try {
     let res = await lamb.invoke(params).promise()
@@ -25,38 +25,44 @@ const lambdaInvoke = async event => {
 //  'SELECT TOP 500 START AT 1 * from well order by uwi',
 //  'SELECT TOP 500 START AT 501 * from well order by uwi',
 //  'SELECT TOP 137 START AT 1001 * from well order by uwi' ]
-//const batchSelector = ({ q_total, q_chunk, q_counter }) => {
-const batchSelector = (total, chunk, sql) => {
+//
+// selector: {
+//   select: (a select statement from asset)
+//   where:  (where clause based on user-defined filter)
+//   order:  (order by clause required for TOP syntax)
+// }
+const batchSelector = (opts) => {
+  let { count, chunk, selector } = opts
   const selectors = []
   const start = 1
   let x = 0
   x = start
-  let sqlTail = sql.substring(7) // removes 'SELECT ' from string
-  while ((total - x) * chunk >= 0) {
-    chunk = x + chunk > total ? total - x + start : chunk
-    selectors.push(`SELECT TOP ${chunk} START AT ${x} ${sqlTail}`)
+  while ((count - x) * chunk >= 0) {
+    chunk = x + chunk > count ? count - x + start : chunk
+    const sql =
+      `SELECT TOP ${chunk} START AT ${x} ` +
+      `${selector.select.substring(7)} ` + // remove the 'SELECT'
+      `${selector.where} ${selector.order};`
+    selectors.push(sql)
     x += chunk
   }
   return selectors
 }
 
 // a single collector is either: database or filesystem
-// q_count is provided by worker
-const enqueueCollectors = async event => {
+const enqueueCollectors = async (event) => {
   const results = []
 
   if (event.r_target === 'database') {
-    const batches = batchSelector(
-      event.q_count,
-      event.q_chunk,
-      event.q_selector,
-      event.q_filter
-    )
+    const batches = batchSelector({
+      count: event.q_count,
+      chunk: event.q_chunk,
+      selector: event.q_selector,
+    })
 
     delete event.f_batcher
     delete event.q_chunk
     delete event.q_counter
-    delete event.q_filter
     delete event.q_selector
 
     event.a_purr_org = event.m_purr_org
@@ -68,14 +74,13 @@ const enqueueCollectors = async event => {
       let i = await lambdaInvoke({
         cred: event.cred,
         name: event.f_enqueue,
-        args: event
+        args: event,
       })
-      console.log(i)
       results.push(i)
     }
     return results
   } else {
-    console.log('!!!!!!!!!!!!!filesystem!!!!!!!!!!!!!')
+    console.log('TODO !!!!!!!!!!!!!filesystem!!!!!!!!!!!!!')
   }
 }
 

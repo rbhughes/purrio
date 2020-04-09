@@ -188,7 +188,6 @@ const handleEnqueue = async (event, job) => {
           q_counter: assetQ.counter,
           q_filter: job.filter,
           q_selector: assetQ.selector,
-          //q_where: assetQ.where,
           q_conn: conn,
         },
       })

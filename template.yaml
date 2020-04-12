@@ -279,16 +279,6 @@ Resources:
       ApiId: !GetAtt API.ApiId
       FieldName: listJobsByApp
     DependsOn: APISchema
-  APIQuerylistJobsByPartitionKeyResolver:
-    Type: AWS::AppSync::Resolver
-    Properties:
-      TypeName: Query
-      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
-      RequestMappingTemplateS3Location: Graphql/Query-listJobsByPartitionKey-request.vm
-      ResponseMappingTemplateS3Location: Graphql/Query-listJobsByPartitionKey-response.vm
-      ApiId: !GetAtt API.ApiId
-      FieldName: listJobsByPartitionKey
-    DependsOn: APISchema
   APIMutationcreateJobResolver:
     Type: AWS::AppSync::Resolver
     Properties:
@@ -461,24 +451,14 @@ Resources:
     Properties:
       GroupName: !Sub ${AWS::StackName}-WorkerGroup
       ManagedPolicyArns:
-        - !Ref WorkerPolicy
+        - !Ref APIPolicy
+        - !Ref BatcherPolicy
+        - !Ref EnqueuePolicy
         - !Ref QueuePolicy
   WorkerUser:
     Type: AWS::IAM::User
     Properties:
       UserName: !Sub ${AWS::StackName}-WorkerUser
-  WorkerPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      ManagedPolicyName: !Sub ${AWS::StackName}-WorkerPolicy
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: lambda:invokeFunction
-            Resource:
-              - !GetAtt Batcher.Arn
-              - !GetAtt Enqueue.Arn
   WorkerUserToGroup:
     Type: AWS::IAM::UserToGroupAddition
     Properties:
@@ -643,6 +623,56 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
+  APIMutationupdateJobResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Mutation
+      DataSourceName: !GetAtt APILocalDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Mutation-updateJob-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-updateJob-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: updateJob
+    DependsOn: APISchema
+  APIMutationcreateNoteResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Mutation
+      DataSourceName: !GetAtt APILocalDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Mutation-createNote-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-createNote-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: createNote
+    DependsOn: APISchema
+  APIMutationdeleteNoteResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Mutation
+      DataSourceName: !GetAtt APILocalDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Mutation-deleteNote-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-deleteNote-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: deleteNote
+    DependsOn: APISchema
+  APIMutationbatchDeleteNotesResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Mutation
+      DataSourceName: !GetAtt APILocalDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Mutation-batchDeleteNotes-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Mutation-batchDeleteNotes-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: batchDeleteNotes
+    DependsOn: APISchema
+  APIQuerylistNotesByPKeyResolver:
+    Type: AWS::AppSync::Resolver
+    Properties:
+      TypeName: Query
+      DataSourceName: !GetAtt APILocalDataSource.Name
+      RequestMappingTemplateS3Location: Graphql/Query-listNotesByPKey-request.vm
+      ResponseMappingTemplateS3Location: Graphql/Query-listNotesByPKey-response.vm
+      ApiId: !GetAtt API.ApiId
+      FieldName: listNotesByPKey
+    DependsOn: APISchema
 Parameters:
   StackTagName:
     Type: String

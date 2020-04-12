@@ -1,0 +1,10 @@
+$util.qr($context.args.note.put("modified", $util.defaultIfNull($ctx.args.note.modified, $util.time.nowISO8601())))
+{
+    "version" : "2017-02-28",
+    "operation" : "PutItem",
+    "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($ctx.args.note.id),
+        "rk": $util.dynamodb.toDynamoDBJson($ctx.args.note.rk)
+    },
+    "attributeValues" : $util.dynamodb.toMapValuesJson($ctx.args.note)
+}

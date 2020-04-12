@@ -135,6 +135,7 @@ const handleNotesDelete = async (event, job) => {
 }
 
 const handleEnqueue = async (event, job) => {
+  console.log(event)
   try {
     loadingSpin(event, true)
 

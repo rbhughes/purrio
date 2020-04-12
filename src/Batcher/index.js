@@ -69,14 +69,15 @@ const enqueueCollectors = async (event) => {
     event.a_purr_env = event.m_purr_env
     event.r_directive = 'selector'
 
-    for (const sql of batches) {
+    for (const [i, sql] of batches.entries()) {
       event.q_batched_selector = sql
-      let i = await lambdaInvoke({
+      event.m_batched_num = `${i + 1} of ${batches.length}`
+      let qj = await lambdaInvoke({
         cred: event.cred,
         name: event.f_enqueue,
         args: event,
       })
-      results.push(i)
+      results.push(qj)
     }
     return results
   } else {

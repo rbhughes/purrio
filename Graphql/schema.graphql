@@ -1,60 +1,77 @@
 enum App {
-	GEOGRAPHIX
-	KINGDOM
-	PETRA
+  GEOGRAPHIX
+  KINGDOM
+  PETRA
 }
 
 enum Asset {
-	BUSINESS_ASSOCIATE
-	DIGITAL_LOG
-	DIRECTIONAL_SURVEY
-	FORMATION_TOP
-	LEGAL_DESCRIPTION
-	PRODUCTION
-	RASTER_LOG
-	STRAT_COLUMN
-	WELL_HEADER
+  BUSINESS_ASSOCIATE
+  DIGITAL_LOG
+  DIRECTIONAL_SURVEY
+  FORMATION_TOP
+  LEGAL_DESCRIPTION
+  PRODUCTION
+  RASTER_LOG
+  STRAT_COLUMN
+  WELL_HEADER
 }
 
 type Job {
-	id: ID!
-	rk: String
-	app: App!
-	assets: String
-	aux: String
-	label: String
-	repo: String!
+  id: ID!
+  rk: String
+  app: App!
+  assets: String
+  aux: String
+  label: String
+  repo: String!
+  modified: String
 }
 
 input JobInput {
-	id: ID
-	rk: String
-	app: App
-	assets: String
-	aux: String
-	label: String
-	repo: String
+  id: ID
+  rk: String
+  app: App
+  assets: String
+  aux: String
+  label: String
+  repo: String
 }
 
-input JobKeyPair {
-	id: ID!
-	rk: String
+input KeyPair {
+  id: ID!
+  rk: String
 }
 
 type Mutation {
-	createJob(job: JobInput): Job
-	deleteJob(pair: JobKeyPair): Job
+  createJob(job: JobInput): Job
+  updateJob(job: JobInput): Job
+  deleteJob(pair: KeyPair): Job
+  createNote(note: NoteInput): Note
+  deleteNote(pair: KeyPair): Note
+  batchDeleteNotes(pairs: [KeyPair]): [Note]
+}
+
+type Note {
+  id: ID!
+  rk: String
+  message: String
+  modified: String
+}
+
+input NoteInput {
+  id: ID
+  rk: String
+  message: String
 }
 
 type Query {
-	listJobs: [Job]
-	listJobsByApp(app: App): [Job]
-	listJobsByPartitionKey(id: ID): [Job]
+  listJobsByApp(app: App): [Job]
+  listNotesByPKey(id: ID): [Note]
 }
 
 type Subscription {
-	onCreateJob(job: JobInput): Job
-		@aws_subscribe(mutations: ["createJob"])
-	onDeleteJob(job: JobInput): Job
-		@aws_subscribe(mutations: ["deleteJob"])
+  onCreateJob(job: JobInput): Job @aws_subscribe(mutations: ["createJob"])
+  onUpdateJob(job: JobInput): Job @aws_subscribe(mutations: ["updateJob"])
+  onDeleteJob(job: JobInput): Job @aws_subscribe(mutations: ["deleteJob"])
+  onCreateNote(note: NoteInput): Note @aws_subscribe(mutations: ["createNote"])
 }

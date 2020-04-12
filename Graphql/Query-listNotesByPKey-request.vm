@@ -1,11 +1,14 @@
 {
-    "version" : "2017-02-28",
+    "version" : "2018-05-29",
     "operation" : "Query",
     "query" : {
         "expression": "id = :id",
         "expressionValues" : {
             ":id" : $util.dynamodb.toDynamoDBJson($ctx.args.id)
+            
         }
+    },
+    "filter" : {
+        "expression" : "attribute_exists(message)"
     }
-
 }

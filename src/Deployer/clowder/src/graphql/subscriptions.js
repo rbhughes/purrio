@@ -35,7 +35,6 @@ export const onCreateNote = `subscription OnCreateNote {
   onCreateNote {
     id
     rk
-    asset
     message
     modified
   }

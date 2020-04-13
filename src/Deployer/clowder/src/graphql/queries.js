@@ -15,7 +15,6 @@ export const listNotesByPKey = `query ListNotesByPKey($id: ID) {
   listNotesByPKey(id: $id) {
     id
     rk
-    asset
     message
     modified
   }

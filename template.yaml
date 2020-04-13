@@ -627,7 +627,7 @@ Resources:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Mutation
-      DataSourceName: !GetAtt APILocalDataSource.Name
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
       RequestMappingTemplateS3Location: Graphql/Mutation-updateJob-request.vm
       ResponseMappingTemplateS3Location: Graphql/Mutation-updateJob-response.vm
       ApiId: !GetAtt API.ApiId
@@ -637,7 +637,7 @@ Resources:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Mutation
-      DataSourceName: !GetAtt APILocalDataSource.Name
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
       RequestMappingTemplateS3Location: Graphql/Mutation-createNote-request.vm
       ResponseMappingTemplateS3Location: Graphql/Mutation-createNote-response.vm
       ApiId: !GetAtt API.ApiId
@@ -647,7 +647,7 @@ Resources:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Mutation
-      DataSourceName: !GetAtt APILocalDataSource.Name
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
       RequestMappingTemplateS3Location: Graphql/Mutation-deleteNote-request.vm
       ResponseMappingTemplateS3Location: Graphql/Mutation-deleteNote-response.vm
       ApiId: !GetAtt API.ApiId
@@ -657,7 +657,7 @@ Resources:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Mutation
-      DataSourceName: !GetAtt APILocalDataSource.Name
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
       RequestMappingTemplateS3Location: Graphql/Mutation-batchDeleteNotes-request.vm
       ResponseMappingTemplateS3Location: Graphql/Mutation-batchDeleteNotes-response.vm
       ApiId: !GetAtt API.ApiId
@@ -667,7 +667,7 @@ Resources:
     Type: AWS::AppSync::Resolver
     Properties:
       TypeName: Query
-      DataSourceName: !GetAtt APILocalDataSource.Name
+      DataSourceName: !GetAtt APIToKittyBoxDataSource.Name
       RequestMappingTemplateS3Location: Graphql/Query-listNotesByPKey-request.vm
       ResponseMappingTemplateS3Location: Graphql/Query-listNotesByPKey-response.vm
       ApiId: !GetAtt API.ApiId
@@ -684,9 +684,9 @@ Parameters:
     Type: Number
     Description: Deployment preparation timestamp in milliseconds Since Epoch (injected by Stackery at deployment time)
 Outputs:
-  AccessKey:
+  AccessKeyId:
     Value: !Ref WorkerUserKeys
     Description: AWSAccessKeyId
-  SecretKey:
+  SecretAccessKey:
     Value: !GetAtt WorkerUserKeys.SecretAccessKey
     Description: AWSSecretAccessKey

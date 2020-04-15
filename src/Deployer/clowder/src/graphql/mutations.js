@@ -33,7 +33,6 @@ export const createNote = `mutation CreateNote($note: NoteInput ) {
   createNote(note: $note) {
     id
     rk
-    asset
     message
   }
 }`
@@ -42,7 +41,6 @@ export const batchDeleteNotes = `mutation BatchDeleteNotes($pairs: [KeyPair]) {
   batchDeleteNotes(pairs: $pairs) {
     id
     rk
-    asset
     message
     modified
   }

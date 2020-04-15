@@ -1,4 +1,5 @@
 const WHERE_FIELDS = ['a.uwi']
+const CHUNK = 25
 
 const sanitize = (s) => {
   return s.replace(/[^-a-z0-9%_\-]+/gi, '')
@@ -87,7 +88,7 @@ const selector = (where) => {
 }
 
 exports.handler = async (event, context) => {
-  const { chunk = 1000 } = event
+  const { chunk = CHUNK } = event
   const where = sanitizedWhereClause(event.q_filter)
   return {
     chunk: chunk,

@@ -88,8 +88,9 @@ const enqueueCollectors = async (event) => {
 exports.handler = async (event, context) => {
   try {
     let results = await enqueueCollectors(event)
+    return results
 
-    return { event: event, results: results }
+    //return { event: event, results: results }
   } catch (error) {
     return error
   }

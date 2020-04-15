@@ -6,7 +6,7 @@ import {
   Label,
   List,
   Segment,
-  Transition
+  Transition,
 } from 'semantic-ui-react'
 
 import { API, graphqlOperation } from 'aws-amplify'
@@ -17,25 +17,23 @@ import * as subscriptions from '../graphql/subscriptions'
 //const hashify = require('../util').hashify
 const utility = require('../utility')
 
-const MessageListItem = props => {
+const MessageListItem = (props) => {
   return (
     <List.Item>
       {/*<Image avatar src="/images/avatar/small/rachel.png" />*/}
       <List.Content>
-        <List.Header>{props.note.asset}</List.Header>
         <List.Description>{props.note.message}</List.Description>
       </List.Content>
     </List.Item>
   )
 }
 
-const handleFakeMessage = async job => {
+const handleFakeMessage = async (job) => {
   try {
     const fake = {
       id: job.id,
       rk: Date.now().toString(),
-      asset: 'PRODUCTION',
-      message: `${job.id} --- howdy from a fake message ${Date.now()}`
+      message: `${job.id} --- howdy from a fake message ${Date.now()}`,
     }
     await API.graphql(graphqlOperation(mutations.createNote, { note: fake }))
   } catch (error) {
@@ -43,11 +41,11 @@ const handleFakeMessage = async job => {
   }
 }
 
-const Job = props => {
+const Job = (props) => {
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
 
-  const fetchNotes = async id => {
+  const fetchNotes = async (id) => {
     //setIsLoading(true)
 
     try {
@@ -70,14 +68,14 @@ const Job = props => {
       const subscription = API.graphql(
         graphqlOperation(subscriptions.onCreateNote)
       ).subscribe({
-        next: res => {
+        next: (res) => {
           console.log('__________onCreateNote')
           const createdNote = res.value.data.onCreateNote
           if (props.job.id === createdNote.id) {
             const updatedNotes = notes.concat(createdNote)
             setNotes(updatedNotes)
           }
-        }
+        },
       })
       return () => subscription.unsubscribe()
     } catch (error) {
@@ -109,14 +107,14 @@ const Job = props => {
                 }}
               />
               <Button
-                onClick={e => {
+                onClick={(e) => {
                   props.job.handleJobDelete(e, props.job)
                 }}
               >
                 Delete
               </Button>
               <Button
-                onClick={e => {
+                onClick={(e) => {
                   props.job.handleEnqueue(e, props.job)
                 }}
               >
@@ -143,7 +141,7 @@ const Job = props => {
                   make fake message
                 </Button>
                 <Button
-                  onClick={e => {
+                  onClick={(e) => {
                     let deleted = props.job.handleNotesDelete(e, props.job)
                     if (deleted) {
                       setNotes([])
@@ -157,7 +155,7 @@ const Job = props => {
             <Grid.Column width={13}>
               <Card fluid>
                 <List>
-                  {notes.map(note => (
+                  {notes.map((note) => (
                     <MessageListItem
                       key={utility.hashify(note.rk)}
                       note={note}

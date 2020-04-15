@@ -13,8 +13,6 @@ import pcfg from '../purr-cfg'
 
 const utility = require('../utility')
 
-console.log('======JobList======')
-
 /////
 const getCredentials = async (event) => {
   const currCred = await Auth.currentCredentials()
@@ -62,6 +60,7 @@ const formJobToDB = (data) => {
     aux: data.aux || null,
     label: data.label || 'unlabeled',
     repo: data.repo,
+    batchs: 0,
   }
   return job
 }
@@ -242,6 +241,33 @@ const JobList = (props) => {
     }
     fetcher(props.app)
   }, [props.app])
+
+  ////
+  useEffect(() => {
+    try {
+      const subscription = API.graphql(
+        graphqlOperation(subscriptions.onCreateNote)
+      ).subscribe({
+        next: (res) => {
+          console.log('______INTERCEPTED____onCreateNote')
+          const n = res.value.data.onCreateNote
+
+          console.log(n)
+          /*
+          const createdNote = res.value.data.onCreateNote
+          if (props.job.id === createdNote.id) {
+            const updatedNotes = notes.concat(createdNote)
+            setNotes(updatedNotes)
+          }
+          */
+        },
+      })
+      return () => subscription.unsubscribe()
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+  ////
 
   useEffect(() => {
     try {

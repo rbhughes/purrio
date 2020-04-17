@@ -27,7 +27,7 @@ const lambdaInvoke = async (event) => {
   const lamb = new Lambda(cred)
   let params = {
     FunctionName: name,
-    Payload: JSON.stringify(args),
+    Payload: JSON.stringify(args)
   }
   try {
     let res = await lamb.invoke(params).promise()
@@ -59,8 +59,7 @@ const formJobToDB = (data) => {
     assets: JSON.stringify(data.assets) || null,
     aux: data.aux || null,
     label: data.label || 'unlabeled',
-    repo: data.repo,
-    batchs: 0,
+    repo: data.repo
   }
   return job
 }
@@ -74,7 +73,7 @@ const deserializeJobs = (data) => {
       assets: JSON.parse(o.assets),
       aux: o.aux,
       label: o.label,
-      repo: o.repo,
+      repo: o.repo
     }
     jobs.push(attachJobHandlers(job))
   }
@@ -134,7 +133,6 @@ const handleNotesDelete = async (event, job) => {
 }
 
 const handleEnqueue = async (event, job) => {
-  console.log(event)
   try {
     loadingSpin(event, true)
 
@@ -153,9 +151,9 @@ const handleEnqueue = async (event, job) => {
       let assetQ = await lambdaInvoke({
         cred: cred,
         name: assetLambda,
-        args: { q_filter: o.filter },
+        args: { q_filter: o.filter }
       })
-      console.log(assetQ)
+      //console.log(assetQ)
 
       // a: attributes of this SQS message for future use (?)
       // r: routing info for worker
@@ -163,7 +161,8 @@ const handleEnqueue = async (event, job) => {
       // m: metadata about the job
       // q: stuff involving queries worker will use
 
-      let resEnqueue = await lambdaInvoke({
+      //let resEnqueue = await lambdaInvoke({
+      await lambdaInvoke({
         cred: cred,
         name: enqueueLambda,
         args: {
@@ -188,10 +187,10 @@ const handleEnqueue = async (event, job) => {
           q_counter: assetQ.counter,
           q_filter: job.filter,
           q_selector: assetQ.selector,
-          q_conn: conn,
-        },
+          q_conn: conn
+        }
       })
-      console.log(resEnqueue)
+      //console.log(resEnqueue)
     }
 
     loadingSpin(event, false)
@@ -205,7 +204,7 @@ const emptyJob = (app) => {
     app: app.toUpperCase(),
     repo: '',
     label: '',
-    assets: [{ asset: '', filter: '' }],
+    assets: [{ asset: '', filter: '' }]
   }
   return attachJobHandlers(job)
 }
@@ -216,7 +215,7 @@ const attachJobHandlers = (job) => {
     handleJobUpdate: handleJobUpdate,
     handleJobDelete: handleJobDelete,
     handleNotesDelete: handleNotesDelete,
-    handleEnqueue: handleEnqueue,
+    handleEnqueue: handleEnqueue
   }
   return Object.assign(job, handlers)
 }
@@ -243,23 +242,24 @@ const JobList = (props) => {
   }, [props.app])
 
   ////
+
+  /*
   useEffect(() => {
     try {
       const subscription = API.graphql(
         graphqlOperation(subscriptions.onCreateNote)
       ).subscribe({
         next: (res) => {
-          console.log('______INTERCEPTED____onCreateNote')
-          const n = res.value.data.onCreateNote
+          console.log('_______INTERCEPTED_______')
+          //const note = JSON.parse(res.value.data.onCreateNote)
+          const note = res.value.data.onCreateNote
+          console.log(props)
 
-          console.log(n)
-          /*
-          const createdNote = res.value.data.onCreateNote
-          if (props.job.id === createdNote.id) {
-            const updatedNotes = notes.concat(createdNote)
-            setNotes(updatedNotes)
-          }
-          */
+          console.log(jobs)
+          console.log('-------------------------')
+          //const thisJob = jobs.find((j) => j.id === note.id)
+          //console.log(thisJob)
+
         },
       })
       return () => subscription.unsubscribe()
@@ -267,6 +267,7 @@ const JobList = (props) => {
       console.error(error)
     }
   }, [])
+  */
   ////
 
   useEffect(() => {
@@ -275,12 +276,11 @@ const JobList = (props) => {
         graphqlOperation(subscriptions.onCreateJob)
       ).subscribe({
         next: (res) => {
-          console.log('create sub')
           const createdJob = res.value.data.onCreateJob
           const job = deserializeJobs([createdJob]) // input is an array
           const refresh = jobs.concat(job)
           setJobs(refresh)
-        },
+        }
       })
       return () => subscription.unsubscribe()
     } catch (error) {
@@ -294,7 +294,6 @@ const JobList = (props) => {
         graphqlOperation(subscriptions.onUpdateJob)
       ).subscribe({
         next: (res) => {
-          console.log('update sub')
           const updatedJob = res.value.data.onUpdateJob
           const job = deserializeJobs([updatedJob])[0]
 
@@ -316,7 +315,7 @@ const JobList = (props) => {
           // this dumb "double-set" workaround suffices (tried async, etc.)
           setJobs([])
           setJobs(refresh)
-        },
+        }
       })
       return () => subscription.unsubscribe()
     } catch (error) {
@@ -335,7 +334,7 @@ const JobList = (props) => {
             (job) => job.id !== deletedJob.id && job.rk !== deletedJob.rk
           )
           setJobs(refresh)
-        },
+        }
       })
       return () => subscription.unsubscribe()
     } catch (error) {

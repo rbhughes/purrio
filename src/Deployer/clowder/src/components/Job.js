@@ -6,7 +6,7 @@ import {
   Label,
   List,
   Segment,
-  Transition,
+  Transition
 } from 'semantic-ui-react'
 
 import { API, graphqlOperation } from 'aws-amplify'
@@ -15,14 +15,17 @@ import * as mutations from '../graphql/mutations'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 //const hashify = require('../util').hashify
-const utility = require('../utility')
+//const utility = require('../utility')
 
 const MessageListItem = (props) => {
+  const n = JSON.parse(props.note.message)
   return (
     <List.Item>
       {/*<Image avatar src="/images/avatar/small/rachel.png" />*/}
       <List.Content>
-        <List.Description>{props.note.message}</List.Description>
+        <List.Description>
+          {n.class}|{n.msg}
+        </List.Description>
       </List.Content>
     </List.Item>
   )
@@ -33,7 +36,10 @@ const handleFakeMessage = async (job) => {
     const fake = {
       id: job.id,
       rk: Date.now().toString(),
-      message: `${job.id} --- howdy from a fake message ${Date.now()}`,
+      message: JSON.stringify({
+        id: job.id,
+        message: `FAKE message says Hello ${Date.now()}`
+      })
     }
     await API.graphql(graphqlOperation(mutations.createNote, { note: fake }))
   } catch (error) {
@@ -69,19 +75,38 @@ const Job = (props) => {
         graphqlOperation(subscriptions.onCreateNote)
       ).subscribe({
         next: (res) => {
-          console.log('__________onCreateNote')
           const createdNote = res.value.data.onCreateNote
+
           if (props.job.id === createdNote.id) {
+            console.log('_______INTERCEPTED_______')
+            console.log(props.job)
+            console.log('_________________________')
             const updatedNotes = notes.concat(createdNote)
             setNotes(updatedNotes)
+
+            const msg = JSON.parse(createdNote.message)
+            if (msg.action && msg.action === 'decrement') {
+              props.job.item_count -= msg.count
+              props.job.batch_count -= 1
+            } else if (msg.action && msg.action === 'set_counts') {
+              props.job.item_count = msg.item_count
+              props.job.batch_count = msg.batch_count
+            }
+
+            if (props.job.batch_count === 0) {
+              console.log('THIS BATCH IS DONE')
+            } else {
+              console.log(props.job.batch_count)
+            }
           }
-        },
+        }
       })
       return () => subscription.unsubscribe()
     } catch (error) {
       console.error(error)
     }
-  }, [notes, props.job.id])
+    //}, [notes, props.job.id])
+  }, [notes, props.job])
 
   return (
     <Segment>
@@ -156,10 +181,7 @@ const Job = (props) => {
               <Card fluid>
                 <List>
                   {notes.map((note) => (
-                    <MessageListItem
-                      key={utility.hashify(note.rk)}
-                      note={note}
-                    />
+                    <MessageListItem key={note.rk} note={note} />
                   ))}
                 </List>
               </Card>

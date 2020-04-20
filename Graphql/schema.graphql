@@ -54,14 +54,14 @@ type Mutation {
 type Note {
   id: ID!
   rk: String
-  message: String
+  cargo: String
   modified: String
 }
 
 input NoteInput {
   id: ID
   rk: String
-  message: String
+  cargo: String
 }
 
 type Query {

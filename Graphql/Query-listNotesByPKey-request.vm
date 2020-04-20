@@ -9,6 +9,6 @@
         }
     },
     "filter" : {
-        "expression" : "attribute_exists(message)"
+        "expression" : "attribute_exists(cargo)"
     }
 }

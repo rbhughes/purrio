@@ -24,7 +24,7 @@ const NotFound = () => (
   </h1>
 )
 
-const handleSignOut = async e => {
+const handleSignOut = async (e) => {
   e.preventDefault()
   try {
     let data = await Auth.signOut()
@@ -34,7 +34,7 @@ const handleSignOut = async e => {
   }
 }
 
-const HeaderBar = props => {
+const HeaderBar = (props) => {
   return (
     <Router>
       <Menu className="ui">
@@ -77,15 +77,15 @@ const HeaderBar = props => {
         <Route path="/" exact component={Home} />
         <Route
           path="/geographix"
-          render={props => <JobList {...props} app="geographix" />}
+          render={(props) => <JobList {...props} app="geographix" />}
         />
         <Route
           path="/kingdom"
-          render={props => <JobList {...props} app="kingdom" />}
+          render={(props) => <JobList {...props} app="kingdom" />}
         />
         <Route
           path="/petra"
-          render={props => <JobList {...props} app="petra" />}
+          render={(props) => <JobList {...props} app="petra" />}
         />
         <Route path="/config" component={Config} />
         <Route component={NotFound} />

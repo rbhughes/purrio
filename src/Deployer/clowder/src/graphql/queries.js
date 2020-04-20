@@ -15,7 +15,7 @@ export const listNotesByPKey = `query ListNotesByPKey($id: ID) {
   listNotesByPKey(id: $id) {
     id
     rk
-    message
+    cargo
     modified
   }
 }`

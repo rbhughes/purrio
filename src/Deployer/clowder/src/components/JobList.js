@@ -132,6 +132,30 @@ const handleNotesDelete = async (event, job) => {
   }
 }
 
+const handleWorkerPing = async (event, job) => {
+  try {
+    loadingSpin(event, true)
+
+    const enqueueLambda = utility.enqueueLambdaName()
+    const cred = await getCredentials()
+
+    await lambdaInvoke({
+      cred: cred,
+      name: enqueueLambda,
+      args: {
+        a_purr_org: pcfg.purr_org,
+        a_purr_env: pcfg.purr_env,
+        r_app: 'ping',
+        m_job_id: job.id
+      }
+    })
+
+    loadingSpin(event, false)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 const handleEnqueue = async (event, job) => {
   try {
     loadingSpin(event, true)
@@ -215,7 +239,8 @@ const attachJobHandlers = (job) => {
     handleJobUpdate: handleJobUpdate,
     handleJobDelete: handleJobDelete,
     handleNotesDelete: handleNotesDelete,
-    handleEnqueue: handleEnqueue
+    handleEnqueue: handleEnqueue,
+    handleWorkerPing: handleWorkerPing
   }
   return Object.assign(job, handlers)
 }

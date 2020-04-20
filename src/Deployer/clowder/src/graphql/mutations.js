@@ -33,7 +33,7 @@ export const createNote = `mutation CreateNote($note: NoteInput ) {
   createNote(note: $note) {
     id
     rk
-    message
+    cargo
   }
 }`
 
@@ -41,7 +41,7 @@ export const batchDeleteNotes = `mutation BatchDeleteNotes($pairs: [KeyPair]) {
   batchDeleteNotes(pairs: $pairs) {
     id
     rk
-    message
+    cargo
     modified
   }
 }`

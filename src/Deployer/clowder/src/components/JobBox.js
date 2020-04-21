@@ -18,53 +18,63 @@ import ModalJobForm from './ModalJobForm'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 
-const StatusBox = (props) => {
+const WorkerButtonBox = (props) => {
   return (
-    <Message icon>
-      <Icon
-        name="circle notched"
-        className={props.batchDone ? '' : 'loading'}
-      />
-      <Message.Content>
-        <Message.Header hidden>Worker Progress</Message.Header>
-        <List>
-          {props.counters.batches + props.counters.items > 0 ? (
-            <>
-              <List.Item>Remaining Batches: {props.counters.batches}</List.Item>
-              <List.Item>Remaining Items: {props.counters.items}</List.Item>
-            </>
-          ) : (
-            <List.Item>(idle)</List.Item>
-          )}
-        </List>
-      </Message.Content>
-    </Message>
+    <Card fluid>
+      <Button
+        onClick={(e) => {
+          props.job.handleWorkerPing(e, props.job)
+        }}
+      >
+        ping a worker
+      </Button>
+
+      <Button
+        onClick={(e) => {
+          let deleted = props.job.handleNotesDelete(e, props.job)
+          if (deleted) {
+            props.setNotes([])
+          }
+        }}
+      >
+        clear messages
+      </Button>
+    </Card>
+  )
+}
+const WorkerStatusBox = (props) => {
+  return (
+    <Card>
+      <Message icon>
+        <Icon loading name="circle notched" />
+        <Message.Content>
+          <Message.Header hidden>Worker Progress</Message.Header>
+          <List>
+            <List.Item>Remaining Batches: {props.counters.batches}</List.Item>
+            <List.Item>Remaining Items: {props.counters.items}</List.Item>
+          </List>
+        </Message.Content>
+      </Message>
+    </Card>
   )
 }
 
 const MessageListItem = (props) => {
   const n = JSON.parse(props.note.cargo)
-  /*
-  const item = <Header as='h4'></Header>
-  if (n.error) {
-    console.log('ERRRRRR')
-  } else {
-
-  }
-  */
 
   const item = n.error ? (
-    <Header as="h4" color="red">
+    <Header as="h5" color="red">
       {n.text}
       <Divider />
       {JSON.stringify(n.error, null, 2)}
     </Header>
   ) : (
-    <Header as="h4">{n.text}</Header>
+    <Header as="h5">
+      <code>{n.text}</code>
+    </Header>
   )
   return (
     <List.Item>
-      {/*<Image avatar src="/images/avatar/small/rachel.png" />*/}
       <List.Content>
         <List.Description>{item}</List.Description>
       </List.Content>
@@ -90,7 +100,7 @@ const handleFakeMessage = async (job) => {
 }
 */
 
-const Job = (props) => {
+const JobBox = (props) => {
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
   const [batchDone, setBatchDone] = useState(true)
@@ -225,39 +235,16 @@ const Job = (props) => {
         >
           <Grid.Row>
             <Grid.Column width={3}>
-              <Card fluid>
-                <Button
-                  onClick={(e) => {
-                    props.job.handleWorkerPing(e, props.job)
-                  }}
-                >
-                  ping a worker
-                </Button>
-
-                {/*
-                <Button
-                  onClick={() => {
-                    handleFakeMessage(props.job)
-                  }}
-                >
-                  make fake message
-                </Button>
-                */}
-                <Button
-                  onClick={(e) => {
-                    let deleted = props.job.handleNotesDelete(e, props.job)
-                    if (deleted) {
-                      setNotes([])
-                    }
-                  }}
-                >
-                  clear messages
-                </Button>
-
-                <StatusBox batchDone={batchDone} counters={counters} />
-              </Card>
+              {batchDone ? (
+                <WorkerButtonBox job={props.job} setNotes={setNotes} />
+              ) : (
+                <WorkerStatusBox counters={counters} />
+              )}
             </Grid.Column>
-            <Grid.Column width={13}>
+            <Grid.Column
+              width={13}
+              style={{ maxHeight: 200, overflow: 'auto' }}
+            >
               <Card fluid>
                 <List>
                   {notes.map((note) => (
@@ -273,4 +260,4 @@ const Job = (props) => {
   )
 }
 
-export default Job
+export default JobBox

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Loader, Divider } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
-import Job from './Job'
+import JobBox from './JobBox'
 
 import ModalJobForm from './ModalJobForm'
 import * as mutations from '../graphql/mutations'
@@ -372,7 +372,7 @@ const JobList = (props) => {
   ) : (
     <div>
       {jobs.map((job) => (
-        <Job key={job.id} job={job} />
+        <JobBox key={job.id} job={job} />
       ))}
       <Divider />
       <ModalJobForm job={emptyJob(props.app)} />

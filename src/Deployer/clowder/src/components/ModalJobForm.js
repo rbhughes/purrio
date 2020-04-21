@@ -13,7 +13,7 @@ import { AssetContext } from './AssetContext'
 import { VendorContext } from './VendorContext'
 
 // TODO: form validation?
-const ModalJobForm = props => {
+const ModalJobForm = (props) => {
   const [visible, setVisible] = useState(false)
 
   const assetList = useContext(AssetContext)
@@ -35,7 +35,7 @@ const ModalJobForm = props => {
     name: 'assets'
   })
 
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     if (props.job.id) {
       props.job.handleJobUpdate(data)
     } else {
@@ -112,7 +112,7 @@ const ModalJobForm = props => {
                       ref={register({})}
                       defaultValue={field.asset}
                     >
-                      {assetList.map(x => {
+                      {assetList.map((x) => {
                         return <option key={x.key}>{x.value}</option>
                       })}
                     </select>
@@ -151,7 +151,7 @@ const ModalJobForm = props => {
                         floated="right"
                         onClick={() => append(index)}
                       >
-                        Add New Asset
+                        Add Another Asset
                       </Button>
                     )}
                   </Form.Field>
@@ -161,7 +161,7 @@ const ModalJobForm = props => {
           })}
           <Divider hidden />
 
-          <Button type="submit">Submit</Button>
+          <Button type="submit">Save</Button>
           <Button
             onClick={() => {
               reset()

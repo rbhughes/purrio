@@ -1,83 +1,29 @@
-enum App {
-	GEOGRAPHIX
-	KINGDOM
-	PETRA
+/*
+let a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+let chunks = []
+let chunk = 8
+
+const arrayChunks = (a, size) => {
+  var chunks = []
+  for (var i = 0; i < a.length; i += size) {
+    chunks.push(a.slice(i, i + size))
+  }
+  return chunks
+}
+//console.log(chunkArrayInGroups(["a", "b", "c", "d"], 2));
+//
+let c = arrayChunks(a, 3)
+console.log(c)
+*/
+
+let notes = [{a: 1, b: 2}, {a: 4, b: 4}, {a: 9, b: 3}, {a: 5, b: 4}]
+
+let cn = {a: 8, b: 8}
+
+const f = b => {
+  let a = [...notes, b]
+  console.log(a)
 }
 
-enum Asset {
-	BUSINESS_ASSOCIATE
-	DIGITAL_LOG
-	DIRECTIONAL_SURVEY
-	FORMATION_TOP
-	LEGAL_DESCRIPTION
-	PRODUCTION
-	RASTER_LOG
-	STRAT_COLUMN
-	WELL_HEADER
-}
-
-type Job {
-	id: ID!
-	rk: String
-	app: App!
-	assets: String
-	aux: String
-	label: String
-	repo: String!
-	modified: String
-}
-
-input JobInput {
-	id: ID
-	rk: String
-	app: App
-	assets: String
-	aux: String
-	label: String
-	repo: String
-}
-
-input KeyPair {
-	id: ID!
-	rk: String
-}
-
-type Mutation {
-	createJob(job: JobInput): Job
-	updateJob(job: JobInput): Job
-	deleteJob(pair: KeyPair): Job
-	createNote(note: NoteInput): Note
-	deleteNote(pair: KeyPair): Note
-	batchDeleteNotes(pairs: [KeyPair]): [Note]
-}
-
-type Note {
-	id: ID!
-	rk: String
-	asset: Asset
-	message: String
-	modified: String
-}
-
-input NoteInput {
-	id: ID
-	rk: String
-	asset: Asset
-	message: String
-}
-
-type Query {
-	listJobsByApp(app: App): [Job]
-	listNotesByPKey(id: ID): [Note]
-}
-
-type Subscription {
-	onCreateJob(job: JobInput): Job
-		@aws_subscribe(mutations: ["createJob"])
-	onUpdateJob(job: JobInput): Job
-		@aws_subscribe(mutations: ["updateJob"])
-	onDeleteJob(job: JobInput): Job
-		@aws_subscribe(mutations: ["deleteJob"])
-	onCreateNote(note: NoteInput): Note
-		@aws_subscribe(mutations: ["createNote"])
-}
+f(cn)

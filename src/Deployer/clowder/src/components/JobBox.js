@@ -22,18 +22,20 @@ const WorkerButtonBox = (props) => {
   return (
     <Card fluid>
       <Button
-        onClick={(e) => {
-          props.job.handleWorkerPing(e, props.job)
+        onClick={async (e) => {
+          await props.job.handleWorkerPing(e, props.job)
         }}
       >
         ping a worker
       </Button>
 
       <Button
-        onClick={(e) => {
-          let deleted = props.job.handleNotesDelete(e, props.job)
+        onClick={async (e) => {
+          let deleted = await props.job.handleNotesDelete(e, props.job)
           if (deleted) {
             props.setNotes([])
+            props.setBatchCount(0)
+            props.setItemCount(0)
           }
         }}
       >
@@ -42,6 +44,7 @@ const WorkerButtonBox = (props) => {
     </Card>
   )
 }
+
 const WorkerStatusBox = (props) => {
   return (
     <Card>
@@ -50,8 +53,8 @@ const WorkerStatusBox = (props) => {
         <Message.Content>
           <Message.Header hidden>Worker Progress</Message.Header>
           <List>
-            <List.Item>Remaining Batches: {props.counters.batches}</List.Item>
-            <List.Item>Remaining Items: {props.counters.items}</List.Item>
+            <List.Item>Remaining Batches: {props.batchCount}</List.Item>
+            <List.Item>Remaining Items: {props.itemCount}</List.Item>
           </List>
         </Message.Content>
       </Message>
@@ -59,18 +62,54 @@ const WorkerStatusBox = (props) => {
   )
 }
 
+const Thing = (props) => {
+  if (props.batchCount < 1) {
+    console.log('SHOULD STOP IT NOW')
+  } else {
+    console.log('SHOW DAT SPINNER')
+  }
+  return (
+    <Header>
+      batchCount={props.batchCount} itemCount={props.itemCount}
+    </Header>
+  )
+}
+
+const MessageList = (props) => {
+  return (
+    <Card fluid>
+      <List>
+        {props.notes
+          //.sort((a, b) => (a.rk < b.rk ? 1 : -1))
+          .map((note) => (
+            <MessageListItem key={note.rk} note={note} />
+          ))}
+      </List>
+    </Card>
+  )
+}
+
 const MessageListItem = (props) => {
   const n = JSON.parse(props.note.cargo)
+  //const className = n.class
+  const lead = n.text
+
+  delete n.class
+  delete n.text
+
+  const main = JSON.stringify(n)
 
   const item = n.error ? (
     <Header as="h5" color="red">
-      {n.text}
+      {lead}
       <Divider />
       {JSON.stringify(n.error, null, 2)}
     </Header>
   ) : (
     <Header as="h5">
-      <code>{n.text}</code>
+      <code>
+        {lead} | {main | props.note.rk}
+      </code>
     </Header>
   )
   return (
@@ -104,12 +143,10 @@ const JobBox = (props) => {
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
   const [batchDone, setBatchDone] = useState(true)
-  const [counters, setCounters] = useState({ batches: 0, items: 0 })
-  //const [batch_count, setBatchCount] = useState(0)
+  const [batchCount, setBatchCount] = useState(0)
+  const [itemCount, setItemCount] = useState(0)
 
   const fetchNotes = async (id) => {
-    //setIsLoading(true)
-
     try {
       const dbNotes = await API.graphql(
         graphqlOperation(queries.listNotesByPKey, { id: id })
@@ -118,7 +155,6 @@ const JobBox = (props) => {
     } catch (error) {
       console.error(error)
     }
-    //setIsLoading(false)
   }
 
   useEffect(() => {
@@ -126,13 +162,40 @@ const JobBox = (props) => {
   }, [props.job.id])
 
   useEffect(() => {
-    try {
-      const subscription = API.graphql(
-        graphqlOperation(subscriptions.onCreateNote)
-      ).subscribe({
-        next: (res) => {
-          const createdNote = res.value.data.onCreateNote
+    const subscription = API.graphql(
+      graphqlOperation(subscriptions.onCreateNote)
+    ).subscribe({
+      next: (res) => {
+        const createdNote = res.value.data.onCreateNote
+        if (createdNote.id === props.job.id) {
+          setNotes((notes) => [...notes, createdNote])
+        }
 
+        const cargo = JSON.parse(createdNote.cargo)
+        if (cargo.action && cargo.action === 'set_counts') {
+          setBatchDone(false)
+          setBatchCount((batchCount) => (batchCount += cargo.batch_count))
+          setItemCount((itemCount) => (itemCount += cargo.item_count))
+        } else if (cargo.action && cargo.action === 'decrement') {
+          setBatchCount((batchCount) => (batchCount -= 1))
+          setItemCount((itemCount) => (itemCount -= cargo.item_count))
+        }
+
+        /*
+        setBatchDone((batchDone) => {
+          const check = (batchCount) => {
+            return batchCount < 1 ? true : false
+          }
+          console.log('hello?')
+          return check(batchCount)
+        })
+        */
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [props.job.id])
+
+  /*
           if (props.job.id === createdNote.id) {
             const updatedNotes = notes.concat(createdNote)
             setNotes(updatedNotes)
@@ -175,13 +238,8 @@ const JobBox = (props) => {
             }
             ////
           }
-        }
-      })
-      return () => subscription.unsubscribe()
-    } catch (error) {
-      console.error(error)
-    }
-  }, [notes, props.job, batchDone, counters])
+          */
+  //}, [notes, props.job, batchDone, counters])
 
   return (
     <Segment>
@@ -236,22 +294,25 @@ const JobBox = (props) => {
           <Grid.Row>
             <Grid.Column width={3}>
               {batchDone ? (
-                <WorkerButtonBox job={props.job} setNotes={setNotes} />
+                <WorkerButtonBox
+                  job={props.job}
+                  setNotes={setNotes}
+                  setBatchCount={setBatchCount}
+                  setItemCount={setItemCount}
+                />
               ) : (
-                <WorkerStatusBox counters={counters} />
+                <WorkerStatusBox
+                  batchCount={batchCount}
+                  itemCount={itemCount}
+                />
               )}
             </Grid.Column>
             <Grid.Column
               width={13}
-              style={{ maxHeight: 200, overflow: 'auto' }}
+              style={{ maxHeight: 500, overflow: 'auto' }}
             >
-              <Card fluid>
-                <List>
-                  {notes.map((note) => (
-                    <MessageListItem key={note.rk} note={note} />
-                  ))}
-                </List>
-              </Card>
+              <Thing batchCount={batchCount} itemCount={itemCount} />
+              <MessageList notes={notes} />
             </Grid.Column>
           </Grid.Row>
         </Transition>

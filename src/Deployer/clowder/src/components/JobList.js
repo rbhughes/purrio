@@ -120,9 +120,20 @@ const handleNotesDelete = async (event, job) => {
       const pairs = allNotes.data.listNotesByPKey.map((o) => {
         return { id: o.id, rk: o.rk }
       })
-      await API.graphql(
-        graphqlOperation(mutations.batchDeleteNotes, { pairs: pairs })
-      )
+
+      // DynamoDB batch delete is limited to chunks of 25, may need a refactor?
+      const doomed = []
+      for (let i = 0; i < pairs.length; i += 25) {
+        let discards = pairs.slice(i, i + 25)
+        doomed.push(
+          API.graphql(
+            graphqlOperation(mutations.batchDeleteNotes, { pairs: discards })
+          )
+        )
+      }
+      await Promise.all(doomed)
+      loadingSpin(event, false)
+      return true
     }
     loadingSpin(event, false)
     return true

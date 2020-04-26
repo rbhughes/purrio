@@ -18,50 +18,53 @@ import ModalJobForm from './ModalJobForm'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 
-const WorkerButtonBox = (props) => {
-  return (
-    <Card fluid>
-      <Button
-        onClick={async (e) => {
-          await props.job.handleWorkerPing(e, props.job)
-        }}
-      >
-        ping a worker
-      </Button>
+const WorkerStatus = (props) => {
+  if (props.batchCount < 1) {
+    // workers are idle
+    return (
+      <Card fluid>
+        <Button
+          onClick={async (e) => {
+            await props.job.handleWorkerPing(e, props.job)
+          }}
+        >
+          ping a worker
+        </Button>
 
-      <Button
-        onClick={async (e) => {
-          let deleted = await props.job.handleNotesDelete(e, props.job)
-          if (deleted) {
-            props.setNotes([])
-            props.setBatchCount(0)
-            props.setItemCount(0)
-          }
-        }}
-      >
-        clear messages
-      </Button>
-    </Card>
-  )
+        <Button
+          onClick={async (e) => {
+            let deleted = await props.job.handleNotesDelete(e, props.job)
+            if (deleted) {
+              props.setNotes([])
+              props.setBatchCount(0)
+              props.setItemCount(0)
+            }
+          }}
+        >
+          clear messages
+        </Button>
+      </Card>
+    )
+  } else {
+    // workers are processing a job
+    return (
+      <Card>
+        <Message icon>
+          <Icon loading name="circle notched" />
+          <Message.Content>
+            <Message.Header hidden>Worker Progress</Message.Header>
+            <List>
+              <List.Item>Remaining Batches: {props.batchCount}</List.Item>
+              <List.Item>Remaining Items: {props.itemCount}</List.Item>
+            </List>
+          </Message.Content>
+        </Message>
+      </Card>
+    )
+  }
 }
 
-const WorkerStatusBox = (props) => {
-  return (
-    <Card>
-      <Message icon>
-        <Icon loading name="circle notched" />
-        <Message.Content>
-          <Message.Header hidden>Worker Progress</Message.Header>
-          <List>
-            <List.Item>Remaining Batches: {props.batchCount}</List.Item>
-            <List.Item>Remaining Items: {props.itemCount}</List.Item>
-          </List>
-        </Message.Content>
-      </Message>
-    </Card>
-  )
-}
-
+/*
 const Thing = (props) => {
   if (props.batchCount < 1) {
     console.log('SHOULD STOP IT NOW')
@@ -74,13 +77,14 @@ const Thing = (props) => {
     </Header>
   )
 }
+*/
 
 const MessageList = (props) => {
   return (
     <Card fluid>
       <List>
         {props.notes
-          //.sort((a, b) => (a.rk < b.rk ? 1 : -1))
+          .sort((a, b) => (a.rk < b.rk ? 1 : -1))
           .map((note) => (
             <MessageListItem key={note.rk} note={note} />
           ))}
@@ -108,7 +112,7 @@ const MessageListItem = (props) => {
   ) : (
     <Header as="h5">
       <code>
-        {lead} | {main | props.note.rk}
+        {lead} | {main}
       </code>
     </Header>
   )
@@ -140,25 +144,22 @@ const handleFakeMessage = async (job) => {
 */
 
 const JobBox = (props) => {
+  console.log('____________JobBox')
+  console.log(props)
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
-  const [batchDone, setBatchDone] = useState(true)
   const [batchCount, setBatchCount] = useState(0)
   const [itemCount, setItemCount] = useState(0)
-
-  const fetchNotes = async (id) => {
-    try {
-      const dbNotes = await API.graphql(
-        graphqlOperation(queries.listNotesByPKey, { id: id })
-      )
-      setNotes(dbNotes.data.listNotesByPKey)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const [currentJobId, setCurrentJobId] = useState(props.job.id)
 
   useEffect(() => {
-    fetchNotes(props.job.id)
+    const fetchNotes = async () => {
+      const dbNotes = await API.graphql(
+        graphqlOperation(queries.listNotesByPKey, { id: props.job.id })
+      )
+      setNotes(dbNotes.data.listNotesByPKey)
+    }
+    fetchNotes()
   }, [props.job.id])
 
   useEffect(() => {
@@ -167,79 +168,23 @@ const JobBox = (props) => {
     ).subscribe({
       next: (res) => {
         const createdNote = res.value.data.onCreateNote
+        setCurrentJobId(createdNote.id)
         if (createdNote.id === props.job.id) {
           setNotes((notes) => [...notes, createdNote])
         }
 
         const cargo = JSON.parse(createdNote.cargo)
         if (cargo.action && cargo.action === 'set_counts') {
-          setBatchDone(false)
           setBatchCount((batchCount) => (batchCount += cargo.batch_count))
           setItemCount((itemCount) => (itemCount += cargo.item_count))
         } else if (cargo.action && cargo.action === 'decrement') {
           setBatchCount((batchCount) => (batchCount -= 1))
           setItemCount((itemCount) => (itemCount -= cargo.item_count))
         }
-
-        /*
-        setBatchDone((batchDone) => {
-          const check = (batchCount) => {
-            return batchCount < 1 ? true : false
-          }
-          console.log('hello?')
-          return check(batchCount)
-        })
-        */
       }
     })
     return () => subscription.unsubscribe()
   }, [props.job.id])
-
-  /*
-          if (props.job.id === createdNote.id) {
-            const updatedNotes = notes.concat(createdNote)
-            setNotes(updatedNotes)
-
-            ////
-            const cargo = JSON.parse(createdNote.cargo)
-            console.log(cargo)
-
-            if (cargo.action && cargo.action === 'decrement') {
-              props.job.item_count -= cargo.item_count
-              props.job.batch_count -= 1
-              setCounters({
-                batches: props.job.batch_count,
-                items: props.job.item_count
-              })
-            } else if (cargo.action && cargo.action === 'set_counts') {
-              setBatchDone(false)
-
-              // initialize or increment counters (they aren't persisted)
-              if (props.job.batch_count) {
-                props.job.batch_count += cargo.batch_count
-              } else {
-                props.job.batch_count = cargo.batch_count
-              }
-
-              if (props.job.item_count) {
-                props.job.item_count += cargo.item_count
-              } else {
-                props.job.item_count = cargo.item_count
-              }
-
-              setCounters({
-                batches: props.job.batch_count,
-                items: props.job.item_count
-              })
-            }
-
-            if (props.job.batch_count < 1) {
-              setBatchDone(true)
-            }
-            ////
-          }
-          */
-  //}, [notes, props.job, batchDone, counters])
 
   return (
     <Segment>
@@ -252,6 +197,7 @@ const JobBox = (props) => {
               </List.Item>
               <List.Item>
                 <Label tag>{props.job.label}</Label>
+                <Label tag>asset count = {props.job.assets.length}</Label>
               </List.Item>
             </List>
           </Grid.Column>
@@ -293,25 +239,32 @@ const JobBox = (props) => {
         >
           <Grid.Row>
             <Grid.Column width={3}>
-              {batchDone ? (
-                <WorkerButtonBox
+              {batchCount < 1 ? (
+                <Header>
+                  {batchCount} no batches {props.job.id}
+                </Header>
+              ) : (
+                <Header>
+                  {batchCount} processing! {props.job.id}
+                </Header>
+              )}
+              {props.job.id === currentJobId ? (
+                <WorkerStatus
                   job={props.job}
                   setNotes={setNotes}
                   setBatchCount={setBatchCount}
                   setItemCount={setItemCount}
-                />
-              ) : (
-                <WorkerStatusBox
                   batchCount={batchCount}
                   itemCount={itemCount}
                 />
+              ) : (
+                <Header>nope</Header>
               )}
             </Grid.Column>
             <Grid.Column
               width={13}
-              style={{ maxHeight: 500, overflow: 'auto' }}
+              style={{ maxHeight: 200, overflow: 'auto' }}
             >
-              <Thing batchCount={batchCount} itemCount={itemCount} />
               <MessageList notes={notes} />
             </Grid.Column>
           </Grid.Row>

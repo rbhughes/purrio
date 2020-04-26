@@ -83,7 +83,10 @@ const deserializeJobs = (data) => {
 const handleJobCreate = async (data) => {
   try {
     const job = formJobToDB(data)
-    await API.graphql(graphqlOperation(mutations.createJob, { job: job }))
+    const x = await API.graphql(
+      graphqlOperation(mutations.createJob, { job: job })
+    )
+    return attachJobHandlers(x.data.updateJob)
   } catch (error) {
     console.error(error)
   }
@@ -92,7 +95,10 @@ const handleJobCreate = async (data) => {
 const handleJobUpdate = async (data) => {
   try {
     const job = formJobToDB(data)
-    await API.graphql(graphqlOperation(mutations.updateJob, { job: job }))
+    const x = await API.graphql(
+      graphqlOperation(mutations.updateJob, { job: job })
+    )
+    return attachJobHandlers(x.data.updateJob)
   } catch (error) {
     console.error(error)
   }
@@ -257,11 +263,13 @@ const attachJobHandlers = (job) => {
 }
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = (props) => {
+  console.log('JOBLIST props')
+  console.log(props)
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const fetcher = async (app) => {
+    const fetchJobs = async (app) => {
       setIsLoading(true)
 
       try {
@@ -274,108 +282,77 @@ const JobList = (props) => {
       }
       setIsLoading(false)
     }
-    fetcher(props.app)
+    fetchJobs(props.app)
   }, [props.app])
 
-  ////
-
-  /*
   useEffect(() => {
-    try {
-      const subscription = API.graphql(
-        graphqlOperation(subscriptions.onCreateNote)
-      ).subscribe({
-        next: (res) => {
-          console.log('_______INTERCEPTED_______')
-          //const note = JSON.parse(res.value.data.onCreateNote)
-          const note = res.value.data.onCreateNote
-          console.log(props)
-
-          console.log(jobs)
-          console.log('-------------------------')
-          //const thisJob = jobs.find((j) => j.id === note.id)
-          //console.log(thisJob)
-
-        },
-      })
-      return () => subscription.unsubscribe()
-    } catch (error) {
-      console.error(error)
-    }
-  }, [])
-  */
-  ////
-
-  useEffect(() => {
-    try {
-      const subscription = API.graphql(
-        graphqlOperation(subscriptions.onCreateJob)
-      ).subscribe({
-        next: (res) => {
-          const createdJob = res.value.data.onCreateJob
-          const job = deserializeJobs([createdJob]) // input is an array
-          const refresh = jobs.concat(job)
-          setJobs(refresh)
-        }
-      })
-      return () => subscription.unsubscribe()
-    } catch (error) {
-      console.error(error)
-    }
+    const subscription = API.graphql(
+      graphqlOperation(subscriptions.onCreateJob)
+    ).subscribe({
+      next: (res) => {
+        const createdJob = res.value.data.onCreateJob
+        const job = deserializeJobs([createdJob]) // input is an array
+        const refresh = jobs.concat(job)
+        setJobs(refresh)
+      }
+    })
+    return () => subscription.unsubscribe()
   })
 
   useEffect(() => {
-    try {
-      const subscription = API.graphql(
-        graphqlOperation(subscriptions.onUpdateJob)
-      ).subscribe({
-        next: (res) => {
-          const updatedJob = res.value.data.onUpdateJob
-          const job = deserializeJobs([updatedJob])[0]
+    const subscription = API.graphql(
+      graphqlOperation(subscriptions.onUpdateJob)
+    ).subscribe({
+      next: (res) => {
+        // job.id is based on "app + repo + label", so if any of those fields
+        // changed this should get processed as a Create, not an Update
 
-          let refresh = []
-          let idExists = jobs.map((j) => j.id).includes(job.id)
+        const updatedJob = res.value.data.onUpdateJob
+        const job = deserializeJobs([updatedJob])[0]
 
-          // job.id is based on "app + repo + label", so if any of those fields
-          // changed this should get processed as a Create, not Update
+        /*
+        // functional update, no relevant difference
+        setJobs((jobs) => {
+          const idExists = jobs.map((j) => j.id).includes(job.id)
           if (idExists) {
-            refresh = jobs.map((j) => {
+            const refresh = jobs.map((j) => {
               return j.id === job.id ? job : j
             })
+            return refresh
           } else {
-            refresh = jobs.concat([job])
+            return [...jobs, job]
           }
+        })
+        */
 
-          // TODO revisit this workaround
-          // mutation fires, KittyBox gets updated, React does not refresh
-          // this dumb "double-set" workaround suffices (tried async, etc.)
-          setJobs([])
+        let idExists = jobs.map((j) => j.id).includes(job.id)
+
+        if (idExists) {
+          const refresh = jobs.map((j) => {
+            return j.id === job.id ? job : j
+          })
           setJobs(refresh)
+        } else {
+          setJobs((jobs) => [...jobs, job])
         }
-      })
-      return () => subscription.unsubscribe()
-    } catch (error) {
-      console.error(error)
-    }
-  })
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [jobs])
 
   useEffect(() => {
-    try {
-      const subscription = API.graphql(
-        graphqlOperation(subscriptions.onDeleteJob)
-      ).subscribe({
-        next: (res) => {
-          const deletedJob = res.value.data.onDeleteJob
-          const refresh = jobs.filter(
-            (job) => job.id !== deletedJob.id && job.rk !== deletedJob.rk
-          )
-          setJobs(refresh)
-        }
-      })
-      return () => subscription.unsubscribe()
-    } catch (error) {
-      console.error(error)
-    }
+    const subscription = API.graphql(
+      graphqlOperation(subscriptions.onDeleteJob)
+    ).subscribe({
+      next: (res) => {
+        const deletedJob = res.value.data.onDeleteJob
+        const refresh = jobs.filter(
+          (job) => job.id !== deletedJob.id && job.rk !== deletedJob.rk
+        )
+        setJobs(refresh)
+      }
+    })
+    return () => subscription.unsubscribe()
   })
 
   return isLoading ? (

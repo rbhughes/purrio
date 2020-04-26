@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import {
   Button,
@@ -14,20 +14,25 @@ import { VendorContext } from './VendorContext'
 
 // TODO: form validation?
 const ModalJobForm = (props) => {
+  console.log('_________modalJobForm')
+  console.log(props)
+  const defaultValues = {
+    app: props.job.app,
+    aux: props.job.aux,
+    repo: props.job.repo,
+    label: props.job.label,
+    assets: props.job.assets
+  }
   const [visible, setVisible] = useState(false)
+  const [formDefaults, setFormDefaults] = useState(defaultValues)
 
   const assetList = useContext(AssetContext)
   const vendor = useContext(VendorContext)(props.job.app)
 
   const { control, register, handleSubmit, reset, setValue, watch } = useForm({
-    defaultValues: {
-      app: props.job.app,
-      aux: props.job.aux,
-      repo: props.job.repo,
-      label: props.job.label,
-      assets: props.job.assets
-    }
+    defaultValues: formDefaults
   })
+
   const watchRepo = watch('repo', props.repo)
 
   const { fields, append, remove } = useFieldArray({
@@ -35,13 +40,17 @@ const ModalJobForm = (props) => {
     name: 'assets'
   })
 
-  const onSubmit = (data) => {
+  useEffect(() => {
+    reset(formDefaults)
+  }, [formDefaults, reset])
+
+  const onSubmit = async (data) => {
+    setFormDefaults(data)
     if (props.job.id) {
-      props.job.handleJobUpdate(data)
+      await props.job.handleJobUpdate(data)
     } else {
-      props.job.handleJobCreate(data)
+      await props.job.handleJobCreate(data)
     }
-    reset()
     setVisible(!visible)
   }
 
@@ -164,7 +173,7 @@ const ModalJobForm = (props) => {
           <Button type="submit">Save</Button>
           <Button
             onClick={() => {
-              reset()
+              //reset()
               setVisible(!visible)
             }}
           >

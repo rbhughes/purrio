@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Loader, Divider } from 'semantic-ui-react'
+import { Loader, Label, Divider } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
 import JobBox from './JobBox'
 
@@ -263,8 +263,8 @@ const attachJobHandlers = (job) => {
 }
 ///////////////////////////////////////////////////////////////////////////////
 const JobList = (props) => {
-  console.log('JOBLIST props')
-  console.log(props)
+  //console.log('JOBLIST props')
+  //console.log(props)
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -359,6 +359,7 @@ const JobList = (props) => {
     <Loader active={true} size="massive" />
   ) : (
     <div>
+      <Label>hello</Label>
       {jobs.map((job) => (
         <JobBox key={job.id} job={job} />
       ))}

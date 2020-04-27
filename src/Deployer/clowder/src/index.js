@@ -6,13 +6,16 @@ import * as serviceWorker from './serviceWorker'
 
 import { AssetProvider } from './components/AssetContext'
 import { VendorProvider } from './components/VendorContext'
+import { WorkerProvider } from './components/WorkerContext'
 
 ReactDOM.render(
-  <VendorProvider>
-    <AssetProvider>
-      <App />
-    </AssetProvider>
-  </VendorProvider>,
+  <WorkerProvider>
+    <VendorProvider>
+      <AssetProvider>
+        <App />
+      </AssetProvider>
+    </VendorProvider>
+  </WorkerProvider>,
   document.getElementById('root')
 )
 

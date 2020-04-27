@@ -14,8 +14,8 @@ import { VendorContext } from './VendorContext'
 
 // TODO: form validation?
 const ModalJobForm = (props) => {
-  console.log('_________modalJobForm')
-  console.log(props)
+  //console.log('_________modalJobForm')
+  //console.log(props)
   const defaultValues = {
     app: props.job.app,
     aux: props.job.aux,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import {
   Button,
   Card,
@@ -17,51 +17,52 @@ import { API, graphqlOperation } from 'aws-amplify'
 import ModalJobForm from './ModalJobForm'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
+import { useStore } from './WorkerContext'
 
 const WorkerStatus = (props) => {
-  if (props.batchCount < 1) {
-    // workers are idle
-    return (
-      <Card fluid>
-        <Button
-          onClick={async (e) => {
-            await props.job.handleWorkerPing(e, props.job)
-          }}
-        >
-          ping a worker
-        </Button>
+  return (
+    <Card fluid>
+      <Button
+        onClick={async (e) => {
+          await props.job.handleWorkerPing(e, props.job)
+        }}
+      >
+        ping a worker
+      </Button>
 
-        <Button
-          onClick={async (e) => {
-            let deleted = await props.job.handleNotesDelete(e, props.job)
-            if (deleted) {
-              props.setNotes([])
-              props.setBatchCount(0)
-              props.setItemCount(0)
-            }
-          }}
-        >
-          clear messages
-        </Button>
-      </Card>
-    )
-  } else {
-    // workers are processing a job
-    return (
-      <Card>
-        <Message icon>
-          <Icon loading name="circle notched" />
-          <Message.Content>
-            <Message.Header hidden>Worker Progress</Message.Header>
-            <List>
-              <List.Item>Remaining Batches: {props.batchCount}</List.Item>
-              <List.Item>Remaining Items: {props.itemCount}</List.Item>
-            </List>
-          </Message.Content>
-        </Message>
-      </Card>
-    )
-  }
+      <Button
+        onClick={async (e) => {
+          let deleted = await props.job.handleNotesDelete(e, props.job)
+          if (deleted) {
+            props.setNotes([])
+            props.setBatchCount(0)
+            props.setItemCount(0)
+          }
+        }}
+      >
+        clear messages
+      </Button>
+    </Card>
+  )
+}
+
+const WorkerStatusSpinner = (props) => {
+  //if (props.batchCount > 0 || props.itemCount > 0) {
+  return (
+    <Message icon>
+      <Icon loading name="circle notched" />
+      <Message.Content>
+        <Message.Header hidden>Worker Progress</Message.Header>
+        <List>
+          <List.Item>Remaining Batches: {props.batchCount}</List.Item>
+          <List.Item>Remaining Items: {props.itemCount}</List.Item>
+        </List>
+      </Message.Content>
+    </Message>
+  )
+  //} else {
+  //  return null
+  //}
 }
 
 /*
@@ -144,13 +145,15 @@ const handleFakeMessage = async (job) => {
 */
 
 const JobBox = (props) => {
-  console.log('____________JobBox')
-  console.log(props)
+  //console.log('____________JobBox')
+  //console.log(props)
+
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
   const [batchCount, setBatchCount] = useState(0)
   const [itemCount, setItemCount] = useState(0)
-  const [currentJobId, setCurrentJobId] = useState(props.job.id)
+
+  const { state, dispatch } = useStore()
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -168,18 +171,37 @@ const JobBox = (props) => {
     ).subscribe({
       next: (res) => {
         const createdNote = res.value.data.onCreateNote
-        setCurrentJobId(createdNote.id)
+        //setCurrentJobId(createdNote.id)
         if (createdNote.id === props.job.id) {
           setNotes((notes) => [...notes, createdNote])
         }
 
         const cargo = JSON.parse(createdNote.cargo)
         if (cargo.action && cargo.action === 'set_counts') {
-          setBatchCount((batchCount) => (batchCount += cargo.batch_count))
-          setItemCount((itemCount) => (itemCount += cargo.item_count))
+          setBatchCount((batchCount) => {
+            batchCount += cargo.batch_count
+          })
+          setItemCount((itemCount) => {
+            itemCount += cargo.item_count
+          })
+
+          //props.job.cnt += cargo.item_count
+          //setCounts((counts) => {
+          //  counts[`${props.job.id}`]['batchCount'] += cargo.batch_count
+          //  counts[`${props.job.id}`]['itemCount'] += cargo.item_count
+          //})
         } else if (cargo.action && cargo.action === 'decrement') {
-          setBatchCount((batchCount) => (batchCount -= 1))
-          setItemCount((itemCount) => (itemCount -= cargo.item_count))
+          setBatchCount((batchCount) => {
+            batchCount -= 1
+          })
+          setItemCount((itemCount) => {
+            itemCount -= cargo.item_count
+          })
+          //props.job.cnt -= cargo.item_count
+          //setCounts((counts) => {
+          //  counts[`${props.job.id}`]['batchCount'] -= 1
+          //  counts[`${props.job.id}`]['itemCount'] -= cargo.item_count
+          //})
         }
       }
     })
@@ -196,8 +218,43 @@ const JobBox = (props) => {
                 <code>{props.job.repo}</code>
               </List.Item>
               <List.Item>
+                <div>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: 'increment',
+                        id: props.job.id,
+                        message: 'Incremented'
+                      })
+                    }
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: 'decrement',
+                        id: props.job.id,
+                        message: props.job.id
+                      })
+                    }
+                  >
+                    -
+                  </button>
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: 'reset',
+                        id: props.job.id,
+                        message: 'Reset'
+                      })
+                    }
+                  >
+                    Reset
+                  </button>
+                </div>
                 <Label tag>{props.job.label}</Label>
-                <Label tag>asset count = {props.job.assets.length}</Label>
+                <Label tag>assets={props.job.assets.length}</Label>
               </List.Item>
             </List>
           </Grid.Column>
@@ -239,27 +296,33 @@ const JobBox = (props) => {
         >
           <Grid.Row>
             <Grid.Column width={3}>
-              {batchCount < 1 ? (
-                <Header>
-                  {batchCount} no batches {props.job.id}
-                </Header>
-              ) : (
-                <Header>
-                  {batchCount} processing! {props.job.id}
-                </Header>
-              )}
-              {props.job.id === currentJobId ? (
-                <WorkerStatus
-                  job={props.job}
-                  setNotes={setNotes}
-                  setBatchCount={setBatchCount}
-                  setItemCount={setItemCount}
-                  batchCount={batchCount}
-                  itemCount={itemCount}
+              <Label>{batchCount}</Label>
+              <Label>{itemCount}</Label>
+
+              {/*
+              <Label>{counts[props.job.id].batchCount}</Label>
+              <Label>{counts[props.job.id].itemCount}</Label>
+              */}
+              {/*
+              {props.job.id === currentJobId && props.batchCount > 0 && (
+                <WorkerStatusSpinner
+                  batchCount={props.batchCount}
+                  itemCount={props.itemCount}
                 />
-              ) : (
-                <Header>nope</Header>
               )}
+              */}
+              <WorkerStatusSpinner
+                batchCount={batchCount}
+                itemCount={itemCount}
+              />
+              <WorkerStatus
+                job={props.job}
+                setNotes={setNotes}
+                setBatchCount={setBatchCount}
+                setItemCount={setItemCount}
+                batchCount={batchCount}
+                itemCount={itemCount}
+              />
             </Grid.Column>
             <Grid.Column
               width={13}

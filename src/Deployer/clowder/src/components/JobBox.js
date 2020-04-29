@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Button,
   Card,
@@ -19,6 +19,8 @@ import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
 import { useStore } from './WorkerContext'
 
+///////////////////////////////////
+
 const WorkerStatus = (props) => {
   return (
     <Card fluid>
@@ -35,8 +37,8 @@ const WorkerStatus = (props) => {
           let deleted = await props.job.handleNotesDelete(e, props.job)
           if (deleted) {
             props.setNotes([])
-            props.setBatchCount(0)
-            props.setItemCount(0)
+            //props.setBatchCount(0)
+            //props.setItemCount(0)
           }
         }}
       >
@@ -46,6 +48,7 @@ const WorkerStatus = (props) => {
   )
 }
 
+/*
 const WorkerStatusSpinner = (props) => {
   //if (props.batchCount > 0 || props.itemCount > 0) {
   return (
@@ -64,6 +67,7 @@ const WorkerStatusSpinner = (props) => {
   //  return null
   //}
 }
+*/
 
 /*
 const Thing = (props) => {
@@ -150,10 +154,11 @@ const JobBox = (props) => {
 
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
-  const [batchCount, setBatchCount] = useState(0)
-  const [itemCount, setItemCount] = useState(0)
+  //const [batchCount, setBatchCount] = useState(0)
+  //const [itemCount, setItemCount] = useState(0)
 
   const { state, dispatch } = useStore()
+  //const [state, dispatch] = React.useReducer(reducer, {})
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -171,42 +176,80 @@ const JobBox = (props) => {
     ).subscribe({
       next: (res) => {
         const createdNote = res.value.data.onCreateNote
-        //setCurrentJobId(createdNote.id)
-        if (createdNote.id === props.job.id) {
-          setNotes((notes) => [...notes, createdNote])
-        }
-
         const cargo = JSON.parse(createdNote.cargo)
-        if (cargo.action && cargo.action === 'set_counts') {
-          setBatchCount((batchCount) => {
-            batchCount += cargo.batch_count
-          })
-          setItemCount((itemCount) => {
-            itemCount += cargo.item_count
-          })
 
-          //props.job.cnt += cargo.item_count
-          //setCounts((counts) => {
-          //  counts[`${props.job.id}`]['batchCount'] += cargo.batch_count
-          //  counts[`${props.job.id}`]['itemCount'] += cargo.item_count
+        if (createdNote.id === props.job.id) {
+          //dispatch({
+          //  id: props.job.id,
+          //  type: 'message',
+          //  note: createdNote
           //})
-        } else if (cargo.action && cargo.action === 'decrement') {
-          setBatchCount((batchCount) => {
-            batchCount -= 1
-          })
-          setItemCount((itemCount) => {
-            itemCount -= cargo.item_count
-          })
-          //props.job.cnt -= cargo.item_count
-          //setCounts((counts) => {
-          //  counts[`${props.job.id}`]['batchCount'] -= 1
-          //  counts[`${props.job.id}`]['itemCount'] -= cargo.item_count
-          //})
+
+          setNotes((notes) => [...notes, createdNote])
+
+          if (cargo.action && cargo.action === 'set_counts') {
+            dispatch({
+              id: props.job.id,
+              type: 'increment',
+              batchCount: cargo.batch_count,
+              itemCount: cargo.item_count
+            })
+          } else if (cargo.action && cargo.action === 'decrement') {
+            dispatch({
+              id: props.job.id,
+              type: 'decrement',
+              batchCount: 1,
+              itemCount: cargo.item_count
+            })
+          }
         }
+
+        //setCurrentJobId(createdNote.id)
+        //setNotes((notes) => [...notes, createdNote])
+
+        //if (cargo.action && cargo.action === 'set_counts') {
+        //setBatchCount((batchCount) => {
+        //  batchCount += cargo.batch_count
+        //})
+        //setItemCount((itemCount) => {
+        //  itemCount += cargo.item_count
+        //  dispatch({
+        //    type: 'increment',
+        //    id: props.job.id,
+        //    message: 'Incremented',
+        //    itemCount: cargo.item_count
+        //  })
+        //})
+        //props.job.cnt += cargo.item_count
+        //setCounts((counts) => {
+        //  counts[`${props.job.id}`]['batchCount'] += cargo.batch_count
+        //  counts[`${props.job.id}`]['itemCount'] += cargo.item_count
+        //})
+        //} else if (cargo.action && cargo.action === 'decrement') {
+        //setBatchCount((batchCount) => {
+        //  batchCount -= 1
+        //})
+        //setItemCount((itemCount) => {
+        //  itemCount -= cargo.item_count
+        //dispatch({
+        //  type: 'decrement',
+        //  id: props.job.id,
+        //  message: 'Decremented',
+        //  itemCount: cargo.item_count
+        //})
+        //})
+        //props.job.cnt -= cargo.item_count
+        //setCounts((counts) => {
+        //  counts[`${props.job.id}`]['batchCount'] -= 1
+        //  counts[`${props.job.id}`]['itemCount'] -= cargo.item_count
+        //})
+        //}
+        //}
       }
     })
     return () => subscription.unsubscribe()
-  }, [props.job.id])
+    //}, [props.job.id, dispatch, state])
+  })
 
   return (
     <Segment>
@@ -218,41 +261,6 @@ const JobBox = (props) => {
                 <code>{props.job.repo}</code>
               </List.Item>
               <List.Item>
-                <div>
-                  <button
-                    onClick={() =>
-                      dispatch({
-                        type: 'increment',
-                        id: props.job.id,
-                        message: 'Incremented'
-                      })
-                    }
-                  >
-                    +
-                  </button>
-                  <button
-                    onClick={() =>
-                      dispatch({
-                        type: 'decrement',
-                        id: props.job.id,
-                        message: props.job.id
-                      })
-                    }
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() =>
-                      dispatch({
-                        type: 'reset',
-                        id: props.job.id,
-                        message: 'Reset'
-                      })
-                    }
-                  >
-                    Reset
-                  </button>
-                </div>
                 <Label tag>{props.job.label}</Label>
                 <Label tag>assets={props.job.assets.length}</Label>
               </List.Item>
@@ -296,8 +304,8 @@ const JobBox = (props) => {
         >
           <Grid.Row>
             <Grid.Column width={3}>
-              <Label>{batchCount}</Label>
-              <Label>{itemCount}</Label>
+              <Label>{'i was batchCount'}</Label>
+              <Label>{'i was itemCount'}</Label>
 
               {/*
               <Label>{counts[props.job.id].batchCount}</Label>
@@ -311,24 +319,46 @@ const JobBox = (props) => {
                 />
               )}
               */}
+              {/*
               <WorkerStatusSpinner
                 batchCount={batchCount}
                 itemCount={itemCount}
               />
+              */}
               <WorkerStatus
                 job={props.job}
                 setNotes={setNotes}
-                setBatchCount={setBatchCount}
-                setItemCount={setItemCount}
-                batchCount={batchCount}
-                itemCount={itemCount}
+                //setBatchCount={setBatchCount}
+                //setItemCount={setItemCount}
+                //batchCount={batchCount}
+                //itemCount={itemCount}
               />
             </Grid.Column>
             <Grid.Column
               width={13}
               style={{ maxHeight: 200, overflow: 'auto' }}
             >
+              {JSON.stringify(state)}
               <MessageList notes={notes} />
+              {/*
+              
+              <div>
+                {JSON.stringify(state)}
+                <button
+                  onClick={() =>
+                    dispatch({
+                      id: props.job.id,
+                      type: 'test',
+                      note: 'fakery thing',
+                      thing: 'I AM THING'
+                    })
+                  }
+                >
+                  SOMETHING
+                </button>
+                {JSON.stringify(state)}
+              </div>
+              */}
             </Grid.Column>
           </Grid.Row>
         </Transition>

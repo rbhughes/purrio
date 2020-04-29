@@ -37,8 +37,10 @@ const WorkerStatus = (props) => {
           let deleted = await props.job.handleNotesDelete(e, props.job)
           if (deleted) {
             props.setNotes([])
-            //props.setBatchCount(0)
-            //props.setItemCount(0)
+            props.dispatch({
+              id: props.job.id,
+              type: 'reset'
+            })
           }
         }}
       >
@@ -48,41 +50,30 @@ const WorkerStatus = (props) => {
   )
 }
 
-/*
 const WorkerStatusSpinner = (props) => {
-  //if (props.batchCount > 0 || props.itemCount > 0) {
+  let batchCount = 0
+  let itemCount = 0
+  if (props.state) {
+    batchCount = props.state.batchCount ? props.state.batchCount : 0
+    itemCount = props.state.itemCount ? props.state.itemCount : 0
+  }
+
   return (
     <Message icon>
-      <Icon loading name="circle notched" />
+      <Icon
+        className={batchCount + itemCount > 0 ? 'loading' : ''}
+        name="circle notched"
+      />
       <Message.Content>
         <Message.Header hidden>Worker Progress</Message.Header>
         <List>
-          <List.Item>Remaining Batches: {props.batchCount}</List.Item>
-          <List.Item>Remaining Items: {props.itemCount}</List.Item>
+          <List.Item>Remaining Batches: {batchCount}</List.Item>
+          <List.Item>Remaining Items: {itemCount}</List.Item>
         </List>
       </Message.Content>
     </Message>
   )
-  //} else {
-  //  return null
-  //}
 }
-*/
-
-/*
-const Thing = (props) => {
-  if (props.batchCount < 1) {
-    console.log('SHOULD STOP IT NOW')
-  } else {
-    console.log('SHOW DAT SPINNER')
-  }
-  return (
-    <Header>
-      batchCount={props.batchCount} itemCount={props.itemCount}
-    </Header>
-  )
-}
-*/
 
 const MessageList = (props) => {
   return (
@@ -154,11 +145,8 @@ const JobBox = (props) => {
 
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
-  //const [batchCount, setBatchCount] = useState(0)
-  //const [itemCount, setItemCount] = useState(0)
 
   const { state, dispatch } = useStore()
-  //const [state, dispatch] = React.useReducer(reducer, {})
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -176,16 +164,11 @@ const JobBox = (props) => {
     ).subscribe({
       next: (res) => {
         const createdNote = res.value.data.onCreateNote
-        const cargo = JSON.parse(createdNote.cargo)
 
         if (createdNote.id === props.job.id) {
-          //dispatch({
-          //  id: props.job.id,
-          //  type: 'message',
-          //  note: createdNote
-          //})
-
           setNotes((notes) => [...notes, createdNote])
+
+          const cargo = JSON.parse(createdNote.cargo)
 
           if (cargo.action && cargo.action === 'set_counts') {
             dispatch({
@@ -203,53 +186,10 @@ const JobBox = (props) => {
             })
           }
         }
-
-        //setCurrentJobId(createdNote.id)
-        //setNotes((notes) => [...notes, createdNote])
-
-        //if (cargo.action && cargo.action === 'set_counts') {
-        //setBatchCount((batchCount) => {
-        //  batchCount += cargo.batch_count
-        //})
-        //setItemCount((itemCount) => {
-        //  itemCount += cargo.item_count
-        //  dispatch({
-        //    type: 'increment',
-        //    id: props.job.id,
-        //    message: 'Incremented',
-        //    itemCount: cargo.item_count
-        //  })
-        //})
-        //props.job.cnt += cargo.item_count
-        //setCounts((counts) => {
-        //  counts[`${props.job.id}`]['batchCount'] += cargo.batch_count
-        //  counts[`${props.job.id}`]['itemCount'] += cargo.item_count
-        //})
-        //} else if (cargo.action && cargo.action === 'decrement') {
-        //setBatchCount((batchCount) => {
-        //  batchCount -= 1
-        //})
-        //setItemCount((itemCount) => {
-        //  itemCount -= cargo.item_count
-        //dispatch({
-        //  type: 'decrement',
-        //  id: props.job.id,
-        //  message: 'Decremented',
-        //  itemCount: cargo.item_count
-        //})
-        //})
-        //props.job.cnt -= cargo.item_count
-        //setCounts((counts) => {
-        //  counts[`${props.job.id}`]['batchCount'] -= 1
-        //  counts[`${props.job.id}`]['itemCount'] -= cargo.item_count
-        //})
-        //}
-        //}
       }
     })
     return () => subscription.unsubscribe()
-    //}, [props.job.id, dispatch, state])
-  })
+  }, [props.job.id, dispatch])
 
   return (
     <Segment>
@@ -304,30 +244,11 @@ const JobBox = (props) => {
         >
           <Grid.Row>
             <Grid.Column width={3}>
-              <Label>{'i was batchCount'}</Label>
-              <Label>{'i was itemCount'}</Label>
-
-              {/*
-              <Label>{counts[props.job.id].batchCount}</Label>
-              <Label>{counts[props.job.id].itemCount}</Label>
-              */}
-              {/*
-              {props.job.id === currentJobId && props.batchCount > 0 && (
-                <WorkerStatusSpinner
-                  batchCount={props.batchCount}
-                  itemCount={props.itemCount}
-                />
-              )}
-              */}
-              {/*
-              <WorkerStatusSpinner
-                batchCount={batchCount}
-                itemCount={itemCount}
-              />
-              */}
+              <WorkerStatusSpinner state={state[props.job.id]} />
               <WorkerStatus
                 job={props.job}
                 setNotes={setNotes}
+                dispatch={dispatch}
                 //setBatchCount={setBatchCount}
                 //setItemCount={setItemCount}
                 //batchCount={batchCount}
@@ -338,27 +259,7 @@ const JobBox = (props) => {
               width={13}
               style={{ maxHeight: 200, overflow: 'auto' }}
             >
-              {JSON.stringify(state)}
               <MessageList notes={notes} />
-              {/*
-              
-              <div>
-                {JSON.stringify(state)}
-                <button
-                  onClick={() =>
-                    dispatch({
-                      id: props.job.id,
-                      type: 'test',
-                      note: 'fakery thing',
-                      thing: 'I AM THING'
-                    })
-                  }
-                >
-                  SOMETHING
-                </button>
-                {JSON.stringify(state)}
-              </div>
-              */}
             </Grid.Column>
           </Grid.Row>
         </Transition>

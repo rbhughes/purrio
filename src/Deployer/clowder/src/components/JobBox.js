@@ -17,24 +17,24 @@ import { API, graphqlOperation } from 'aws-amplify'
 import ModalJobForm from './ModalJobForm'
 import * as queries from '../graphql/queries'
 import * as subscriptions from '../graphql/subscriptions'
-import { useStore } from './WorkerContext'
+import { WorkerStore } from './WorkerContext'
 
-///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 const WorkerStatus = (props) => {
   return (
     <Card fluid>
       <Button
-        onClick={async (e) => {
-          await props.job.handleWorkerPing(e, props.job)
+        onClick={async (event) => {
+          await props.job.handleWorkerPing(event, props.job)
         }}
       >
         ping a worker
       </Button>
 
       <Button
-        onClick={async (e) => {
-          let deleted = await props.job.handleNotesDelete(e, props.job)
+        onClick={async (event) => {
+          let deleted = await props.job.handleNotesDelete(event, props.job)
           if (deleted) {
             props.setNotes([])
             props.dispatch({
@@ -65,7 +65,7 @@ const WorkerStatusSpinner = (props) => {
         name="circle notched"
       />
       <Message.Content>
-        <Message.Header hidden>Worker Progress</Message.Header>
+        <Message.Header>Worker Progress</Message.Header>
         <List>
           <List.Item>Remaining Batches: {batchCount}</List.Item>
           <List.Item>Remaining Items: {itemCount}</List.Item>
@@ -139,14 +139,12 @@ const handleFakeMessage = async (job) => {
 }
 */
 
-const JobBox = (props) => {
-  //console.log('____________JobBox')
-  //console.log(props)
+////////////////////////////////////////////////////////////////////////////////
 
+const JobBox = (props) => {
   const [notes, setNotes] = useState([])
   const [visible, setVisible] = useState(false)
-
-  const { state, dispatch } = useStore()
+  const { state, dispatch } = WorkerStore()
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -167,29 +165,11 @@ const JobBox = (props) => {
 
         if (createdNote.id === props.job.id) {
           setNotes((notes) => [...notes, createdNote])
-
-          const cargo = JSON.parse(createdNote.cargo)
-
-          if (cargo.action && cargo.action === 'set_counts') {
-            dispatch({
-              id: props.job.id,
-              type: 'increment',
-              batchCount: cargo.batch_count,
-              itemCount: cargo.item_count
-            })
-          } else if (cargo.action && cargo.action === 'decrement') {
-            dispatch({
-              id: props.job.id,
-              type: 'decrement',
-              batchCount: 1,
-              itemCount: cargo.item_count
-            })
-          }
         }
       }
     })
     return () => subscription.unsubscribe()
-  }, [props.job.id, dispatch])
+  }, [props.job.id])
 
   return (
     <Segment>
@@ -202,7 +182,6 @@ const JobBox = (props) => {
               </List.Item>
               <List.Item>
                 <Label tag>{props.job.label}</Label>
-                <Label tag>assets={props.job.assets.length}</Label>
               </List.Item>
             </List>
           </Grid.Column>
@@ -249,10 +228,6 @@ const JobBox = (props) => {
                 job={props.job}
                 setNotes={setNotes}
                 dispatch={dispatch}
-                //setBatchCount={setBatchCount}
-                //setItemCount={setItemCount}
-                //batchCount={batchCount}
-                //itemCount={itemCount}
               />
             </Grid.Column>
             <Grid.Column

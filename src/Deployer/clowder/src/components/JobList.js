@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Loader, Label, Divider } from 'semantic-ui-react'
+import { Loader, Divider } from 'semantic-ui-react'
 import { API, graphqlOperation } from 'aws-amplify'
 import JobBox from './JobBox'
-
 import ModalJobForm from './ModalJobForm'
 import * as mutations from '../graphql/mutations'
 import * as queries from '../graphql/queries'
@@ -10,10 +9,11 @@ import * as subscriptions from '../graphql/subscriptions'
 import { Auth } from 'aws-amplify'
 import Lambda from 'aws-sdk/clients/lambda'
 import pcfg from '../purr-cfg'
-
+import { WorkerStore } from './WorkerContext'
 const utility = require('../utility')
 
-/////
+////////////////////////////////////////////////////////////////////////////////
+
 const getCredentials = async (event) => {
   const currCred = await Auth.currentCredentials()
   const cred = Auth.essentialCredentials(currCred)
@@ -38,8 +38,6 @@ const lambdaInvoke = async (event) => {
     console.error(error)
   }
 }
-
-/////
 
 const loadingSpin = (event, spin) => {
   event.preventDefault()
@@ -196,13 +194,12 @@ const handleEnqueue = async (event, job) => {
       })
       //console.log(assetQ)
 
-      // a: attributes of this SQS message for future use (?)
+      // a: attributes of this SQS message (usage tbd)
       // r: routing info for worker
       // f: lambda function names so that the worker needn't look them up
       // m: metadata about the job
       // q: stuff involving queries worker will use
 
-      //let resEnqueue = await lambdaInvoke({
       await lambdaInvoke({
         cred: cred,
         name: enqueueLambda,
@@ -231,7 +228,6 @@ const handleEnqueue = async (event, job) => {
           q_conn: conn
         }
       })
-      //console.log(resEnqueue)
     }
 
     loadingSpin(event, false)
@@ -261,12 +257,14 @@ const attachJobHandlers = (job) => {
   }
   return Object.assign(job, handlers)
 }
-///////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+
 const JobList = (props) => {
-  //console.log('JOBLIST props')
-  //console.log(props)
   const [jobs, setJobs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const { dispatch } = WorkerStore()
 
   useEffect(() => {
     const fetchJobs = async (app) => {
@@ -311,7 +309,7 @@ const JobList = (props) => {
         const job = deserializeJobs([updatedJob])[0]
 
         /*
-        // functional update, no relevant difference
+        // functional update has no relevant difference
         setJobs((jobs) => {
           const idExists = jobs.map((j) => j.id).includes(job.id)
           if (idExists) {
@@ -355,11 +353,37 @@ const JobList = (props) => {
     return () => subscription.unsubscribe()
   })
 
+  useEffect(() => {
+    const subscription = API.graphql(
+      graphqlOperation(subscriptions.onCreateNote)
+    ).subscribe({
+      next: (res) => {
+        const createdNote = res.value.data.onCreateNote
+        const cargo = JSON.parse(createdNote.cargo)
+        if (cargo.action && cargo.action === 'set_counts') {
+          dispatch({
+            id: createdNote.id,
+            type: 'increment',
+            batchCount: cargo.batch_count,
+            itemCount: cargo.item_count
+          })
+        } else if (cargo.action && cargo.action === 'decrement') {
+          dispatch({
+            id: createdNote.id,
+            type: 'decrement',
+            batchCount: 1,
+            itemCount: cargo.item_count
+          })
+        }
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [dispatch])
+
   return isLoading ? (
     <Loader active={true} size="massive" />
   ) : (
     <div>
-      <Label>hello</Label>
       {jobs.map((job) => (
         <JobBox key={job.id} job={job} />
       ))}

@@ -50,4 +50,17 @@ export const WorkerProvider = ({ children }) => {
   )
 }
 
-export const useStore = () => useContext(WorkerContext)
+export const WorkerStore = () => useContext(WorkerContext)
+
+
+/*
+export const loadingSpin = (event, spin) => {
+  event.preventDefault()
+  event.persist()
+  if (spin) {
+    event.target.className += ' loading'
+  } else {
+    event.target.className = event.target.className.replace(/ loading/g, '')
+  }
+}
+*/

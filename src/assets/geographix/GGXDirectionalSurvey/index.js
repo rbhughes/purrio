@@ -43,7 +43,6 @@ const counter = (where) => {
 const selector = (where) => {
   const select =
     `SELECT ` +
-    `a.uwi AS filter, ` +
     `a.uwi, ` +
     `a.source, ` +
     `a.survey_id, ` +

@@ -44,74 +44,77 @@ const counter = (where) => {
   return sql
 }
 
-const selector = () => {
-  `SELECT ` +
-  `a.uwi, ` +
-  `a.uwi AS filter, ` +
-  `a.geologic_province AS area, ` +
-  `a.assigned_field, ` +
-  `a.current_class AS class, ` +
-  `a.common_well_name, ` + 
-  `a.completion_date, ` +
-  `a.country, ` +
-  `a.county, ` +
-  `a.row_changed_date AS data_date, ` +
-  `a.district, ` +
-  `a.depth_datum_elev AS datum_elevation, ` +
-  `a.depth_datum AS datum_reference, ` +
-  `a.td_form AS formation_at_td, ` +
-  `a.ground_elev AS ground_elevation, ` +
-  `a.gx_alternate_id, ` +
-  `a.gx_old_id, ` +
-  `a.gx_user1, ` +
-  `a.gx_user2, ` +
-  `a.gx_user_date, ` +
-  `a.ggx_internal_status AS internal_status, ` +
-  `(CASE (SELECT COUNT(station_md) ` + 
-  `  FROM well_dir_srvy_station WHERE uwi = a.uwi) ` + 
-  `  WHEN 0 THEN 0 ELSE 1 END) AS is_deviated, ` +
-  `a.gx_proposed_flag AS is_proposed, ` +
-  `a.surface_latitude AS latitude, ` +
-  `a.lease_name, ` +
-  `(SELECT remark FROM legal_congress_loc WHERE a.uwi = uwi ` +
-  `  AND a.legal_survey_type = location_type) AS location_congress, ` +
-  `(SELECT remark FROM legal_dls_loc WHERE a.uwi = uwi ` + 
-  `  AND a.legal_survey_type = location_type) AS location_dls, ` +
-  `(SELECT remark FROM legal_ne_loc WHERE a.uwi = uwi ` + 
-  `  AND a.legal_survey_type = location_type) AS location_ne, ` +
-  `(SELECT remark FROM legal_offshore_loc WHERE a.uwi = uwi ` + 
-  `  AND a.legal_survey_type = location_type) AS location_offshore, ` +
-  `(SELECT remark FROM legal_texas_loc WHERE a.uwi = uwi ` + 
-  `  AND a.legal_survey_type = location_type) AS location_texas, ` +
-  `a.surface_longitude AS longitude, ` +
-  `a.operator, ` +
-  `a.original_operator, ` +
-  `a.parent_relationship_type AS parent_type, ` +
-  `a.gx_permit_date AS permit_date, ` +
-  `a.well_govt_id AS permit_number, ` +
-  `a.platform_id, ` +
-  `a.plugback_depth, ` +
-  `a.province_state, ` +
-  `(SELECT COUNT(log_section_name) FROM log_image_reg_log_section ` +
-  `  WHERE well_id = a.uwi) AS raster_logs, ` +
-  `a.spud_date, ` +
-  `a.current_status AS status, ` +
-  `a.final_td AS total_depth, ` +
-  `a.gx_location_string as township_range_section, ` +
-  `(SELECT COUNT(curvename) FROM gx_well_curve ` +
-  `  WHERE wellid = a.uwi) AS vector_logs, ` +
-  `a.water_depth, ` +
-  `a.water_depth_datum, ` +
-  `a.well_name, ` +
-  `a.well_number, ` +
-  `a.gx_wsn AS wsn ` +
-  `FROM well a` +
+const selector = (where) => {
+  const select =
+    `SELECT ` +
+    `a.uwi, ` +
+    `a.geologic_province AS area, ` +
+    `a.assigned_field, ` +
+    `a.current_class AS class, ` +
+    `a.common_well_name, ` +
+    `a.completion_date, ` +
+    `a.country, ` +
+    `a.county, ` +
+    `a.row_changed_date AS data_date, ` +
+    `a.district, ` +
+    `a.depth_datum_elev AS datum_elevation, ` +
+    `a.depth_datum AS datum_reference, ` +
+    `a.td_form AS formation_at_td, ` +
+    `a.ground_elev AS ground_elevation, ` +
+    `a.gx_alternate_id, ` +
+    `a.gx_old_id, ` +
+    `a.gx_user1, ` +
+    `a.gx_user2, ` +
+    `a.gx_user_date, ` +
+    `a.ggx_internal_status AS internal_status, ` +
+    `(CASE (SELECT COUNT(station_md) ` +
+    `  FROM well_dir_srvy_station WHERE uwi = a.uwi) ` +
+    `  WHEN 0 THEN 0 ELSE 1 END) AS is_deviated, ` +
+    `a.gx_proposed_flag AS is_proposed, ` +
+    `a.surface_latitude AS latitude, ` +
+    `a.lease_name, ` +
+    `(SELECT remark FROM legal_congress_loc WHERE a.uwi = uwi ` +
+    `  AND a.legal_survey_type = location_type) AS location_congress, ` +
+    `(SELECT remark FROM legal_dls_loc WHERE a.uwi = uwi ` +
+    `  AND a.legal_survey_type = location_type) AS location_dls, ` +
+    `(SELECT remark FROM legal_ne_loc WHERE a.uwi = uwi ` +
+    `  AND a.legal_survey_type = location_type) AS location_ne, ` +
+    `(SELECT remark FROM legal_offshore_loc WHERE a.uwi = uwi ` +
+    `  AND a.legal_survey_type = location_type) AS location_offshore, ` +
+    `(SELECT remark FROM legal_texas_loc WHERE a.uwi = uwi ` +
+    `  AND a.legal_survey_type = location_type) AS location_texas, ` +
+    `a.surface_longitude AS longitude, ` +
+    `a.operator, ` +
+    `a.original_operator, ` +
+    `a.parent_relationship_type AS parent_type, ` +
+    `a.gx_permit_date AS permit_date, ` +
+    `a.well_govt_id AS permit_number, ` +
+    `a.platform_id, ` +
+    `a.plugback_depth, ` +
+    `a.province_state, ` +
+    `(SELECT COUNT(log_section_name) FROM log_image_reg_log_section ` +
+    `  WHERE well_id = a.uwi) AS raster_logs, ` +
+    `a.spud_date, ` +
+    `a.current_status AS status, ` +
+    `a.final_td AS total_depth, ` +
+    `a.gx_location_string as township_range_section, ` +
+    `(SELECT COUNT(curvename) FROM gx_well_curve ` +
+    `  WHERE wellid = a.uwi) AS vector_logs, ` +
+    `a.water_depth, ` +
+    `a.water_depth_datum, ` +
+    `a.well_name, ` +
+    `a.well_number, ` +
+    `a.gx_wsn AS wsn ` +
+    `FROM well a`
+
+  const order = 'ORDER BY a.uwi'
+
+  return { select: select, where: where, order: order }
 }
 
 const steps = () => {
   return [{ query: 'selector' }, { publish: 'stdout' }]
 }
-
 
 exports.handler = async (event, context) => {
   const chunk = event.q_chunk ? event.q_chunk : CHUNK

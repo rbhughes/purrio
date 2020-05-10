@@ -190,9 +190,8 @@ const handleEnqueue = async (event, job) => {
       let assetQ = await lambdaInvoke({
         cred: cred,
         name: assetLambda,
-        args: { q_filter: o.filter }
+        args: { q_filter: o.filter, q_chunk: o.chunk }
       })
-      //console.log(assetQ)
 
       // a: attributes of this SQS message (usage tbd)
       // r: routing info for worker
@@ -228,6 +227,7 @@ const handleEnqueue = async (event, job) => {
           q_conn: conn
         }
       })
+      //console.log(x)
     }
 
     loadingSpin(event, false)

@@ -7,24 +7,34 @@ const AWS = require('aws-sdk')
 const glob = require('glob')
 
 const s3 = new AWS.S3()
-exports.handler = async message => {
+exports.handler = async (message) => {
   console.log(message)
   try {
     const tmpDir = `/tmp/clowder${process.pid}`
+    //console.log(process.env.BUCKET_NAME)
+    //console.log(tmpDir)
 
     const npm = 'npm'
+    //await spawnPromise('uname', ['-a'])
+    //await spawnPromise('ls', ['-la', '/tmp'])
+    //await spawnPromise('df', ['-k'])
+    //await spawnPromise('df', ['-ih'])
     await spawnPromise('rm', ['-rf', tmpDir])
-    await spawnPromise('cp', ['-R', 'clowder/', tmpDir])
+    await spawnPromise('cp', ['-R', 'clowder/build/', tmpDir])
+    //await spawnPromise('ls', ['-la', '/tmp'])
+
+    /*
     await spawnPromise(
       npm,
       [
         '--production',
         '--no-progress',
-        '--loglevel=error',
+        '--loglevel=verbose',
         '--cache',
         path.join('/tmp', 'npm'),
         '--userconfig',
         path.join('/tmp', 'npmrc'),
+        //'ci'
         'install'
       ],
       { cwd: tmpDir }
@@ -44,8 +54,9 @@ exports.handler = async message => {
       ],
       { cwd: tmpDir }
     )
+    */
 
-    // delete pre-existing bucket contents
+    ////////// delete pre-existing bucket contents /////////////////////////////
     let bucketItems = await s3
       .listObjects({ Bucket: process.env.BUCKET_NAME })
       .promise()
@@ -61,11 +72,15 @@ exports.handler = async message => {
       console.log(deletedBucketItems)
     }
 
-    const builtPaths = glob.sync(`${tmpDir}/build/**/*`)
+    ////////// assign mimeTypes and copy all built files to bucket /////////////
+
+    //const builtPaths = glob.sync(`${tmpDir}/build/**/*`)
+    const builtPaths = glob.sync(`${tmpDir}/**/*`)
+
     console.log(builtPaths)
 
     const uploads = []
-    builtPaths.forEach(async path => {
+    builtPaths.forEach(async (path) => {
       if (!fs.lstatSync(path).isFile()) {
         return
       }
@@ -82,7 +97,8 @@ exports.handler = async message => {
       // TODO: revisit promisified fs.readFile maybe?
       //const fileHandle = await readFile(path)
       const fileHandle = fs.readFileSync(path)
-      const key = path.replace(`${tmpDir}/build/`, '')
+      //const key = path.replace(`${tmpDir}/build/`, '')
+      const key = path.replace(`${tmpDir}/`, '')
 
       const params = {
         ACL: 'public-read',

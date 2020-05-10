@@ -5,7 +5,7 @@ const lambdaInvoke = async (event) => {
   const lamb = new Lambda(cred)
   let params = {
     FunctionName: name,
-    Payload: JSON.stringify(args),
+    Payload: JSON.stringify(args)
   }
   try {
     let res = await lamb.invoke(params).promise()
@@ -56,8 +56,8 @@ const enqueueCollectors = async (event) => {
   if (event.r_target === 'database') {
     const batches = batchSelector({
       count: event.q_count,
-      chunk: event.q_chunk,
-      selector: event.q_selector,
+      chunk: parseInt(event.q_chunk),
+      selector: event.q_selector
     })
 
     delete event.f_batcher
@@ -75,7 +75,7 @@ const enqueueCollectors = async (event) => {
       let qj = await lambdaInvoke({
         cred: event.cred,
         name: event.f_enqueue,
-        args: event,
+        args: event
       })
       results.push(qj)
     }
@@ -89,8 +89,6 @@ exports.handler = async (event, context) => {
   try {
     let results = await enqueueCollectors(event)
     return results
-
-    //return { event: event, results: results }
   } catch (error) {
     return error
   }

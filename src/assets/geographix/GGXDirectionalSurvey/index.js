@@ -1,18 +1,10 @@
 const WHERE_FIELDS = ['a.uwi']
-const CHUNK = 25
+const CHUNK = 1000
 
 const sanitize = (s) => {
   return s.replace(/[^-a-z0-9%_\-]+/gi, '')
 }
 
-// And but so...the node sqlanywhere driver allegedly supports stored procedures
-// but no other functions to sanitize strings for parameterized statements.
-// It makes no sense to create a stored procedure for a one-off query, so we
-// severely sanitize the input string to prevent injection attacks.
-//
-// return empty string if no filter
-// if any wildcards exist in the filter string, use LIKE or '=' as needed
-// if no wildcards, use IN
 const sanitizedWhereClause = (filter) => {
   const a = []
 
@@ -51,7 +43,7 @@ const counter = (where) => {
 const selector = (where) => {
   const select =
     `SELECT ` +
-    `a.uwi as filter, ` +
+    `a.uwi AS filter, ` +
     `a.uwi, ` +
     `a.source, ` +
     `a.survey_id, ` +
@@ -88,11 +80,11 @@ const selector = (where) => {
 }
 
 exports.handler = async (event, context) => {
-  const { chunk = CHUNK } = event
+  const chunk = event.q_chunk ? event.q_chunk : CHUNK
   const where = sanitizedWhereClause(event.q_filter)
   return {
-    chunk: chunk,
+    chunk: parseInt(chunk),
     counter: counter(where),
-    selector: selector(where),
+    selector: selector(where)
   }
 }

@@ -12,7 +12,7 @@ import {
 import { AssetContext } from './AssetContext'
 import { VendorContext } from './VendorContext'
 
-// TODO: form validation?
+// TODO: form validation--particularly or chunk <1?
 const ModalJobForm = (props) => {
   //console.log('_________modalJobForm')
   //console.log(props)
@@ -114,7 +114,7 @@ const ModalJobForm = (props) => {
             return (
               <Container key={field.id} fluid>
                 <Form.Group widths="equal">
-                  <Form.Field>
+                  <Form.Field width={3}>
                     {index === 0 && <label>asset</label>}
                     <select
                       name={`assets[${index}].asset`}
@@ -126,7 +126,8 @@ const ModalJobForm = (props) => {
                       })}
                     </select>
                   </Form.Field>
-                  <Form.Field>
+
+                  <Form.Field width={4}>
                     {index === 0 && (
                       <>
                         <Popup trigger={<label>filter</label>} wide="very">
@@ -143,7 +144,23 @@ const ModalJobForm = (props) => {
                     />
                   </Form.Field>
 
-                  <Form.Field>
+                  <Form.Field width={1}>
+                    {index === 0 && (
+                      <>
+                        <Popup trigger={<label>chunk</label>} wide="very">
+                          something about chunk size
+                        </Popup>
+                      </>
+                    )}
+                    <input
+                      placeholder={'chunk size'}
+                      name={`assets[${index}].chunk`}
+                      ref={register({})}
+                      defaultValue={field.chunk}
+                    />
+                  </Form.Field>
+
+                  <Form.Field width={3}>
                     {index === 0 && <label>&nbsp;</label>}
                     <Button
                       type="button"

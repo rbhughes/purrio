@@ -2,12 +2,12 @@
   "name": "function",
   "version": "1.0.0",
   "devDependencies": {
-    "aws-sdk": "^2.600.0"
+    "aws-sdk": "^2.668.0"
   },
   "dependencies": {
-    "cfn-custom-resource": "^5.0.0",
+    "cfn-custom-resource": "^5.0.6",
     "glob": "^7.1.6",
-    "mime-types": "^2.1.26",
+    "mime-types": "^2.1.27",
     "npm": "^6.14.4"
   }
 }

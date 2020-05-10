@@ -1,138 +1,124 @@
-const counter = () => {
-  return 'SELECT COUNT(*) as count FROM well;'
+const WHERE_FIELDS = ['a.uwi']
+const CHUNK = 1000
+
+const sanitize = (s) => {
+  return s.replace(/[^-a-z0-9%_\-]+/gi, '')
+}
+
+// And but so...the node sqlanywhere driver allegedly supports stored procedures
+// but no other functions to sanitize strings for parameterized statements.
+// It makes no sense to create a stored procedure for a one-off query, so we
+// severely sanitize the input string to prevent injection attacks.
+//
+// return empty string if no filter
+// if any wildcards exist in the filter string, use LIKE or '=' as needed
+// if no wildcards, use IN
+const sanitizedWhereClause = (filter) => {
+  const a = []
+
+  if (filter.trim().length === 0) {
+    return ''
+  }
+  const split = filter.split(',').map((s) => s.trim())
+
+  if (filter.match(/\%|\*/)) {
+    for (const s of split) {
+      const token = sanitize(s.replace(/\*/g, '%'))
+      let x = token.match(/\%/)
+        ? WHERE_FIELDS.map((f) => `${f} LIKE '${token}'`).join(' OR ')
+        : WHERE_FIELDS.map((f) => `${f} = '${token}'`).join(' OR ')
+      a.push(x)
+    }
+  } else {
+    const tokens = split.map((s) => `'${sanitize(s)}'`)
+    for (const f of WHERE_FIELDS) {
+      let x = `${f} IN (${tokens.join(', ')})`
+      a.push(x)
+    }
+  }
+  return `WHERE ${a.join(' OR ')}`
+}
+
+const counter = (where) => {
+  const sql = `SELECT COUNT(DISTINCT(a.uwi)) AS count FROM well a ` + `${where}`
+  return sql
 }
 
 const selector = () => {
-  return 'SELECT * FROM well ORDER BY uwi;'
-
-  /*
-  const sql =
-    'SELECT \
-    uwi,\
-    primary_source,\
-    well_govt_id,\
-    well_name,\
-    well_number,\
-    legal_survey_type,\
-    surface_node_id,\
-    base_node_id,\
-    surface_latitude,\
-    surface_longitude,\
-    surface_longitude,\
-    bottom_hole_latitude,\
-    bottom_hole_longitude,\
-    geodetic_datum_id,\
-    parent_uwi,\
-    parent_relationship_type,\
-    well_intersect_md,\
-    operator,\
-    td_form,\
-    gx_td_form_alias,\
-    td_form_age,\
-    oldest_form,\
-    gx_oldest_form_alias,\
-    oldest_form_age,\
-    initial_class,\
-    current_class,\
-    current_status,\
-    current_status_date,\
-    profile_type,\
-    final_td,\
-    drill_td,\
-    log_td,\
-    max_tvd,\
-    plugback_depth,\
-    whipstock_depth,\
-    spud_date,\
-    rig_release_date,\
-    final_drill_date,\
-    completion_date,\
-    abandonment_date,\
-    assigned_field,\
-    lease_number,\
-    lease_name,\
-    geologic_province,\
-    geographic_region,\
-    regulatory_agency,\
-    district,\
-    county,\
-    province_state,\
-    country,\
-    depth_datum,\
-    depth_datum_elev,\
-    kb_elev,\
-    ground_elev,\
-    plot_symbol,\
-    casing_flange_elev,\
-    ground_elev_type,\
-    water_depth,\
-    water_depth_datum,\
-    platform_id,\
-    platform_source,\
-    plot_name,\
-    discovery_ind,\
-    faulted_ind,\
-    confidential_type,\
-    confidential_date,\
-    confidential_depth,\
-    confidential_form,\
-    source_document,\
-    tax_credit_code,\
-    net_pay,\
-    net_pay_ouom,\
-    whipstock_depth_ouom,\
-    water_depth_ouom,\
-    max_tvd_ouom,\
-    depth_datum_elev_ouom,\
-    plugback_depth_ouom,\
-    kb_elev_ouom,\
-    ground_elev_ouom,\
-    drill_td_ouom,\
-    confidential_depth_ouom,\
-    casing_flange_elev_ouom,\
-    log_td_ouom,\
-    final_td_ouom,\
-    gx_formid,\
-    gx_formid_alias,\
-    gx_alternate_id,\
-    gx_old_id,\
-    gx_user1,\
-    gx_user2,\
-    gx_original_units,\
-    gx_bottom_hole_y_offset,\
-    gx_bottom_hole_ns_direction,\
-    gx_bottom_hole_x_offset,\
-    gx_bottom_hole_ew_direction,\
-    gx_bottom_hole_tvd,\
-    gx_rigfloor_elev,\
-    gx_permit_date,\
-    gx_user_date,\
-    gx_location_string,\
-    gx_legal_string,\
-    gx_remarks,\
-    gx_dev_well_blob,\
-    row_changed_date,\
-    gx_mag_declination,\
-    gx_percent_allocation,\
-    common_well_name,\
-    original_operator,\
-    ggx_internal_status,\
-    gx_wsn,\
-    gx_proposed_flag\
-    FROM well;'
-    */
+  `SELECT ` +
+  `a.uwi, ` +
+  `a.uwi AS filter, ` +
+  `a.geologic_province AS area, ` +
+  `a.assigned_field, ` +
+  `a.current_class AS class, ` +
+  `a.common_well_name, ` + 
+  `a.completion_date, ` +
+  `a.country, ` +
+  `a.county, ` +
+  `a.row_changed_date AS data_date, ` +
+  `a.district, ` +
+  `a.depth_datum_elev AS datum_elevation, ` +
+  `a.depth_datum AS datum_reference, ` +
+  `a.td_form AS formation_at_td, ` +
+  `a.ground_elev AS ground_elevation, ` +
+  `a.gx_alternate_id, ` +
+  `a.gx_old_id, ` +
+  `a.gx_user1, ` +
+  `a.gx_user2, ` +
+  `a.gx_user_date, ` +
+  `a.ggx_internal_status AS internal_status, ` +
+  `(CASE (SELECT COUNT(station_md) ` + 
+  `  FROM well_dir_srvy_station WHERE uwi = a.uwi) ` + 
+  `  WHEN 0 THEN 0 ELSE 1 END) AS is_deviated, ` +
+  `a.gx_proposed_flag AS is_proposed, ` +
+  `a.surface_latitude AS latitude, ` +
+  `a.lease_name, ` +
+  `(SELECT remark FROM legal_congress_loc WHERE a.uwi = uwi ` +
+  `  AND a.legal_survey_type = location_type) AS location_congress, ` +
+  `(SELECT remark FROM legal_dls_loc WHERE a.uwi = uwi ` + 
+  `  AND a.legal_survey_type = location_type) AS location_dls, ` +
+  `(SELECT remark FROM legal_ne_loc WHERE a.uwi = uwi ` + 
+  `  AND a.legal_survey_type = location_type) AS location_ne, ` +
+  `(SELECT remark FROM legal_offshore_loc WHERE a.uwi = uwi ` + 
+  `  AND a.legal_survey_type = location_type) AS location_offshore, ` +
+  `(SELECT remark FROM legal_texas_loc WHERE a.uwi = uwi ` + 
+  `  AND a.legal_survey_type = location_type) AS location_texas, ` +
+  `a.surface_longitude AS longitude, ` +
+  `a.operator, ` +
+  `a.original_operator, ` +
+  `a.parent_relationship_type AS parent_type, ` +
+  `a.gx_permit_date AS permit_date, ` +
+  `a.well_govt_id AS permit_number, ` +
+  `a.platform_id, ` +
+  `a.plugback_depth, ` +
+  `a.province_state, ` +
+  `(SELECT COUNT(log_section_name) FROM log_image_reg_log_section ` +
+  `  WHERE well_id = a.uwi) AS raster_logs, ` +
+  `a.spud_date, ` +
+  `a.current_status AS status, ` +
+  `a.final_td AS total_depth, ` +
+  `a.gx_location_string as township_range_section, ` +
+  `(SELECT COUNT(curvename) FROM gx_well_curve ` +
+  `  WHERE wellid = a.uwi) AS vector_logs, ` +
+  `a.water_depth, ` +
+  `a.water_depth_datum, ` +
+  `a.well_name, ` +
+  `a.well_number, ` +
+  `a.gx_wsn AS wsn ` +
+  `FROM well a` +
 }
 
 const steps = () => {
   return [{ query: 'selector' }, { publish: 'stdout' }]
 }
 
+
 exports.handler = async (event, context) => {
-  const { chunk = 1000 } = event
+  const chunk = event.q_chunk ? event.q_chunk : CHUNK
+  const where = sanitizedWhereClause(event.q_filter)
   return {
-    chunk: chunk,
-    counter: counter(),
-    selector: selector(),
-    steps: steps()
+    chunk: parseInt(chunk),
+    counter: counter(where),
+    selector: selector(where)
   }
 }

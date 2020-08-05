@@ -7,7 +7,12 @@ import {
   Switch
 } from 'react-router-dom'
 import Amplify, { Auth } from 'aws-amplify'
-import { withAuthenticator } from 'aws-amplify-react'
+//import { withAuthenticator } from 'aws-amplify-react'
+
+import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
+
+import { withAuthenticator } from '@aws-amplify/ui-react'
+
 import { Menu } from 'semantic-ui-react'
 
 import 'semantic-ui-css/semantic.min.css'
@@ -90,6 +95,8 @@ const HeaderBar = (props) => {
         <Route path="/config" component={Config} />
         <Route component={NotFound} />
       </Switch>
+
+      <AmplifySignOut />
     </Router>
   )
 }

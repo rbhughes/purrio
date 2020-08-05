@@ -46,17 +46,17 @@ const selector = (where) => {
     `a.uwi, ` +
     `a.source, ` +
     `a.survey_id, ` +
-    `a.gx_base_tvd, ` +
-    `a.gx_kop_md, ` +
+    `a.gx_base_tvd AS bottom_hole_tvd, ` +
+    `a.gx_kop_md AS kickoff_point_md, ` +
     `a.north_reference, ` +
     `a.magnetic_declination, ` +
-    `a.gx_base_n_s_offset, ` +
-    `a.gx_base_e_w_offset, ` +
-    `a.gx_base_latitude, ` +
-    `a.gx_base_longitude, ` +
+    `a.gx_base_n_s_offset AS bottom_hole_ns_offset, ` +
+    `a.gx_base_e_w_offset AS bottom_hole_ew_offset, ` +
+    `a.gx_base_latitude AS bottom_hole_latitude, ` +
+    `a.gx_base_longitude AS bottom_hole_longitude, ` +
     `a.compute_method, ` +
-    `a.gx_footage, ` +
-    `a.gx_base_location_string, ` +
+    `a.gx_footage AS footage, ` +
+    `a.gx_base_location_string AS township_range_section, ` +
     `'[' || b.stations || ']' stations ` +
     `FROM well_dir_srvy a ` +
     `INNER JOIN ` +

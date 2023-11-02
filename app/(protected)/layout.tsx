@@ -1,6 +1,7 @@
 import "../globals.css";
 
-import { sessionExists } from "@/utils/supabase/server";
+import { sessionExists } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
 // export const metadata = {
 //   title: "Next.js and Supabase Starter Kit",
@@ -12,11 +13,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const currentSession = await sessionExists();
+  const session = await sessionExists();
+
+  if (!session) {
+    redirect("/");
+  }
 
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      {currentSession ? children : <p>no session</p>}
-    </main>
+    <section>{children}</section>
+    // <main className="min-h-screen flex flex-col items-center">
+    //   {session ? children : <p>no session</p>}
+    // </main>
   );
 }

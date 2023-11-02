@@ -6,23 +6,36 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.2",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
-    "autoprefixer": "10.4.15",
+    "autoprefixer": "latest",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.290.0",
     "next": "latest",
-    "postcss": "8.4.29",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "tailwindcss": "3.3.3"
+    "postcss": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-hook-form": "^7.47.0",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss": "latest",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "20.8.8",
-    "@types/react": "18.2.12",
-    "@types/react-dom": "18.2.5",
-    "encoding": "^0.1.13",
-    "eslint": "^8.52.0",
-    "eslint-config-next": "^13.5.6",
-    "eslint-config-prettier": "^9.0.0",
-    "typescript": "^5.2.2"
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "encoding": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "eslint-config-prettier": "latest",
+    "supabase": "latest",
+    "typescript": "latest"
   }
 }

@@ -1,0 +1,10 @@
+import { z } from 'zod'
+
+export const FormDataSchema = z.object({
+  name: z.string().nonempty('Name is required.'),
+  //geo_type: z.string().nonempty('geo_type is required'),
+  message: z
+    .string()
+    .nonempty('Message is required.')
+    .min(6, { message: 'Message must be at least 6 characters.' })
+})

@@ -1,4 +1,4 @@
-import { sessionExists } from "@/utils/supabase/server";
+import { sessionExists } from "@/lib/supabase/server";
 
 export default async function Crumble() {
   const currentSession = await sessionExists();

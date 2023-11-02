@@ -1,22 +1,35 @@
-import './globals.css'
+import "./globals.css";
 
+import { Inter as FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+// https://github.com/vercel/next.js/discussions/57251
 export const metadata = {
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
-}
+  metadataBase: new URL("http://localhost:3000"),
+  title: "purrio",
+  description: "meow meow meow",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
-        <main className="min-h-screen flex flex-col items-center">
-          {children}
-        </main>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <main>{children}</main>
       </body>
     </html>
-  )
+  );
 }

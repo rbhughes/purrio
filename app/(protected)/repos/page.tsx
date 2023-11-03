@@ -18,14 +18,12 @@ export default async function Page() {
 
   const email = user ? user.email! : "guest";
 
-  //const { data: repos } = await supabase.from('repos').select()
-
-  //return <pre>{JSON.stringify(repos, null, 2)}</pre>;
+  const { data: repos } = await supabase.from("repos").select();
 
   return (
     <div>
-      {/* <RhfWithAction geotypes={geotypes} hostnames={hostnames} /> */}
       <RepoRecon email={email} geotypes={geotypes} hostnames={hostnames} />
+      <pre>{JSON.stringify(repos, null, 2)}</pre>;
     </div>
   );
 }

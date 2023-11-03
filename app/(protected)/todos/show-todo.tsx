@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Database } from "@/lib/sb_types.ts";
+import { Database } from "@/lib/sb_types";
 import { revalidatePath } from "next/cache";
 
 type Todo = Database["public"]["Tables"]["todos"]["Row"];

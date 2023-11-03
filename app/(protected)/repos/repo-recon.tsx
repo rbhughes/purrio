@@ -3,7 +3,7 @@ import React from "react";
 
 import Link from "next/link";
 
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -30,7 +30,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/components/ui/use-toast";
 
 import { RepoReconFormSchema } from "./repo-recon-schema";
-import { addEntry } from "./server-actions";
+import { addRepoReconTask } from "./server-actions";
+
+import { AuxGeographix } from "./AuxGeoGraphix";
+import { AuxKingdom } from "./AuxKingdom";
 
 type Inputs = z.infer<typeof RepoReconFormSchema>;
 
@@ -45,32 +48,39 @@ export function RepoRecon({
 }) {
   const [data, setData] = React.useState<Inputs>();
 
-  let defaults = {
-    geo_type: geotypes[0],
-    recon_root: "path somewhere",
-    hostname: hostnames[0],
-  };
+  // let defaults = {
+  //   geo_type: geotypes[0],
+  //   recon_root: "path somewhere",
+  //   hostname: hostnames[0],
+  //   tag: "",
+  // };
 
   const form = useForm<Inputs>({
     resolver: zodResolver(RepoReconFormSchema),
-    defaultValues: defaults,
-    // defaultValues: {
-    //   geo_type: geotypes[0],
-    //   recon_root: "path somewhere",
-    //   hostname: hostnames[0],
-    // },
+    defaultValues: {
+      geo_type: geotypes[0],
+      recon_root: "path somewhere",
+      hostname: hostnames[0],
+      tag: "",
+      ggx_host: "",
+    },
   });
 
   const { reset } = useForm<Inputs>({
     resolver: zodResolver(RepoReconFormSchema),
   });
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {
+  const selectedGeoType = useWatch({
+    control: form.control,
+    name: "geo_type",
+    defaultValue: geotypes[0],
+  });
+
+  const processForm: SubmitHandler<Inputs> = async (formData) => {
     // console.log("____top of processForm______(written to BROWSER)__");
     // console.log(data);
     // console.log("__________________________________________________");
-    const result = await addEntry(data);
-    console.log(result);
+    const result = await addRepoReconTask(formData);
 
     if (!result) {
       console.log("Something went wrong");
@@ -84,19 +94,20 @@ export function RepoRecon({
     }
 
     toast({
-      title: "You submitted the following values:",
+      className: "w-[700px]",
+      title: result.data.recon_root,
       description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        <pre className="mt-2 w-[650px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">
+            {JSON.stringify(result.data, null, 2)}
+          </code>
         </pre>
       ),
     });
 
-    reset();
-    //setData(result.data);
+    //reset();
     setData(result.data);
     //reset(defaults);
-    // 2023-11-01 | reset not working? Maybe do useEffect (since controlled)
     //https://react-hook-form.com/docs/useform/reset
   };
 
@@ -107,7 +118,7 @@ export function RepoRecon({
           onSubmit={form.handleSubmit(processForm)}
           className="w-2/3 space-y-6"
         >
-          {/* -------- */}
+          {/* ---------- */}
 
           <FormField
             control={form.control}
@@ -119,6 +130,23 @@ export function RepoRecon({
                   <Input placeholder="recon root" {...field} />
                 </FormControl>
                 <FormDescription>This is a recon root</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* -------- */}
+
+          <FormField
+            control={form.control}
+            name="tag"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tag</FormLabel>
+                <FormControl>
+                  <Input placeholder="tag" {...field} />
+                </FormControl>
+                <FormDescription>This is a tag</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -159,6 +187,10 @@ export function RepoRecon({
               </FormItem>
             )}
           />
+          {/* -------- */}
+
+          {selectedGeoType === "geographix" && <AuxGeographix form={form} />}
+          {selectedGeoType === "kingdom" && <AuxKingdom form={form} />}
 
           {/* -------- */}
 
@@ -187,15 +219,18 @@ export function RepoRecon({
                     })}
                   </SelectContent>
                 </Select>
-                <FormDescription>just a form description</FormDescription>
+                <FormDescription>assigned hostname for task</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
+          {selectedGeoType}
+
           <Button type="submit">Submit</Button>
         </form>
       </Form>
+
       <Toaster />
     </>
   );

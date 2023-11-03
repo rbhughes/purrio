@@ -7,6 +7,10 @@ import DeleteTodo from "./delete-todo";
 
 export const dynamic = "force-dynamic";
 
+import { Database } from "@/lib/sb_types";
+
+type Todo = Database["public"]["Tables"]["todos"]["Row"];
+
 export default async function Page() {
   const supabase = createClient();
 

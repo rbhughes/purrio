@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { Database } from "@/lib/sb_types.ts";
+import { Database } from "@/lib/sb_types";
 import { revalidatePath } from "next/cache";
 
 type Todo = Database["public"]["Tables"]["todos"]["Row"];
 
 export default async function UpdateTodo({ todo }: { todo: Todo }) {
-  const updateTodo = async (formData: formData) => {
+  const updateTodo = async (formData: FormData) => {
     "use server";
 
     todo.is_complete = true;
@@ -29,7 +29,7 @@ export default async function UpdateTodo({ todo }: { todo: Todo }) {
       </p>
       {todo.task}
       */}
-      <input name="task" className="bg-pink-50" defaultValue={todo.task} />
+      <input name="task" className="bg-pink-50" defaultValue={todo.task!} />
       <button name="update" className="bg-yellow-100">
         update
       </button>

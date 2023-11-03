@@ -1,11 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
-import { Database } from "@/lib/sb_types.ts";
+import { Database } from "@/lib/sb_types";
 import { revalidatePath } from "next/cache";
 
 import { Button } from "@/components/ui/button";
 
 export default async function NewTodo({ user }: { user: any }) {
-  const addTodo = async (formData: formData) => {
+  const addTodo = async (formData: FormData) => {
     "use server";
     let fd = {
       task: String(formData.get("task")),

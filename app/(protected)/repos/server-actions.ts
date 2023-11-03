@@ -8,14 +8,30 @@ import { SupabaseClient } from "@supabase/supabase-js";
 
 type Inputs = z.infer<typeof RepoReconFormSchema>;
 
-export async function addEntry(data: Inputs) {
+export async function addRepoReconTask(formData: Inputs) {
   console.log("____top of addEntry_____(written to SERVER)_______");
-  console.log(data);
+  console.log(formData);
   console.log("__________________________________________________");
 
-  const result = RepoReconFormSchema.safeParse(data);
+  const result = RepoReconFormSchema.safeParse(formData);
+  console.log(result);
+  console.log("__________________________________________________");
 
   if (result.success) {
+    const supabase = createClient();
+
+    await supabase.from("tasks").insert({
+      hostname: formData.hostname,
+      directive: "recon",
+      body: {
+        geo_type: formData.geo_type,
+        tag: formData.tag,
+        ggx_host: "scarab",
+        recon_root: formData.recon_root,
+      },
+      status: "PENDING",
+    });
+
     return { success: true, data: result.data };
   }
 

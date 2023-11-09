@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 //import ShowRepo from "./show-repo";
 type Repo = Database["public"]["Tables"]["repos"]["Row"];
 
+import { columns } from "./components/columns";
+import { DataTable } from "./components/data-table";
+
 export default function ShowRepoz({ repos }: { repos: Repo[] }) {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,12 +39,19 @@ export default function ShowRepoz({ repos }: { repos: Repo[] }) {
     };
   }, [supabase, router]);
 
-  return repos?.map((repo: Repo) => {
-    return (
-      <div key={repo.id} className="p-4 bg-slate-200 mb-2">
-        {/* <ShowRepo repo={repo} /> */}
-        {JSON.stringify(repo)}
-      </div>
-    );
-  });
+  /////////////////////////////////////////////////////////
+
+  console.log(columns);
+  /////////////////////////////////////////////////////////
+
+  return <DataTable data={repos} columns={columns} />;
+
+  // return repos?.map((repo: Repo) => {
+  //   return (
+  //     <div key={repo.id} className="p-4 bg-slate-200 mb-2">
+  //       {/* <ShowRepo repo={repo} /> */}
+  //       {/* {JSON.stringify(repo)} */}
+  //     </div>
+  //   );
+  // });
 }

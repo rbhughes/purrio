@@ -48,29 +48,19 @@ export function RepoRecon({
 }) {
   const [data, setData] = React.useState<Inputs>();
 
-  // let defaults = {
-  //   geo_type: geotypes[0],
-  //   recon_root: "path somewhere",
-  //   hostname: hostnames[0],
-  //   tag: "",
-  // };
+  let defaults = {
+    geo_type: geotypes[0],
+    recon_root: "",
+    hostname: hostnames[0],
+    ggx_host: "",
+  };
 
   const form = useForm<Inputs>({
     resolver: zodResolver(RepoReconFormSchema),
-    defaultValues: {
-      geo_type: geotypes[0],
-      recon_root: "path somewhere",
-      hostname: hostnames[0],
-      tag: "",
-      ggx_host: "",
-    },
+    defaultValues: defaults,
   });
 
-  const { reset } = useForm<Inputs>({
-    resolver: zodResolver(RepoReconFormSchema),
-  });
-
-  const selectedGeoType = useWatch({
+  let watchedGeoType = useWatch({
     control: form.control,
     name: "geo_type",
     defaultValue: geotypes[0],
@@ -78,7 +68,7 @@ export function RepoRecon({
 
   const processForm: SubmitHandler<Inputs> = async (formData) => {
     // console.log("____top of processForm______(written to BROWSER)__");
-    // console.log(data);
+    // console.log(formData);
     // console.log("__________________________________________________");
     const result = await addRepoReconTask(formData);
 
@@ -105,10 +95,8 @@ export function RepoRecon({
       ),
     });
 
-    //reset();
     setData(result.data);
-    //reset(defaults);
-    //https://react-hook-form.com/docs/useform/reset
+    form.reset();
   };
 
   return (
@@ -116,7 +104,7 @@ export function RepoRecon({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(processForm)}
-          className="w-2/3 space-y-6"
+          className="w-1/3 space-y-6"
         >
           {/* ---------- */}
 
@@ -137,21 +125,6 @@ export function RepoRecon({
 
           {/* -------- */}
 
-          <FormField
-            control={form.control}
-            name="tag"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Tag</FormLabel>
-                <FormControl>
-                  <Input placeholder="tag" {...field} />
-                </FormControl>
-                <FormDescription>This is a tag</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* -------- */}
 
           <FormField
@@ -160,10 +133,7 @@ export function RepoRecon({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>geo_type</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a geo_type" />
@@ -189,8 +159,8 @@ export function RepoRecon({
           />
           {/* -------- */}
 
-          {selectedGeoType === "geographix" && <AuxGeographix form={form} />}
-          {selectedGeoType === "kingdom" && <AuxKingdom form={form} />}
+          {watchedGeoType === "geographix" && <AuxGeographix form={form} />}
+          {watchedGeoType === "kingdom" && <AuxKingdom form={form} />}
 
           {/* -------- */}
 
@@ -200,10 +170,7 @@ export function RepoRecon({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>hostname</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a hostname" />
@@ -224,8 +191,6 @@ export function RepoRecon({
               </FormItem>
             )}
           />
-
-          {selectedGeoType}
 
           <Button type="submit">Submit</Button>
         </form>

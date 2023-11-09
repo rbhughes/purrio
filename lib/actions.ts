@@ -1,7 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { RepoReconFormSchema } from "./repo-recon-schema";
+//import { RepoReconFormSchema } from "./repo-recon-schema";
+import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-schema";
 
 import { createClient } from "@/lib/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";

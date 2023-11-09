@@ -1,1 +1,6 @@
 https://ui.shadcn.com/docs/installation/next
+
+
+
+
+npx shadcn-ui@latest add button

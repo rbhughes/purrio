@@ -1,18 +1,18 @@
 import React from "react";
 import { createClient } from "@/lib/supabase/server";
 
-import { RepoRecon } from "./repo-recon";
+//import { RepoRecon } from "./repo-recon";
 //import ShowRepo from "./show-repo";
-import ShowRepos from "./show-repos";
+//import ShowRepos from "./show-repos";
+import ShowRepoz from "./show-repoz";
 
-//import { fetchGeoTypes, fetchHostnames } from "./server-actions";
 import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
 
 import { Database } from "@/lib/sb_types";
 
 export const dynamic = "force-dynamic";
 
-//type Repo = Database["public"]["Tables"]["repos"]["Row"];
+type Repo = Database["public"]["Tables"]["repos"]["Row"];
 
 export default async function Page() {
   const supabase = createClient();
@@ -33,8 +33,8 @@ export default async function Page() {
 
   return (
     <div>
-      <RepoRecon email={email} geotypes={geotypes} hostnames={hostnames} />
-      <ShowRepos repos={repos!} />
+      {/* <RepoRecon email={email} geotypes={geotypes} hostnames={hostnames} /> */}
+      <ShowRepoz repos={repos!} />
     </div>
   );
 }

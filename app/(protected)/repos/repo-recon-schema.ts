@@ -12,6 +12,5 @@ export const RepoReconFormSchema = z.object({
   hostname: z.string({
     required_error: "select a hostname",
   }),
-  tag: z.string(),
-  ggx_host: z.string().min(4).optional(),
+  ggx_host: z.union([z.string().min(4), z.string().length(0)]),
 });

@@ -26,6 +26,7 @@ type Repo = Database["public"]["Tables"]["repos"]["Row"];
 
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
+import { humanFileSize } from "@/lib/utils";
 
 export const labels = [
   {
@@ -87,6 +88,30 @@ export const labels = [
 //     icon: ArrowUpIcon,
 //   },
 // ];
+
+interface JsonObject {
+  [key: string]: number;
+}
+
+// function getValueByKey(jsonArray: string, searchKey: string): number | null {
+//   const parsedArray: JsonObject[] = JSON.parse(jsonArray);
+
+//   const resultObject = parsedArray.find((item) => searchKey in item);
+
+//   if (resultObject) {
+//     return resultObject[searchKey];
+//   }
+
+//   return null; // or any default value if the key is not found
+// }
+
+const expandInventoryToColumns = (inventory: JsonObject[]) => {
+  inventory.forEach((i) => {
+    for (const [key, val] of Object.entries(i)) {
+      console.log(key, "--------", val);
+    }
+  });
+};
 
 export const geo_types = [
   {
@@ -167,10 +192,15 @@ export const columns: ColumnDef<Repo>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="name" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("name")}</div>,
+    //cell: ({ row }) => <div className="w-[80px]">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    enableResizing: true,
+    //minSize does not work, only the direct assignment seems to work
+    //size: 1600,
     //enableSorting: false,
     //enableHiding: false,
   },
+
   {
     accessorKey: "fs_path",
     header: ({ column }) => (
@@ -193,14 +223,72 @@ export const columns: ColumnDef<Repo>[] = [
   },
 
   {
-    accessorKey: "human_size",
+    accessorKey: "files",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="human_size" />
+      <DataTableColumnHeader column={column} title="files" />
+    ),
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("files")}</div>,
+  },
+
+  {
+    accessorKey: "directories",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="directories" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue("human_size")}</div>
+      <div className="w-[80px]">{row.getValue("directories")}</div>
     ),
   },
+
+  {
+    accessorKey: "bytes",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="size" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[80px]">{humanFileSize(row.getValue("bytes"))}</div>
+    ),
+  },
+
+  {
+    accessorKey: "storage_epsg",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="storage_epsg" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[80px]">{row.getValue("storage_epsg")}</div>
+    ),
+  },
+
+  // {
+  //   accessorKey: "storage_name",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="storage_name" />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-[80px]">{row.getValue("storage_name")}</div>
+  //   ),
+  // },
+
+  {
+    accessorKey: "display_epsg",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="display_epsg" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[80px]">{row.getValue("display_epsg")}</div>
+    ),
+  },
+
+  // {
+  //   accessorKey: "display_name",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="display_name" />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-[80px]">{row.getValue("display_name")}</div>
+  //   ),
+  // },
 
   {
     accessorKey: "repo_mod",
@@ -208,41 +296,13 @@ export const columns: ColumnDef<Repo>[] = [
       <DataTableColumnHeader column={column} title="repo_mod" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue("repo_mod")}</div>
+      // <div className="w-[80px]">{row.getValue("repo_mod")}</div>
+      <div>{row.getValue("repo_mod")}</div>
     ),
   },
 
-  // {
-  //   accessorKey: "status",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Status" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     const status = statuses.find(
-  //       (status) => status.value === row.getValue("status")
-  //     );
-
-  //     if (!status) {
-  //       return null;
-  //     }
-
-  //     return (
-  //       <div className="flex w-[100px] items-center">
-  //         {status.icon && (
-  //           <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-  //         )}
-  //         <span>{status.label}</span>
-  //       </div>
-  //     );
-  //   },
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ];
-
-//export const columns: string = "I AM COLUMNA";

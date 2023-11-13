@@ -1,6 +1,19 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
- 
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
+}
+
+export function humanFileSize(num: number, suffix: string = "B"): string {
+  num = Math.floor(num);
+  const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
+
+  for (const unit of units) {
+    if (Math.abs(num) < 1024) {
+      return `${num.toFixed(1)}${unit}${suffix}`;
+    }
+    num /= 1024;
+  }
+  return `${num.toFixed(1)}Y${suffix}`;
 }

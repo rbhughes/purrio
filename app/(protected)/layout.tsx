@@ -3,6 +3,8 @@ import "../globals.css";
 import { sessionExists } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+// import Messenger from "@/components/Messenger";
+
 // export const metadata = {
 //   title: "Next.js and Supabase Starter Kit",
 //   description: "The fastest way to build apps with Next.js and Supabase",

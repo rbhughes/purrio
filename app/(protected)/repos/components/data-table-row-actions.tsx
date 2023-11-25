@@ -44,6 +44,11 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
+const doThing = (x: any, r: any) => {
+  console.log("I should be doing thing:", x);
+  console.log(r);
+};
+
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
@@ -63,7 +68,14 @@ export function DataTableRowActions<TData>({
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem>Edit</DropdownMenuItem>
         <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            doThing("favorite", row.getValue("fs_path"));
+          }}
+        >
+          Favorite
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>

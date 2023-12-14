@@ -4,6 +4,7 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
+  RowSelectionState,
   SortingState,
   VisibilityState,
   flexRender,
@@ -34,13 +35,46 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
+let xxx: RowSelectionState = { "1": true };
+let yyy: VisibilityState = {
+  asset_progress: false,
+  //bytes: false,
+  conn: false,
+  conn_aux: false,
+  directories: false,
+  display_epsg: false,
+  display_name: false,
+  files: false,
+  //fs_path: false,
+  //geo_type: false,
+  id: false,
+  //name: false,
+  //repo_mod: false,
+  row_changed: false,
+  row_created: false,
+  row_touched: false,
+  storage_epsg: false,
+  storage_name: false,
+  //well_count: false,
+  wells_with_completion: false,
+  wells_with_core: false,
+  wells_with_dst: false,
+  wells_with_formation: false,
+  wells_with_ip: false,
+  wells_with_perforation: false,
+  wells_with_production: false,
+  wells_with_raster_log: false,
+  wells_with_survey: false,
+  wells_with_vector_log: false,
+  wells_with_zone: false,
+};
+
 export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState(xxx);
+  const [columnVisibility, setColumnVisibility] = React.useState(yyy);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );

@@ -30,14 +30,35 @@ import { User } from "@supabase/supabase-js";
 
 const DELAY = 1000 * 30; //30 sec
 
-type Message = Database["public"]["Tables"]["messages"]["Row"];
+type Message = Database["public"]["Tables"]["message"]["Row"];
 
 interface MessengerArgs {
-  user: User;
-  directive: Message["directive"];
+  new: Message;
+  // new: {
+  //   user: User;
+  //   directive: Message["directive"];
+  //   message: string;
+  //   repo_id: string;
+  // };
 }
 
-export default function Messenger({ user, directive }: MessengerArgs) {
+function refactorArray(arr: MessengerArgs[]) {
+  return arr.reduce((result: Record<string, MessengerArgs["new"]>, item) => {
+    const { repo_id } = item.new;
+    if (repo_id) {
+      result[repo_id] = item.new;
+    }
+    return result;
+  }, {} as Record<string, MessengerArgs["new"]>);
+}
+
+export default function Messenger({
+  user,
+  directive,
+}: {
+  user: User;
+  directive: string;
+}) {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -60,11 +81,14 @@ export default function Messenger({ user, directive }: MessengerArgs) {
         },
         (payload: any) => {
           let msg: Message = payload.new;
+          //console.log(messages);
 
           // reject any messages that don't match this directive
-          if (msg.directive != directive) {
-            return;
-          }
+          // if (msg.directive != directive) {
+          //   return;
+          // } else {
+          //   console.log(msg.directive, " === ", directive);
+          // }
 
           // NOTE: the reverse to put newest item at top of array
           setMessages((prev) => [msg, ...prev]);
@@ -84,13 +108,26 @@ export default function Messenger({ user, directive }: MessengerArgs) {
   }, [supabase]);
 
   return (
-    <div className="bg-slate-100 h-40 overflow-auto break-all font-mono">
+    <div className="bg-slate-100 h-40 overflow-auto break-all font-mono outline m-5">
+      <h1>recon</h1>
       <ul>
-        {messages.map((m) => (
-          <li key={m.row_created}>
-            {m.row_created}--{m.message}
-          </li>
-        ))}
+        {messages
+          .filter((m) => m.directive === "recon")
+          .map((m) => (
+            <li key={m.row_created}>
+              {m.row_created}--{m.message}===={directive}
+            </li>
+          ))}
+      </ul>
+      <h1>upsert</h1>
+      <ul>
+        {messages
+          .filter((m) => m.directive === "upsert")
+          .map((m) => (
+            <li key={m.row_created}>
+              {m.row_created}--{m.message}===={directive}
+            </li>
+          ))}
       </ul>
     </div>
   );

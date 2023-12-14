@@ -21,7 +21,7 @@ export async function addRepoReconTask(formData: Inputs) {
   if (result.success) {
     const supabase = createClient();
 
-    await supabase.from("tasks").insert({
+    await supabase.from("task").insert({
       hostname: formData.hostname,
       directive: "recon",
       body: {
@@ -45,7 +45,7 @@ export async function addRepoReconTask(formData: Inputs) {
 export async function fetchHostnames(
   supabase: SupabaseClient
 ): Promise<string[]> {
-  const { data, error } = await supabase.from("workers").select("hostname");
+  const { data, error } = await supabase.from("worker").select("hostname");
   if (error) {
     console.error(error);
     return [];

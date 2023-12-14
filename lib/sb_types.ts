@@ -9,7 +9,67 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      messages: {
+      batch: {
+        Row: {
+          active: boolean | null
+          asset: string | null
+          chunk: number | null
+          cron: string | null
+          filter: string | null
+          id: number
+          last_invoked: string | null
+          repo_id: string
+          row_created: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          asset?: string | null
+          chunk?: number | null
+          cron?: string | null
+          filter?: string | null
+          id?: number
+          last_invoked?: string | null
+          repo_id: string
+          row_created?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          asset?: string | null
+          chunk?: number | null
+          cron?: string | null
+          filter?: string | null
+          id?: number
+          last_invoked?: string | null
+          repo_id?: string
+          row_created?: string | null
+        }
+        Relationships: []
+      }
+      batch_ledger: {
+        Row: {
+          batch_id: string
+          directive: string | null
+          num_tasks: number | null
+          status: string | null
+          task_id: number
+        }
+        Insert: {
+          batch_id: string
+          directive?: string | null
+          num_tasks?: number | null
+          status?: string | null
+          task_id: number
+        }
+        Update: {
+          batch_id?: string
+          directive?: string | null
+          num_tasks?: number | null
+          status?: string | null
+          task_id?: number
+        }
+        Relationships: []
+      }
+      message: {
         Row: {
           directive: string | null
           function: string | null
@@ -17,6 +77,7 @@ export interface Database {
           level: string | null
           message: string | null
           params: string | null
+          repo_id: string | null
           row_created: string | null
           service: string | null
           source: string | null
@@ -29,6 +90,7 @@ export interface Database {
           level?: string | null
           message?: string | null
           params?: string | null
+          repo_id?: string | null
           row_created?: string | null
           service?: string | null
           source?: string | null
@@ -41,6 +103,7 @@ export interface Database {
           level?: string | null
           message?: string | null
           params?: string | null
+          repo_id?: string | null
           row_created?: string | null
           service?: string | null
           source?: string | null
@@ -74,8 +137,9 @@ export interface Database {
           }
         ]
       }
-      repos: {
+      repo: {
         Row: {
+          asset_progress: number | null
           bytes: number | null
           conn: Json | null
           conn_aux: Json | null
@@ -107,6 +171,7 @@ export interface Database {
           wells_with_zone: number | null
         }
         Insert: {
+          asset_progress?: number | null
           bytes?: number | null
           conn?: Json | null
           conn_aux?: Json | null
@@ -138,6 +203,7 @@ export interface Database {
           wells_with_zone?: number | null
         }
         Update: {
+          asset_progress?: number | null
           bytes?: number | null
           conn?: Json | null
           conn_aux?: Json | null
@@ -170,7 +236,7 @@ export interface Database {
         }
         Relationships: []
       }
-      tasks: {
+      task: {
         Row: {
           body: Json | null
           directive: string | null
@@ -226,7 +292,7 @@ export interface Database {
           }
         ]
       }
-      workers: {
+      worker: {
         Row: {
           hostname: string
           row_changed: string | null
@@ -268,3 +334,83 @@ export interface Database {
     }
   }
 }
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
+      Database["public"]["Views"])
+  ? (Database["public"]["Tables"] &
+      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof Database["public"]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
+  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+  : never

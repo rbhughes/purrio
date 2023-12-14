@@ -11,7 +11,7 @@ import { Database } from "@/lib/sb_types";
 
 export const dynamic = "force-dynamic";
 
-type Repo = Database["public"]["Tables"]["repos"]["Row"];
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 export default async function Page() {
   const supabase = createClient();
@@ -26,7 +26,7 @@ export default async function Page() {
   const email = user ? user.email! : "guest";
 
   const { data: repos } = await supabase
-    .from("repos")
+    .from("repo")
     .select()
     .order("row_changed", { ascending: false });
 

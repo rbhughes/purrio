@@ -4,7 +4,15 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import { Table } from "@tanstack/react-table";
+import {
+  Row,
+  RowModel,
+  RowSelectionTableState,
+  Table,
+} from "@tanstack/react-table";
+
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 //import { Button } from "@/registry/new-york/ui/button";
 import { Button } from "@/components/ui/button";
@@ -15,11 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-//} from "@/registry/new-york/ui/select";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
+
+// TODO: refine the selectedRows type (it's not just Row<Repo>[])
+const formatRowSelection = (selectedRows: any) => {
+  let x = selectedRows.map((r: any) => {
+    console.log(r.original.id);
+  });
+};
 
 export function DataTablePagination<TData>({
   table,
@@ -30,6 +44,24 @@ export function DataTablePagination<TData>({
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
+
+      {/* //experiment */}
+      <Button
+        variant="outline"
+        className="hidden h-8 p-0 mr-10 lg:flex bg-yellow-300"
+        //onClick={() => console.log(table.getFilteredSelectedRowModel())}
+        onClick={() => {
+          //let fr: RowModel<TData> = table.getFilteredSelectedRowModel();
+          //let frr: Row<TData>[] = fr.rows;
+
+          let selected: Row<TData>[] = table.getFilteredSelectedRowModel().rows;
+
+          formatRowSelection(selected);
+        }}
+      >
+        SELECT ME
+      </Button>
+      {/* //experiment */}
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>

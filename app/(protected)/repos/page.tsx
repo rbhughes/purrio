@@ -2,7 +2,7 @@ import React from "react";
 import { createClient } from "@/lib/supabase/server";
 
 import { RepoRecon } from "./components/repo-recon";
-import ShowRepos from "./show-repos";
+import RepoTable from "./repo-table";
 
 //import { fetchGeoTypes, fetchHostnames } from "./server-actions";
 import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
@@ -25,7 +25,7 @@ export default async function Page() {
   const email = user ? user.email! : "guest";
 
   const { data: repos } = await supabase
-    .from("repos")
+    .from("repo")
     .select()
     .order("row_changed", { ascending: false });
 
@@ -35,7 +35,7 @@ export default async function Page() {
         <RepoRecon email={email} geotypes={geotypes} hostnames={hostnames} />
 
         <Messenger user={user} directive={"recon"} />
-        <ShowRepos repos={repos!} />
+        <RepoTable repos={repos!} />
       </div>
     )
   );

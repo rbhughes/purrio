@@ -18,7 +18,9 @@ export interface Database {
           filter: string | null
           id: number
           last_invoked: string | null
+          repo_fs_path: string | null
           repo_id: string
+          repo_name: string | null
           row_created: string | null
         }
         Insert: {
@@ -29,7 +31,9 @@ export interface Database {
           filter?: string | null
           id?: number
           last_invoked?: string | null
+          repo_fs_path?: string | null
           repo_id: string
+          repo_name?: string | null
           row_created?: string | null
         }
         Update: {
@@ -40,7 +44,9 @@ export interface Database {
           filter?: string | null
           id?: number
           last_invoked?: string | null
+          repo_fs_path?: string | null
           repo_id?: string
+          repo_name?: string | null
           row_created?: string | null
         }
         Relationships: []

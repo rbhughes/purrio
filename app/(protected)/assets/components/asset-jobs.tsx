@@ -6,6 +6,8 @@ import { Database } from "@/lib/sb_types";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 
+import AssetJobCard from "./asset-job-card";
+
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 export default function AssetJobs({ assetJobs }: { assetJobs: AssetJob[] }) {
@@ -40,7 +42,7 @@ export default function AssetJobs({ assetJobs }: { assetJobs: AssetJob[] }) {
     <ul>
       {assetJobs?.map((aj: AssetJob) => (
         <li key={aj.id}>
-          <pre>{JSON.stringify(aj, null, 2)}</pre>
+          <AssetJobCard assetJob={aj} />
         </li>
       ))}
     </ul>

@@ -33,6 +33,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Button } from "@/components/ui/button";
+import { saveAssetJob } from "@/lib/actions";
 
 import { AssetJobFormSchema } from "../asset-job-form-schema";
 type Inputs = z.infer<typeof AssetJobFormSchema>;
@@ -60,6 +61,9 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     chunk: 100,
     cron: "",
     filter: "",
+    last_invoked: null,
+    repo_name: null,
+    repo_fs_path: null,
     repo_id: repos[0].id,
   };
 
@@ -68,9 +72,28 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     defaultValues: defaults,
   });
 
+  // add repo fs_path and name here (joins not supported for sb subscription)
   const processForm: SubmitHandler<Inputs> = async (formData) => {
     console.log(formData);
-    //const result = await addRepoReconTask(formData);
+    const repo = repos.filter((r) => r.id === formData.repo_id)[0];
+
+    formData.repo_fs_path = repo.fs_path;
+    formData.repo_name = repo.name;
+    const result = await saveAssetJob(formData);
+
+    if (!result) {
+      console.log("Something went wrong");
+      return;
+    }
+
+    if (result.error) {
+      // set local error state
+      console.log(result.error);
+      return;
+    }
+
+    setData(result.data);
+    form.reset();
   };
 
   return (

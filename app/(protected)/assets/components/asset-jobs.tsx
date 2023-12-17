@@ -2,15 +2,13 @@
 
 import React from "react";
 import { Database } from "@/lib/sb_types";
+
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-import { columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
-
-export default function RepoTable({ repos }: { repos: Repo[] }) {
+export default function AssetJobs({ assetJobs }: { assetJobs: AssetJob[] }) {
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -19,13 +17,13 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
 
   React.useEffect(() => {
     const channel = supabase
-      .channel("realtime repo")
+      .channel("realtime asset-job")
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "repo",
+          table: "asset_job",
         },
         () => {
           router.refresh();
@@ -38,13 +36,13 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
     };
   }, [supabase, router]);
 
-  return <DataTable data={repos} columns={columns} />;
-
-  // return repos?.map((repo: Repo) => {
-  //   return (
-  //     <div key={repo.id} className="p-4 bg-slate-200 mb-2">
-  //       {/* <ShowRepo repo={repo} /> */}
-  //     </div>
-  //   );
-  // });
+  return (
+    <ul>
+      {assetJobs?.map((aj: AssetJob) => (
+        <li key={aj.id}>
+          <pre>{JSON.stringify(aj, null, 2)}</pre>
+        </li>
+      ))}
+    </ul>
+  );
 }

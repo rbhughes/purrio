@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 
 import Link from "next/link";
@@ -29,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/components/ui/use-toast";
 
-import { RepoReconFormSchema } from "../repo-recon-schema";
+import { RepoReconFormSchema } from "../repo-recon-form-schema";
 //import { addRepoReconTask } from "./server-actions";
 import { addRepoReconTask } from "@/lib/actions";
 
@@ -38,7 +39,7 @@ import { AuxKingdom } from "./AuxKingdom";
 
 type Inputs = z.infer<typeof RepoReconFormSchema>;
 
-export function RepoRecon({
+export function RepoReconForm({
   email,
   geotypes,
   hostnames,

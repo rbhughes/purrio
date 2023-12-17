@@ -130,7 +130,7 @@ export function DataTableRowActions<TData>({
           https://github.com/shadcn-ui/ui/issues/1128 */}
 
           {/* // */}
-          <AssetBatchDialog arg={111} />
+          <AssetBatchDialog repo_id={"a repo id"} />
           {/* // */}
 
           {/* </DropdownMenuItem> */}

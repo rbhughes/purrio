@@ -2,7 +2,7 @@
 import { Database } from "@/lib/sb_types";
 //import { revalidatePath } from "next/cache";
 
-type Repo = Database["public"]["Tables"]["repos"]["Row"];
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 export default async function ShowRepo({ repo }: { repo: Repo }) {
   return (

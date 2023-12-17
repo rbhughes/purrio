@@ -2,10 +2,13 @@
 
 import { z } from "zod";
 //import { RepoReconFormSchema } from "./repo-recon-schema";
-import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-schema";
+import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
 
 import { createClient } from "@/lib/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
+
+// import { Database } from "@/lib/sb_types";
+// type Batch = Database["public"]["Tables"]["batch"]["Row"];
 
 type Inputs = z.infer<typeof RepoReconFormSchema>;
 
@@ -66,3 +69,16 @@ export async function fetchGeoTypes(
     return data;
   }
 }
+
+// export async function fetchBatches(supabase: SupabaseClient): Promise<Batch[]> {
+//   const { data, error } = await supabase
+//     .from("batch")
+//     .select()
+//     .order("row_created", { ascending: false });
+//   if (error) {
+//     console.error(error);
+//     return [];
+//   } else {
+//     return data as Batch[];
+//   }
+// }

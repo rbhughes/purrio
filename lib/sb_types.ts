@@ -9,7 +9,7 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      batch: {
+      asset_job: {
         Row: {
           active: boolean | null
           asset: string | null

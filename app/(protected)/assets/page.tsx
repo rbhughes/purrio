@@ -1,7 +1,9 @@
 import React from "react";
-import { createClient } from "@/lib/supabase/server";
+//import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 import { Database } from "@/lib/sb_types";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +15,8 @@ import AssetJobs from "./components/asset-jobs";
 import { AssetJobForm } from "./components/asset-jobs-form";
 
 export default async function Page() {
-  const supabase = createClient();
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const {
     data: { user },

@@ -10,9 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 import { Database } from "@/lib/sb_types";
+
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+import { deleteAssetJob, addAssetJobTask } from "@/lib/actions";
 
 export default function AssetJobCard({ assetJob }: { assetJob: AssetJob }) {
   //return <pre>{JSON.stringify(assetJob, null, 2)}</pre>;
@@ -33,6 +36,10 @@ export default function AssetJobCard({ assetJob }: { assetJob: AssetJob }) {
       </CardContent>
       <CardFooter>
         <p>Card Footer</p>
+        <Button onClick={() => deleteAssetJob(assetJob.id)}>delete</Button>
+        <Button onClick={async () => await addAssetJobTask(assetJob)}>
+          enqueue
+        </Button>
       </CardFooter>
     </Card>
   );

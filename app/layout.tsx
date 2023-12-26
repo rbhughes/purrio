@@ -1,18 +1,19 @@
+import { GeistSans } from "geist/font/sans";
+
+import { ThemeProvider } from "@/components/theme-provider";
+import { Dashboard } from "@/components/sidebar";
+import AuthButton from "../components/AuthButton";
+
 import "./globals.css";
 
-import { Inter as FontSans } from "next/font/google";
-import { cn } from "@/lib/utils";
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
 
-export const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-// https://github.com/vercel/next.js/discussions/57251
 export const metadata = {
-  metadataBase: new URL("http://localhost:3000"),
-  title: "purrio",
-  description: "meow meow meow",
+  metadataBase: new URL(defaultUrl),
+  title: "purr.io",
+  description: "it's purrio, dawg",
 };
 
 export default function RootLayout({
@@ -21,14 +22,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
-        )}
-      >
-        <main>{children}</main>
+    <html lang="en" suppressHydrationWarning className={GeistSans.className}>
+      <body className="bg-background text-foreground">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <main className="min-h-screen flex-col">
+            <Dashboard children={children} />
+            {/* {children} */}
+            <AuthButton />
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

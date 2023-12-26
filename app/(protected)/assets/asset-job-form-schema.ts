@@ -17,5 +17,6 @@ export const AssetJobFormSchema = z.object({
     required_error: "select a repo_id",
   }),
   repo_fs_path: z.string().nullable(),
+  repo_geo_type: z.string().nullable(),
   repo_name: z.string().nullable(),
 });

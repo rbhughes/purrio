@@ -62,8 +62,9 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     cron: "",
     filter: "",
     last_invoked: null,
-    repo_name: null,
     repo_fs_path: null,
+    repo_geo_type: null,
+    repo_name: null,
     repo_id: repos[0].id,
   };
 
@@ -74,10 +75,10 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
 
   // add repo fs_path and name here (joins not supported for sb subscription)
   const processForm: SubmitHandler<Inputs> = async (formData) => {
-    console.log(formData);
     const repo = repos.filter((r) => r.id === formData.repo_id)[0];
 
     formData.repo_fs_path = repo.fs_path;
+    formData.repo_geo_type = repo.geo_type;
     formData.repo_name = repo.name;
     const result = await saveAssetJob(formData);
 

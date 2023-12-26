@@ -1,5 +1,9 @@
 import React from "react";
-import { createClient } from "@/lib/supabase/server";
+//import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
+//import { createClient } from "@/utils/supabase/middleware";
+
+import { cookies } from "next/headers";
 
 import { RepoReconForm } from "./components/repo-recon-form";
 import RepoTable from "./repo-table";
@@ -11,7 +15,8 @@ import Messenger from "@/components/Messenger";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const supabase = createClient();
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
   const geotypes = await fetchGeoTypes(supabase);
   const hostnames = await fetchHostnames(supabase);

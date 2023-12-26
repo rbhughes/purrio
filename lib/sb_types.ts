@@ -19,6 +19,7 @@ export interface Database {
           id: number
           last_invoked: string | null
           repo_fs_path: string | null
+          repo_geo_type: Database["public"]["Enums"]["geo_type"] | null
           repo_id: string
           repo_name: string | null
           row_created: string | null
@@ -32,6 +33,7 @@ export interface Database {
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null
+          repo_geo_type?: Database["public"]["Enums"]["geo_type"] | null
           repo_id: string
           repo_name?: string | null
           row_created?: string | null
@@ -45,6 +47,7 @@ export interface Database {
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null
+          repo_geo_type?: Database["public"]["Enums"]["geo_type"] | null
           repo_id?: string
           repo_name?: string | null
           row_created?: string | null

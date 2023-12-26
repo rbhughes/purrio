@@ -1,6 +1,6 @@
 import "../globals.css";
 
-import { sessionExists } from "@/lib/supabase/server";
+import { sessionExists } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 // import Messenger from "@/components/Messenger";
@@ -22,7 +22,9 @@ export default async function RootLayout({
   }
 
   return (
-    <section>{children}</section>
+    <>
+      <section>{children}</section>
+    </>
     // <main className="min-h-screen flex flex-col items-center">
     //   {session ? children : <p>no session</p>}
     // </main>

@@ -1,18 +1,20 @@
-"use client";
-
 import { WithSidebar } from "@/components/with-sidebar";
-import AuthButton from "../components/AuthButton";
+import AuthButton from "./AuthButton";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Button } from "./ui/button";
 
-//export const Dashboard = () => {
-export const Dashboard = ({ children }: { children: React.ReactNode }) => {
+export const Sidebar = ({
+  children,
+}: {
+  children: React.ReactNode;
+  //hasSession: boolean;
+}) => {
   return (
     <WithSidebar
       sidebarContent={SidebarContent}
       mobileDashboardHeader={CustomHeader}
     >
-      <div className="p-10   ">{children}</div>
+      <div className="p-10 bg-blue-300  ">{children}</div>
     </WithSidebar>
   );
 };
@@ -26,11 +28,16 @@ const CustomHeader = () => {
 };
 
 const SidebarContent = () => {
-  const pathname = usePathname();
-
   return (
     <div>
       <CustomHeader />
+      <Link
+        key={"search"}
+        href={"/search"}
+        className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-900"
+      >
+        search
+      </Link>
       <Link
         key={"repos"}
         href={"/repos"}
@@ -43,6 +50,7 @@ const SidebarContent = () => {
       >
         repos
       </Link>
+
       <Link
         key={"assets"}
         href={"/assets"}
@@ -56,18 +64,7 @@ const SidebarContent = () => {
         assets
       </Link>
 
-      {/*       
-      <div className="mt-6">
-        {["Inicio", "Preguntas"].map((item, index) => (
-          <a
-            key={index}
-            href="#"
-            className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-900"
-          >
-            {item}
-          </a>
-        ))}
-      </div> */}
+      <AuthButton />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { GeistSans } from "geist/font/sans";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Dashboard } from "@/components/sidebar";
-import AuthButton from "../components/AuthButton";
+import { Sidebar } from "@/components/sidebar";
+import { sessionExists } from "@/utils/supabase/server";
 
 import "./globals.css";
 
@@ -16,11 +16,13 @@ export const metadata = {
   description: "it's purrio, dawg",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await sessionExists();
+
   return (
     <html lang="en" suppressHydrationWarning className={GeistSans.className}>
       <body className="bg-background text-foreground">
@@ -31,9 +33,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex-col">
-            <Dashboard children={children} />
-            {/* {children} */}
-            <AuthButton />
+            {/* {session ? <h1>{children}</h1> : <h1> no session</h1>} */}
+            {session ? <Sidebar children={children} /> : children}
+            {/* <Sidebar children={children} hasSession={session} /> */}
           </main>
         </ThemeProvider>
       </body>

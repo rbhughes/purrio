@@ -70,18 +70,18 @@ export default function Messenger({
   // NOTE: message.user_id is determined by purr_client .env
   React.useEffect(() => {
     const channel = supabase
-      .channel("realtime messages")
+      .channel("realtime message")
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "messages",
+          table: "message",
           filter: `user_id=eq.${user.id}`,
         },
         (payload: any) => {
           let msg: Message = payload.new;
-          //console.log(messages);
+          console.log(msg);
 
           // reject any messages that don't match this directive
           // if (msg.directive != directive) {

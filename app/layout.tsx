@@ -33,9 +33,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <main className="min-h-screen flex-col">
-            {/* {session ? <h1>{children}</h1> : <h1> no session</h1>} */}
             {session ? <Sidebar children={children} /> : children}
-            {/* <Sidebar children={children} hasSession={session} /> */}
           </main>
         </ThemeProvider>
       </body>

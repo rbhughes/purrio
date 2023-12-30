@@ -31,6 +31,7 @@ const SidebarContent = () => {
   return (
     <div>
       <CustomHeader />
+      <h1>HEADER</h1>
       <Link
         key={"search"}
         href={"/search"}
@@ -42,24 +43,15 @@ const SidebarContent = () => {
         key={"repos"}
         href={"/repos"}
         className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-400"
-        // className={
-        //   pathname === "repos"
-        //     ? "bg-muted hover:bg-muted"
-        //     : "hover:bg-transparent hover:underline"
-        // }
       >
         repos
       </Link>
 
+      <h1>ASSET</h1>
       <Link
         key={"assets"}
         href={"/assets"}
         className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-900"
-        // className={
-        //   pathname === "repos"
-        //     ? "bg-muted hover:bg-muted"
-        //     : "hover:bg-transparent hover:underline"
-        // }
       >
         assets
       </Link>

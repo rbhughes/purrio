@@ -16,7 +16,7 @@ import { Database } from "@/lib/sb_types";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+//import { Progress } from "@/components/ui/progress";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -463,17 +463,17 @@ export const columns: ColumnDef<Repo>[] = [
     ),
   },
 
-  {
-    accessorKey: "asset_progress",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="asset_progress" />
-    ),
-    cell: ({ row }) => (
-      <div className="w-[80px]">
-        <Progress value={row.getValue("asset_progress")} />
-      </div>
-    ),
-  },
+  // {
+  //   accessorKey: "asset_progress",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="asset_progress" />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <div className="w-[80px]">
+  //       <Progress value={row.getValue("asset_progress")} />
+  //     </div>
+  //   ),
+  // },
 
   {
     id: "actions",

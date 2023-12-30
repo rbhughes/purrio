@@ -28,7 +28,8 @@ import { User } from "@supabase/supabase-js";
 //   }
 // }
 
-const DELAY = 1000 * 30; //30 sec
+//const DELAY = 1000 * 30; //30 sec
+const DELAY = 1000 * 120;
 
 type Message = Database["public"]["Tables"]["message"]["Row"];
 

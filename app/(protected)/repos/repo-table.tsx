@@ -39,12 +39,4 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
   }, [supabase, router]);
 
   return <DataTable data={repos} columns={columns} />;
-
-  // return repos?.map((repo: Repo) => {
-  //   return (
-  //     <div key={repo.id} className="p-4 bg-slate-200 mb-2">
-  //       {/* <ShowRepo repo={repo} /> */}
-  //     </div>
-  //   );
-  // });
 }

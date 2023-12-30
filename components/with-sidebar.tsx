@@ -44,12 +44,22 @@ const WithDesktopSidebar = ({
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
     <div className="flex h-screen ">
-      <aside className="hidden sm:block bg-yellow-200 h-screen w-1/6">
+      <aside className="hidden sm:block bg-yellow-200 h-screen w-40">
         <div className="bg-red-400">
           <SidebarContent />
         </div>
       </aside>
-      <div className="flex-1 bg-green-100 w-5/6">{children}</div>
+
+      {/*  */}
+
+      {/* <div className="flex-grow bg-green-100 w-9/12">{children}</div> */}
+      <div className="flex-grow bg-green-100 ">{children}</div>
+
+      {/*  */}
+
+      {/* <aside className="hidden sm:block bg-yellow-200 h-screen flex-grow">
+        <div className="bg-purple-400">some other content</div>
+      </aside> */}
     </div>
   );
   /*

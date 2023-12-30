@@ -37,7 +37,6 @@ interface DataTableProps<TData, TValue> {
 
 let xxx: RowSelectionState = { "1": true };
 let yyy: VisibilityState = {
-  asset_progress: false,
   //bytes: false,
   conn: false,
   conn_aux: false,

@@ -1,6 +1,6 @@
 "use client";
 
-import { AssetBatchDialog } from "./asset-batch-dialog";
+//import { AssetBatchDialog } from "./asset-batch-dialog";
 import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
@@ -130,7 +130,7 @@ export function DataTableRowActions<TData>({
           https://github.com/shadcn-ui/ui/issues/1128 */}
 
           {/* // */}
-          <AssetBatchDialog repo_id={"a repo id"} />
+          {/* <AssetBatchDialog repo_id={"a repo id"} /> */}
           {/* // */}
 
           {/* </DropdownMenuItem> */}

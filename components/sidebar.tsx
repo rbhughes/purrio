@@ -1,5 +1,5 @@
 import { WithSidebar } from "@/components/with-sidebar";
-import AuthButton from "./AuthButton";
+import LogInOut from "./log-in-out";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
@@ -10,6 +10,17 @@ export const Sidebar = ({
   //hasSession: boolean;
 }) => {
   return (
+    <div className="flex flex-row h-screen">
+      {/* <div className="fixed flex w-48 flex-col items-center gap-2 h-screen rounded-lg"> */}
+      <div className="flex w-48 flex-col items-center gap-2 h-screen rounded-lg bg-slate-200">
+        <SidebarContent />
+      </div>
+      <div className="flex-grow p-4 ">{children}</div>
+    </div>
+  );
+
+  /*
+  return (
     <WithSidebar
       sidebarContent={SidebarContent}
       mobileDashboardHeader={CustomHeader}
@@ -17,46 +28,39 @@ export const Sidebar = ({
       <div className="p-10 bg-blue-300  ">{children}</div>
     </WithSidebar>
   );
+  */
 };
 
+// w-48 = 12rem = 192px
 const CustomHeader = () => {
   return (
-    <div className="flex px-4 ">
-      <span className="text-2xl font-extrabold">Floop</span>
+    <div className="bg-purple-400 p-2  w-48 m-4">
+      <span className="text-2xl font-extrabold">purr.io</span>
     </div>
   );
 };
 
 const SidebarContent = () => {
   return (
-    <div>
+    <>
       <CustomHeader />
-      <h1>HEADER</h1>
-      <Link
-        key={"search"}
-        href={"/search"}
-        className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-900"
-      >
-        search
-      </Link>
-      <Link
-        key={"repos"}
-        href={"/repos"}
-        className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-400"
-      >
-        repos
-      </Link>
 
-      <h1>ASSET</h1>
-      <Link
-        key={"assets"}
-        href={"/assets"}
-        className="block rounded px-4 py-2.5 transition duration-200 hover:bg-cyan-900"
-      >
-        assets
-      </Link>
+      <Button className="purr-navbar-button">
+        <Link href={"/search"}>search</Link>
+      </Button>
+      <Button className="purr-navbar-button">
+        <Link href={"/repos"}>repos</Link>
+      </Button>
+      <Button className="purr-navbar-button">
+        <Link href={"/assets"}>assets</Link>
+      </Button>
+      <Button className="purr-navbar-button">
+        <Link href={"/system"}>system</Link>
+      </Button>
 
-      <AuthButton />
-    </div>
+      <div className="fixed bottom-2 left-2">
+        <LogInOut />
+      </div>
+    </>
   );
 };

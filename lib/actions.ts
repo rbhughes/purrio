@@ -1,11 +1,9 @@
 "use server";
 
 import { z } from "zod";
-//import { RepoReconFormSchema } from "./repo-recon-schema";
 import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
 import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
 
-//import { createClient } from "@/lib/supabase/server";
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
 
@@ -13,7 +11,6 @@ import { cookies } from "next/headers";
 
 import { Database } from "@/lib/sb_types";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-// type Batch = Database["public"]["Tables"]["batch"]["Row"];
 
 type RepoReconInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobInputs = z.infer<typeof AssetJobFormSchema>;

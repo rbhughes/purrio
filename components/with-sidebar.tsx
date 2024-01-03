@@ -43,11 +43,11 @@ const WithDesktopSidebar = ({
 }) => {
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="flex h-screen ">
-      <aside className="hidden sm:block bg-yellow-200 h-screen w-40">
-        <div className="bg-red-400">
-          <SidebarContent />
-        </div>
+    <div className="flex h-screen bg-slate-200  ">
+      <aside className="hidden sm:block ">
+        {/* <div className="flex bg-red-400 items-center"> */}
+        <SidebarContent />
+        {/* </div> */}
       </aside>
 
       {/*  */}
@@ -62,19 +62,6 @@ const WithDesktopSidebar = ({
       </aside> */}
     </div>
   );
-  /*
-  return (
-    // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="container  h-screen flex-1 place-items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-      <aside className="fixed bg-yellow-200 top-14 z-30 -ml-2 hidden h-screen w-full shrink-0 border-r md:sticky md:block">
-        <div className="h-full py-6 pl-8 pr-6 lg:py-8">
-          <SidebarContent />
-        </div>
-      </aside>
-      {children}
-    </div>
-  );
-  */
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -88,8 +75,10 @@ export const WithSidebar = ({
   mobileDashboardHeader?: () => JSX.Element;
 }) => {
   return (
-    <WithDesktopSidebar {...props}>
-      <WithMobileSidebar {...props}>{children}</WithMobileSidebar>
-    </WithDesktopSidebar>
+    <div className="flex bg-gold-500">
+      <WithDesktopSidebar {...props}>
+        <WithMobileSidebar {...props}>{children}</WithMobileSidebar>
+      </WithDesktopSidebar>
+    </div>
   );
 };

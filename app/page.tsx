@@ -1,4 +1,4 @@
-import AuthButton from "../components/AuthButton";
+import LogInOut from "../components/log-in-out";
 import { redirect } from "next/navigation";
 
 import { sessionExists } from "@/utils/supabase/server";
@@ -16,17 +16,7 @@ export default async function Index() {
     <div className="flex flex-col min-h-screen gap-20 items-center">
       <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16 bg-purple-200">
         <div className="w-full max-w-4xl flex justify-between items-center p-3 text-sm">
-          {/* {session ? <h1>already a session</h1> : <AuthButton />} */}
-          {session ? (
-            <h1>already a session</h1>
-          ) : (
-            <Link
-              href="/login"
-              className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-            >
-              Login (page)
-            </Link>
-          )}
+          <LogInOut />
         </div>
       </nav>
 

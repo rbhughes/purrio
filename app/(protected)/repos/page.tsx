@@ -1,6 +1,5 @@
 import React from "react";
 import { createClient } from "@/utils/supabase/server";
-
 import { cookies } from "next/headers";
 
 import { RepoReconForm } from "./components/repo-recon-form";
@@ -8,8 +7,7 @@ import RepoTable from "./repo-table";
 
 import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
 
-import Messenger from "@/components/Messenger";
-import Loader from "@/components/loader";
+import RealtimeMessenger from "@/components/realtime-messenger";
 
 export const dynamic = "force-dynamic";
 
@@ -40,8 +38,7 @@ export default async function Page() {
           hostnames={hostnames}
         />
 
-        <Messenger user={user} directive={"recon"} />
-        <Loader user={user} directive={"recon"} />
+        <RealtimeMessenger user={user} directive={"recon"} />
         <RepoTable repos={repos!} />
       </div>
     )

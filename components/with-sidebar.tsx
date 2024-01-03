@@ -53,7 +53,7 @@ const WithDesktopSidebar = ({
       {/*  */}
 
       {/* <div className="flex-grow bg-green-100 w-9/12">{children}</div> */}
-      <div className="flex-grow bg-green-100 ">{children}</div>
+      <div className="flex-grow bg-purple-200 ">{children}</div>
 
       {/*  */}
 

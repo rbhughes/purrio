@@ -105,7 +105,7 @@ export function DataTableToolbar<TData>({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2 bg-green-200">
+      <div className="flex flex-1 items-center space-x-2 bg-purple-200">
         <Input
           placeholder="Filter tasks..."
           value={(table.getColumn("fs_path")?.getFilterValue() as string) ?? ""}

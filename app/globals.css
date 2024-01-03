@@ -79,3 +79,7 @@
 .purr-navbar-button {
   @apply w-44 bg-slate-500 font-mono font-extrabold;
 }
+
+.purr-activity-button {
+  @apply fixed bottom-14 left-2 h-20 rounded-lg w-44 bg-slate-500 font-mono font-extrabold;
+}

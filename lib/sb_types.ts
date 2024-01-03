@@ -80,12 +80,12 @@ export interface Database {
       }
       message: {
         Row: {
+          activity: string | null
           directive: string | null
           function: string | null
           id: number
           level: string | null
           message: string | null
-          msg_short: string | null
           params: string | null
           repo_id: string | null
           row_created: string | null
@@ -94,12 +94,12 @@ export interface Database {
           user_id: string
         }
         Insert: {
+          activity?: string | null
           directive?: string | null
           function?: string | null
           id?: number
           level?: string | null
           message?: string | null
-          msg_short?: string | null
           params?: string | null
           repo_id?: string | null
           row_created?: string | null
@@ -108,12 +108,12 @@ export interface Database {
           user_id: string
         }
         Update: {
+          activity?: string | null
           directive?: string | null
           function?: string | null
           id?: number
           level?: string | null
           message?: string | null
-          msg_short?: string | null
           params?: string | null
           repo_id?: string | null
           row_created?: string | null

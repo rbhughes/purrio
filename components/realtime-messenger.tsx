@@ -47,7 +47,7 @@ export default function RealtimeMessenger({
   const supabase = createClient();
 
   const [messages, setMessages] = React.useState<Message[]>([]);
-  const [activity, setActivity] = React.useState<string | null>("(activity)");
+  const [activity, setActivity] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const channel = supabase
@@ -64,11 +64,11 @@ export default function RealtimeMessenger({
           let msg: Message = payload.new;
 
           if (msg.directive === "activity") {
-            setActivity(msg.msg_short);
+            setActivity(msg.activity);
           }
 
           setTimeout(() => {
-            setActivity("(activity");
+            setActivity(null);
           }, DELAY);
 
           // NOTE: the reverse to put newest item at top of array
@@ -91,16 +91,20 @@ export default function RealtimeMessenger({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="fixed bottom-14 left-2 h-20 w-44 bg-slate-500 animate-fade opacity-25">
-          {activity}
+        <Button
+          className={`purr-activity-button transition-opacity ease-in-out duration-600 ${
+            activity ? "opacity-100 ring-4 ring-amber-400" : "opacity-10"
+          }`}
+        >
+          {activity ? activity : "(activity)"}
         </Button>
       </DialogTrigger>
 
       <DialogContent className="min-w-full">
-        <DialogHeader>
+        {/* <DialogHeader>
           <DialogTitle>dialog title</DialogTitle>
           <DialogDescription>dialog desc</DialogDescription>
-        </DialogHeader>
+        </DialogHeader> */}
 
         <div className="flex items-center space-x-2">
           {/* <div className="grid flex-1 gap-2">

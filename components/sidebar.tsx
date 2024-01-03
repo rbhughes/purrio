@@ -10,9 +10,8 @@ export const Sidebar = ({
   //hasSession: boolean;
 }) => {
   return (
-    <div className="flex flex-row h-screen">
-      {/* <div className="fixed flex w-48 flex-col items-center gap-2 h-screen rounded-lg"> */}
-      <div className="flex w-48 flex-col items-center gap-2 h-screen rounded-lg bg-slate-200">
+    <div className="flex flex-row ">
+      <div className="flex w-48 flex-col items-center gap-2  rounded-lg bg-slate-200">
         <SidebarContent />
       </div>
       <div className="flex-grow p-4 ">{children}</div>

@@ -43,7 +43,7 @@ const WithDesktopSidebar = ({
 }) => {
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="flex h-screen bg-slate-200  ">
+    <div className="flex h-screen  ">
       <aside className="hidden sm:block ">
         {/* <div className="flex bg-red-400 items-center"> */}
         <SidebarContent />

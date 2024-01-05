@@ -1,8 +1,6 @@
 import { z } from "zod";
 
-// We're keeping a simple non-relational schema here.
-// IRL, you will have a schema for your data models.
-export const repoSchema = z.object({
+export const RepoSchema = z.object({
   id: z.string(),
   geo_type: z.string(),
   name: z.string(),
@@ -20,4 +18,4 @@ export const repoSchema = z.object({
   row_touched: z.string().datetime({ offset: true }),
 });
 
-export type Repo = z.infer<typeof repoSchema>;
+export type Repo = z.infer<typeof RepoSchema>;

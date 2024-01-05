@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
-import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
+import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-schema";
 
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";

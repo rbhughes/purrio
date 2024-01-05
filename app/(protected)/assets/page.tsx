@@ -5,6 +5,10 @@ import { cookies } from "next/headers";
 import { AssetJobForm } from "./components/asset-jobs-form";
 import AssetJobs from "./components/asset-jobs";
 
+import AssetJobTable from "./asset-job-table";
+
+import RealtimeMessenger from "@/components/realtime-messenger";
+
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -27,12 +31,13 @@ export default async function Page() {
     .select()
     .order("row_changed", { ascending: false });
 
+  //return <AssetJobTable assetJobs={assetJobs!} />;
   return (
-    user && (
-      <>
-        <AssetJobForm repos={repos!} />
-        <AssetJobs assetJobs={assetJobs!} />;
-      </>
-    )
+    //user && (
+    <>
+      {/* <AssetJobForm repos={repos!} /> */}
+      <AssetJobTable assetJobs={assetJobs!} />;
+    </>
+    //)
   );
 }

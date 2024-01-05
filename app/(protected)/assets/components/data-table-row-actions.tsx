@@ -38,8 +38,7 @@ export const labels = [
   },
 ];
 
-//import { taskSchema } from "../data/schema";
-import { RepoSchema } from "../repo-schema";
+import { assetJobSchema } from "../asset-job-schema";
 import {
   Dialog,
   DialogTrigger,
@@ -106,7 +105,7 @@ const doThing = (x: any, r: any) => {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const repo = RepoSchema.parse(row.original);
+  const assetJob = assetJobSchema.parse(row.original);
 
   return (
     <Dialog>
@@ -138,7 +137,7 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={(e) => {
               e.preventDefault();
-              doThing("favorite", row.getValue("fs_path"));
+              doThing("favorite", row.getValue("repo_fs_path"));
             }}
           >
             Favorite
@@ -147,7 +146,7 @@ export function DataTableRowActions<TData>({
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup value={repo.geo_type}>
+              <DropdownMenuRadioGroup value={assetJob.repo_geo_type}>
                 {labels.map((label) => (
                   <DropdownMenuRadioItem key={label.value} value={label.value}>
                     {label.label}

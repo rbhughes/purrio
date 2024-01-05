@@ -35,8 +35,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { saveAssetJob } from "@/lib/actions";
 
-import { AssetJobFormSchema } from "../asset-job-form-schema";
-type Inputs = z.infer<typeof AssetJobFormSchema>;
+import { assetJobSchema } from "../asset-job-schema";
+type Inputs = z.infer<typeof assetJobSchema>;
 
 const ASSETS = [
   "core",
@@ -69,7 +69,7 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
   };
 
   const form = useForm<Inputs>({
-    resolver: zodResolver(AssetJobFormSchema),
+    resolver: zodResolver(AssetJobSchema),
     defaultValues: defaults,
   });
 

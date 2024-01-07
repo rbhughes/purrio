@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
-import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-schema";
+import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
 
 import { createClient } from "@/utils/supabase/server";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -12,10 +12,10 @@ import { cookies } from "next/headers";
 import { Database } from "@/lib/sb_types";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-type RepoReconInputs = z.infer<typeof RepoReconFormSchema>;
-type AssetJobInputs = z.infer<typeof AssetJobFormSchema>;
+type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
+type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
-export async function addRepoReconTask(formData: RepoReconInputs) {
+export async function addRepoReconTask(formData: RepoReconFormInputs) {
   const cookieStore = cookies();
   console.log("____top of addEntry_____(written to SERVER) formData_______");
   console.log(formData);
@@ -107,7 +107,7 @@ export async function deleteAssetJob(id: number) {
   }
 }
 
-export async function saveAssetJob(formData: AssetJobInputs) {
+export async function saveAssetJob(formData: AssetJobFormInputs) {
   const cookieStore = cookies();
   const result = AssetJobFormSchema.safeParse(formData);
 
@@ -118,9 +118,9 @@ export async function saveAssetJob(formData: AssetJobInputs) {
       active: formData.active,
       asset: formData.asset,
       chunk: formData.chunk,
-      cron: formData.cron,
+      //cron: formData.cron,
       filter: formData.filter,
-      last_invoked: formData.last_invoked,
+      //last_invoked: formData.last_invoked,
       repo_fs_path: formData.repo_fs_path,
       repo_geo_type: formData.repo_geo_type,
       repo_id: formData.repo_id,

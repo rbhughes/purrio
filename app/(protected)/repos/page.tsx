@@ -1,4 +1,4 @@
-import React from "react";
+//import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
@@ -9,7 +9,13 @@ import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
 
 import RealtimeMessenger from "@/components/realtime-messenger";
 
+import { Toggler } from "./toggler";
+
 export const dynamic = "force-dynamic";
+
+const fakeRepoVis = () => {
+  return <>FAKE REPO VIS</>;
+};
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -38,8 +44,33 @@ export default async function Page() {
           hostnames={hostnames}
         />
 
+        <Toggler
+          componentA={<RepoTable repos={repos!} />}
+          componentB={fakeRepoVis()}
+        />
+
         <RealtimeMessenger user={user} directive={"recon"} />
-        <RepoTable repos={repos!} />
+
+        {process.env.NODE_ENV === "development" && (
+          <div className="bg-amber-400 mt-20 w-fit ">
+            TODO
+            <ul>
+              <li>move view/toggle column list</li>
+              <li>clean up repo-recon form</li>
+              <li>add recon-root to repo model</li>
+              <li>toggle: table vs some kinda datavis</li>
+              <li>row action: refresh</li>
+              <li>row action: forget</li>
+              <li>table action: export selected to csv</li>
+              <li>table action: refresh selected</li>
+              <li>icon for geographix</li>
+              <li>icon for petra</li>
+              <li>icon for kingdom</li>
+              <li>icon for las</li>
+              <li>icon for toggle</li>
+            </ul>
+          </div>
+        )}
       </div>
     )
   );

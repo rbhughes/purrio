@@ -200,6 +200,14 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
+    accessorKey: "asset",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="asset" />
+    ),
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("asset")}</div>,
+  },
+
+  {
     accessorKey: "repo_fs_path",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="repo_fs_path" />
@@ -232,22 +240,12 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
-    accessorKey: "asset",
+    accessorKey: "filter",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="asset" />
+      <DataTableColumnHeader column={column} title="filter" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("asset")}</div>,
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("filter")}</div>,
   },
-
-  // {
-  //   accessorKey: "directories",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="directories" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-[80px]">{row.getValue("directories")}</div>
-  //   ),
-  // },
 
   // {
   //   accessorKey: "bytes",

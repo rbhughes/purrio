@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-export const assetJobSchema = z.object({
-  id: z.number().optional(),
+export const AssetJobFormSchema = z.object({
   active: z.boolean({
     required_error: "active is required",
   }),
@@ -11,15 +10,15 @@ export const assetJobSchema = z.object({
   chunk: z.coerce.number({
     required_error: "enter a chunk value",
   }),
-  cron: z.string().optional(),
   filter: z.string().optional(),
-  //last_invoked: z.date().nullable(),
-  last_invoked: z.string().datetime({ offset: true }).nullable(),
+  // cron: z.string().optional(),
+  // //last_invoked: z.date().nullable(),
+  // last_invoked: z.string().datetime({ offset: true }).nullable(),
+  repo_fs_path: z.string().nullable(),
+  repo_geo_type: z.string(),
   repo_id: z.string({
     required_error: "select a repo_id",
   }),
-  repo_fs_path: z.string().nullable(),
-  repo_geo_type: z.string(),
   repo_name: z.string().nullable(),
-  row_created: z.string().datetime({ offset: true }),
+  // row_created: z.string().datetime({ offset: true }),
 });

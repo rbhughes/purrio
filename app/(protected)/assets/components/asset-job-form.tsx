@@ -4,16 +4,17 @@ import React from "react";
 
 import Link from "next/link";
 
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
-
-import { Database } from "@/lib/sb_types";
-type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
+import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+
+import { Database } from "@/lib/sb_types";
+//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
+
 import {
   Form,
   FormControl,
@@ -30,13 +31,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 
-import { Button } from "@/components/ui/button";
+import { AssetJobFormSchema } from "../asset-job-form-schema";
 import { saveAssetJob } from "@/lib/actions";
 
-import { assetJobSchema } from "../asset-job-schema";
-type Inputs = z.infer<typeof assetJobSchema>;
+type Inputs = z.infer<typeof AssetJobFormSchema>;
 
 const ASSETS = [
   "core",
@@ -63,22 +62,29 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     filter: "",
     last_invoked: null,
     repo_fs_path: null,
-    repo_geo_type: null,
+    repo_geo_type: "geographix",
     repo_name: null,
     repo_id: repos[0].id,
   };
 
   const form = useForm<Inputs>({
-    resolver: zodResolver(AssetJobSchema),
+    resolver: zodResolver(AssetJobFormSchema),
     defaultValues: defaults,
   });
 
+  // const processForm: SubmitHandler<Inputs> = async (formData) => {
+  //   console.log("--------------------------");
+  //   console.log(formData);
+  //   console.log("--------------------------");
+  // };
+
   // add repo fs_path and name here (joins not supported for sb subscription)
   const processForm: SubmitHandler<Inputs> = async (formData) => {
+    console.log("PROCESSFORM", formData);
     const repo = repos.filter((r) => r.id === formData.repo_id)[0];
 
     formData.repo_fs_path = repo.fs_path;
-    formData.repo_geo_type = repo.geo_type;
+    formData.repo_geo_type = repo.geo_type!;
     formData.repo_name = repo.name;
     const result = await saveAssetJob(formData);
 
@@ -101,6 +107,8 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(processForm)} className=" space-y-6 ">
+          {/* ---------- */}
+
           <div className="flex flex-row">
             <div className="flex basis-1/6">
               <FormField
@@ -198,12 +206,13 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
                     <FormControl>
                       <Input placeholder="chunk" {...field} />
                     </FormControl>
-                    <FormDescription>This is chunk</FormDescription>
+                    <FormDescription>This chunk</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
             <div className="flex basis-1/6">
               <FormField
                 control={form.control}
@@ -221,7 +230,7 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
               />
             </div>
 
-            <div className="flex basis-1/6">
+            {/* <div className="flex basis-1/6">
               <FormField
                 control={form.control}
                 name="cron"
@@ -236,7 +245,7 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
           </div>
 
           <Button type="submit">Submit</Button>

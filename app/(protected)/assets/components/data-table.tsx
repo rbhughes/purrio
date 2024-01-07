@@ -41,7 +41,7 @@ let yyy: VisibilityState = {
   //asset: false,
   chunk: false,
   cron: false,
-  filter: false,
+  //filter: false,
   id: false,
   last_invoked: false,
   //repo_fs_path: true,

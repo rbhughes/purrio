@@ -38,7 +38,7 @@ export const labels = [
   },
 ];
 
-import { assetJobSchema } from "../asset-job-schema";
+import { AssetJobSchema } from "../asset-job-schema";
 import {
   Dialog,
   DialogTrigger,
@@ -105,7 +105,7 @@ const doThing = (x: any, r: any) => {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const assetJob = assetJobSchema.parse(row.original);
+  const assetJob = AssetJobSchema.parse(row.original);
 
   return (
     <Dialog>

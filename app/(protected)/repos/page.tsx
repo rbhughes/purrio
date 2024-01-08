@@ -1,21 +1,15 @@
-//import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
 import { RepoReconForm } from "./components/repo-recon-form";
 import RepoTable from "./repo-table";
+import RepoVis from "./repo-vis";
 
 import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
 
-import RealtimeMessenger from "@/components/realtime-messenger";
-
-import { Toggler } from "./toggler";
+import { TableVisSwitch } from "@/components/table-vis-switch";
 
 export const dynamic = "force-dynamic";
-
-const fakeRepoVis = () => {
-  return <>FAKE REPO VIS</>;
-};
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -44,12 +38,10 @@ export default async function Page() {
           hostnames={hostnames}
         />
 
-        <Toggler
-          componentA={<RepoTable repos={repos!} />}
-          componentB={fakeRepoVis()}
+        <TableVisSwitch
+          compA={<RepoTable repos={repos!} />}
+          compB={<RepoVis repos={repos!} />}
         />
-
-        <RealtimeMessenger user={user} directive={"recon"} />
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-amber-400 mt-20 w-fit ">

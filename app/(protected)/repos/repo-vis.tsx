@@ -7,10 +7,10 @@ import { createClient } from "@/utils/supabase/client";
 
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-import { columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
+//import { columns } from "./components/columns";
+//import { DataTable } from "./components/data-table";
 
-export default function RepoTable({ repos }: { repos: Repo[] }) {
+export default function RepoVis({ repos }: { repos: Repo[] }) {
   const supabase = createClient();
   const router = useRouter();
 
@@ -37,7 +37,9 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
 
   return (
     <div className="border border-amber-500 my-4">
-      <DataTable data={repos} columns={columns} />
+      <div className="bg-amber-100 ">
+        <pre>{JSON.stringify(repos, null, 2)}</pre>
+      </div>
     </div>
   );
 }

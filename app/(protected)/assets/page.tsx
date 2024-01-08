@@ -6,8 +6,6 @@ import AssetJobs from "./components/asset-jobs";
 
 import AssetJobTable from "./asset-job-table";
 
-import RealtimeMessenger from "@/components/realtime-messenger";
-
 export const dynamic = "force-dynamic";
 
 export default async function Page() {

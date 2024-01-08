@@ -91,6 +91,11 @@ export default function RealtimeMessenger({
   return (
     <Dialog>
       <DialogTrigger asChild>
+        {/* <Button
+          className={`purr-activity-button transition-opacity ease-in-out duration-600 ${
+            activity ? "opacity-100 ring-4 ring-amber-400" : "opacity-10"
+          }`}
+        > */}
         <Button
           className={`purr-activity-button transition-opacity ease-in-out duration-600 ${
             activity ? "opacity-100 ring-4 ring-amber-400" : "opacity-10"
@@ -152,14 +157,14 @@ export default function RealtimeMessenger({
     </Dialog>
   );
 
-  return (
-    <Button
-      className="fixed bottom-14 left-2 bg-red-600 w-40"
-      onClick={() => console.log("hello")}
-    >
-      {/* {message} */}
-    </Button>
-  );
+  // return (
+  //   <Button
+  //     className="fixed bottom-14 left-2 bg-red-600 w-40"
+  //     onClick={() => console.log("hello")}
+  //   >
+  //     {/* {message} */}
+  //   </Button>
+  // );
 
   // return (
   //   <div className="bg-slate-100 h-40 overflow-auto break-all font-mono outline m-5">

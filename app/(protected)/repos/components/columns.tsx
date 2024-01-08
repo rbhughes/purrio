@@ -13,6 +13,9 @@ import {
 
 import { Database } from "@/lib/sb_types";
 
+//import { Database as DatabaseIcon } from "lucide-react";
+import { Cylinder } from "lucide-react";
+
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
@@ -111,26 +114,40 @@ export const labels = [
 //   });
 // };
 
+//TODO: move to util
 export const geo_types = [
   {
     label: "GeoGraphix",
     value: "geographix",
-    icon: ArrowDownIcon,
+    //icon: <DatabaseIcon color="#ff0000" />,
+    /* <Cylinder color="blue" size={20} strokeWidth={3} /> */
+    icon: () => (
+      <Cylinder color="lime" className="mx-1" size={20} strokeWidth={3} />
+    ),
   },
   {
     label: "Petra",
     value: "petra",
-    icon: ArrowRightIcon,
+    //icon: ArrowRightIcon,
+    icon: () => (
+      <Cylinder color="turquoise" className="mx-1" size={20} strokeWidth={3} />
+    ),
   },
   {
     label: "Kingdom",
     value: "kingdom",
-    icon: ArrowUpIcon,
+    //icon: ArrowUpIcon,
+    icon: () => (
+      <Cylinder color="red" className="mx-1" size={20} strokeWidth={3} />
+    ),
   },
   {
     label: "LAS",
     value: "las",
-    icon: ArrowUpIcon,
+    //icon: ArrowUpIcon,
+    icon: () => (
+      <Cylinder color="grey" className="mx-1" size={20} strokeWidth={3} />
+    ),
   },
 ];
 
@@ -172,10 +189,8 @@ export const columns: ColumnDef<Repo>[] = [
       }
 
       return (
-        <div className="flex items-center">
-          {geo_type.icon && (
-            <geo_type.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
+        <div className="flex items-center w-[120px]">
+          {geo_type.icon()}
           <span>{geo_type.label}</span>
         </div>
       );

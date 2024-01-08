@@ -11,6 +11,8 @@ import {
   StopwatchIcon,
 } from "@radix-ui/react-icons";
 
+import { Database as DBIcon } from "lucide-react";
+
 import { Database } from "@/lib/sb_types";
 
 import { ColumnDef } from "@tanstack/react-table";
@@ -115,7 +117,7 @@ export const repo_geo_types = [
   {
     label: "GeoGraphix",
     value: "geographix",
-    icon: ArrowDownIcon,
+    icon: DBIcon,
   },
   {
     label: "Petra",

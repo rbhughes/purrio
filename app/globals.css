@@ -81,5 +81,6 @@
 }
 
 .purr-activity-button {
-  @apply w-44 m-2 fixed bottom-14 left-0 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
+  /* @apply w-44 m-2 fixed bottom-14 left-0 h-20 rounded-lg bg-slate-500 font-mono font-extrabold; */
+  @apply w-44 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
 }

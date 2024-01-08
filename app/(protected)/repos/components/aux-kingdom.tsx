@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -10,59 +9,63 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-//import { UseFormReturn } from "react-hook-form";
-
 export function AuxKingdom({ form }: { form: any }) {
   return (
-    <>
-      <FormField
-        control={form.control}
-        name="kingdom_server"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Kingdom server</FormLabel>
-            <FormControl>
-              <Input placeholder="hostname or ip" {...field} />
-            </FormControl>
-            <FormDescription>This is kingdom_server</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="flex flex-row gap-2">
+      <div className="w-2/6">
+        <FormField
+          control={form.control}
+          name="kingdom_server"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Database server</FormLabel>
+              <FormControl>
+                <Input placeholder="hostname or IP" {...field} />
+              </FormControl>
+              <FormDescription>Hostname or IP of SQL Server</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       {/* ---------- */}
 
-      <FormField
-        control={form.control}
-        name="kingdom_username"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Kingdom username</FormLabel>
-            <FormControl>
-              <Input placeholder="kingdom username" {...field} />
-            </FormControl>
-            <FormDescription>This is kingdom username</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="w-1/6">
+        <FormField
+          control={form.control}
+          name="kingdom_username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="username" {...field} />
+              </FormControl>
+              <FormDescription>DB username</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
 
       {/* ---------- */}
 
-      <FormField
-        control={form.control}
-        name="kingdom_password"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Kingdom password</FormLabel>
-            <FormControl>
-              <Input placeholder="hostname or ip" {...field} />
-            </FormControl>
-            <FormDescription>This is kingdom_password</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+      <div className="w-1/6">
+        <FormField
+          control={form.control}
+          name="kingdom_password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Kingdom password</FormLabel>
+              <FormControl>
+                <Input placeholder="password" {...field} type="password" />
+              </FormControl>
+              <FormDescription>DB password</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
   );
 }

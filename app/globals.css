@@ -76,6 +76,10 @@
   }
 }
 
+.purr-button {
+  @apply bg-slate-500 font-mono font-extrabold;
+}
+
 .purr-navbar-button {
   @apply w-44 bg-slate-500 font-mono font-extrabold;
 }

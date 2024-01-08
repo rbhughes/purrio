@@ -64,9 +64,6 @@ export function RepoReconForm({
   });
 
   const processForm: SubmitHandler<Inputs> = async (formData) => {
-    // console.log("____top of processForm______(written to BROWSER)__");
-    // console.log(formData);
-    // console.log("__________________________________________________");
     const result = await addRepoReconTask(formData);
 
     if (!result) {
@@ -80,18 +77,6 @@ export function RepoReconForm({
       return;
     }
 
-    // toast({
-    //   className: "w-[700px]",
-    //   title: result.data.recon_root,
-    //   description: (
-    //     <pre className="mt-2 w-[650px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">
-    //         {JSON.stringify(result.data, null, 2)}
-    //       </code>
-    //     </pre>
-    //   ),
-    // });
-
     setData(result.data);
     form.reset();
   };
@@ -102,14 +87,14 @@ export function RepoReconForm({
         <form onSubmit={form.handleSubmit(processForm)} className=" space-y-6 ">
           {/* ---------- */}
 
-          <div className="flex flex-row">
-            <div className="flex basis-1/4">
+          <div className="flex flex-row gap-2 ">
+            <div className="w-1/6">
               <FormField
                 control={form.control}
                 name="geo_type"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>geo_type</FormLabel>
+                    <FormLabel>Repo Type</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -126,17 +111,17 @@ export function RepoReconForm({
                         })}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
+                    {/* <FormDescription>
                       Yay geotypes{" "}
                       <Link href="/examples/forms">email settings</Link>.
-                    </FormDescription>
+                    </FormDescription> */}
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="flex basis-2/4">
+            <div className="w-2/6">
               <FormField
                 control={form.control}
                 name="recon_root"
@@ -146,20 +131,22 @@ export function RepoReconForm({
                     <FormControl>
                       <Input placeholder="recon root" {...field} />
                     </FormControl>
-                    <FormDescription>This is a recon root</FormDescription>
+                    <FormDescription>
+                      Directory containing projects
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <div className="flex basis-1/4">
+            <div className="w-1/6">
               <FormField
                 control={form.control}
                 name="hostname"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>hostname</FormLabel>
+                    <FormLabel>Worker</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -176,32 +163,38 @@ export function RepoReconForm({
                         })}
                       </SelectContent>
                     </Select>
-                    <FormDescription>
-                      assigned hostname for task
-                    </FormDescription>
+                    <FormDescription>Assign a specific worker</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-          </div>
 
-          <div className="flex flex-row">
-            <div className="flex basis-1/4">
-              {watchedGeoType === "geographix" && (
-                <div className="w-full">
-                  <AuxGeographix form={form} />
-                </div>
-              )}
-              {watchedGeoType === "kingdom" && (
-                <div className="w-full">
-                  <AuxKingdom form={form} />
-                </div>
-              )}
+            <div className="w-1/6"></div>
+            <div className="w-1/6 mt-8">
+              <Button type="submit" className="purr-button">
+                Submit
+              </Button>
             </div>
           </div>
 
-          <Button type="submit">Submit</Button>
+          {/* {watchedGeoType === "geographix" && <AuxGeographix form={form} />}
+          {watchedGeoType === "kingodm" && <AuxKingdom form={form} />} */}
+
+          <div className="flex flex-row">
+            {watchedGeoType === "geographix" && (
+              <div className="w-full">
+                <AuxGeographix form={form} />
+              </div>
+            )}
+            {watchedGeoType === "kingdom" && (
+              <div className="w-full">
+                <AuxKingdom form={form} />
+              </div>
+            )}
+          </div>
+
+          {/* <Button type="submit">Submit</Button> */}
         </form>
       </Form>
 

@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 
 import {
-  Form,
   FormControl,
   FormDescription,
   FormField,
@@ -10,23 +9,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-//import { UseFormReturn } from "react-hook-form";
-
 export function AuxGeographix({ form }: { form: any }) {
   return (
-    <FormField
-      control={form.control}
-      name="ggx_host"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>GGX Host</FormLabel>
-          <FormControl>
-            <Input placeholder="ggx_host" {...field} />
-          </FormControl>
-          <FormDescription>This is a ggx host</FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div className="flex flex-row">
+      {/* <div className="w-3/6"></div> */}
+      <div className="w-1/6">
+        <FormField
+          control={form.control}
+          name="ggx_host"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>GGX Host</FormLabel>
+              <FormControl>
+                <Input placeholder="ggx_host" {...field} />
+              </FormControl>
+              <FormDescription>SQLAnywhere Hostname</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
   );
 }

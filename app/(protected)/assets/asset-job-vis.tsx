@@ -5,21 +5,21 @@ import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-export default function RepoVis({ repos }: { repos: Repo[] }) {
+export default function AssetJobVis({ assetJobs }: { assetJobs: AssetJob[] }) {
   const supabase = createClient();
   const router = useRouter();
 
   React.useEffect(() => {
     const channel = supabase
-      .channel("realtime repo")
+      .channel("realtime asset-job")
       .on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
-          table: "repo",
+          table: "asset_job",
         },
         () => {
           router.refresh();
@@ -35,7 +35,7 @@ export default function RepoVis({ repos }: { repos: Repo[] }) {
   return (
     <div className="border border-amber-500 my-4">
       <div className="bg-amber-100 ">
-        <pre>{JSON.stringify(repos, null, 2)}</pre>
+        <pre>{JSON.stringify(assetJobs, null, 2)}</pre>
       </div>
     </div>
   );

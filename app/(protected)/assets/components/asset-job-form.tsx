@@ -2,9 +2,7 @@
 
 import React from "react";
 
-import Link from "next/link";
-
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -12,9 +10,15 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Database } from "@/lib/sb_types";
-//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -37,6 +41,7 @@ import { saveAssetJob } from "@/lib/actions";
 
 type Inputs = z.infer<typeof AssetJobFormSchema>;
 
+//TODO: move to lib
 const ASSETS = [
   "core",
   "dst",
@@ -72,11 +77,12 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     defaultValues: defaults,
   });
 
-  // const processForm: SubmitHandler<Inputs> = async (formData) => {
-  //   console.log("--------------------------");
-  //   console.log(formData);
-  //   console.log("--------------------------");
-  // };
+  // START HERE
+  // let watchedGeoType = useWatch({
+  //   control: form.control,
+  //   name: "geo_type",
+  //   defaultValue: geotypes[0],
+  // });
 
   // add repo fs_path and name here (joins not supported for sb subscription)
   const processForm: SubmitHandler<Inputs> = async (formData) => {
@@ -104,133 +110,144 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
   };
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(processForm)} className=" space-y-6 ">
-          {/* ---------- */}
+    <Card>
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+        <CardDescription>Card Description</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(processForm)}
+            className=" space-y-6 "
+          >
+            <div className="flex flex-row gap-2">
+              {/* ---------- */}
 
-          <div className="flex flex-row">
-            <div className="flex basis-1/6">
-              <FormField
-                control={form.control}
-                name="active"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>active</FormLabel>
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormDescription>This is active</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="flex basis-1/6">
-              <FormField
-                control={form.control}
-                name="repo_id"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>repo_id</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+              <div className="w-1/12">
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Active</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a repo" />
-                        </SelectTrigger>
+                        {/* <div className="flex h-9 items-center justify-center"> */}
+                        <div className="flex h-9 items-center ml-4">
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </div>
                       </FormControl>
-                      <SelectContent>
-                        {repos.map((repo: Repo) => {
-                          return (
-                            <SelectItem key={repo.id} value={repo.id}>
-                              {repo.name}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Yay assets{" "}
-                      <Link href="/examples/forms">email settings</Link>.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      {/* <FormDescription>(default on)</FormDescription> */}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <div className="flex basis-1/6">
-              <FormField
-                control={form.control}
-                name="asset"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>asset</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+              <div className="w-1/6">
+                <FormField
+                  control={form.control}
+                  name="repo_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Repo</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a repo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {repos.map((repo: Repo) => {
+                            return (
+                              <SelectItem key={repo.id} value={repo.id}>
+                                {repo.name}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Source project</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="w-1/6">
+                <FormField
+                  control={form.control}
+                  name="asset"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Asset</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an asset" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {ASSETS.map((asset: string) => {
+                            return (
+                              <SelectItem key={asset} value={asset}>
+                                {asset}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Data type to collect</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* <div className="w-1/6">
+                <FormField
+                  control={form.control}
+                  name="chunk"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>chunk</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an asset" />
-                        </SelectTrigger>
+                        <Input placeholder="chunk" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {ASSETS.map((asset: string) => {
-                          return (
-                            <SelectItem key={asset} value={asset}>
-                              {asset}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Yay assets{" "}
-                      <Link href="/examples/forms">email settings</Link>.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      <FormDescription></FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div> */}
 
-            <div className="flex basis-1/6">
-              <FormField
-                control={form.control}
-                name="chunk"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>chunk</FormLabel>
-                    <FormControl>
-                      <Input placeholder="chunk" {...field} />
-                    </FormControl>
-                    <FormDescription>This chunk</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+              <div className="w-2/6">
+                <FormField
+                  control={form.control}
+                  name="filter"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>filter</FormLabel>
+                      <FormControl>
+                        <Input placeholder="filter" {...field} />
+                      </FormControl>
+                      <FormDescription>SQL where clause stub</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-            <div className="flex basis-1/6">
-              <FormField
-                control={form.control}
-                name="filter"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>filter</FormLabel>
-                    <FormControl>
-                      <Input placeholder="filter" {...field} />
-                    </FormControl>
-                    <FormDescription>This is filter</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* <div className="flex basis-1/6">
+              {/* <div className="flex basis-1/6">
               <FormField
                 control={form.control}
                 name="cron"
@@ -246,11 +263,16 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
                 )}
               />
             </div> */}
-          </div>
 
-          <Button type="submit">Submit</Button>
-        </form>
-      </Form>
-    </>
+              <div className="w-1/6 mt-8">
+                <Button type="submit" className="purr-button">
+                  save
+                </Button>
+              </div>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

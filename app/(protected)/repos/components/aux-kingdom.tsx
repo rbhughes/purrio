@@ -56,7 +56,7 @@ export function AuxKingdom({ form }: { form: any }) {
           name="kingdom_password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Kingdom password</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input placeholder="password" {...field} type="password" />
               </FormControl>

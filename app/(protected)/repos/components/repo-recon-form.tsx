@@ -2,13 +2,18 @@
 
 import React from "react";
 
-import Link from "next/link";
-
 import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -82,123 +87,120 @@ export function RepoReconForm({
   };
 
   return (
-    <div className="border border-amber-500  my-4">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(processForm)} className=" space-y-6 ">
-          {/* ---------- */}
+    // <div className="border bg-slate-100 border-amber-500 rounded-lg my-4 p-4">
+    <Card>
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+        <CardDescription>Card Description</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(processForm)}
+            className=" space-y-6 "
+          >
+            <div className="flex flex-row gap-2">
+              {/* ---------- */}
 
-          <div className="flex flex-row gap-2 ">
-            <div className="w-1/6">
-              <FormField
-                control={form.control}
-                name="geo_type"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Repo Type</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a geo_type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {geotypes.map((geotype: string) => {
-                          return (
-                            <SelectItem key={geotype} value={geotype}>
-                              {geotype}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    {/* <FormDescription>
-                      Yay geotypes{" "}
-                      <Link href="/examples/forms">email settings</Link>.
-                    </FormDescription> */}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="w-2/6">
-              <FormField
-                control={form.control}
-                name="recon_root"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Repo Recon</FormLabel>
-                    <FormControl>
-                      <Input placeholder="recon root" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Directory containing projects
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="w-1/6">
-              <FormField
-                control={form.control}
-                name="hostname"
-                render={({ field }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Worker</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a hostname" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {hostnames.map((hostname: string) => {
-                          return (
-                            <SelectItem key={hostname} value={hostname}>
-                              {hostname}
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>Assign a specific worker</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="w-1/6"></div>
-            <div className="w-1/6 mt-8">
-              <Button type="submit" className="purr-button">
-                Submit
-              </Button>
-            </div>
-          </div>
-
-          {/* {watchedGeoType === "geographix" && <AuxGeographix form={form} />}
-          {watchedGeoType === "kingodm" && <AuxKingdom form={form} />} */}
-
-          <div className="flex flex-row">
-            {watchedGeoType === "geographix" && (
-              <div className="w-full">
-                <AuxGeographix form={form} />
+              <div className="w-1/6">
+                <FormField
+                  control={form.control}
+                  name="geo_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Repo Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a geo_type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {geotypes.map((geotype: string) => {
+                            return (
+                              <SelectItem key={geotype} value={geotype}>
+                                {geotype}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            )}
-            {watchedGeoType === "kingdom" && (
-              <div className="w-full">
-                <AuxKingdom form={form} />
+
+              <div className="w-2/6">
+                <FormField
+                  control={form.control}
+                  name="recon_root"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Repo Recon</FormLabel>
+                      <FormControl>
+                        <Input placeholder="recon root" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Directory containing projects
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            )}
-          </div>
 
-          {/* <Button type="submit">Submit</Button> */}
-        </form>
-      </Form>
+              <div className="w-1/6">
+                <FormField
+                  control={form.control}
+                  name="hostname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Worker</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a hostname" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {hostnames.map((hostname: string) => {
+                            return (
+                              <SelectItem key={hostname} value={hostname}>
+                                {hostname}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Assign a specific worker
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-      {/* <Toaster /> */}
-    </div>
+              <div className="w-1/6"></div>
+              <div className="w-1/6 mt-8">
+                <Button type="submit" className="purr-button">
+                  repo recon
+                </Button>
+              </div>
+            </div>
+
+            {watchedGeoType === "geographix" && <AuxGeographix form={form} />}
+            {watchedGeoType === "kingdom" && <AuxKingdom form={form} />}
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

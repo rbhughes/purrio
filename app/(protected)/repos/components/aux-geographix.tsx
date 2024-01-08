@@ -12,7 +12,6 @@ import {
 export function AuxGeographix({ form }: { form: any }) {
   return (
     <div className="flex flex-row">
-      {/* <div className="w-3/6"></div> */}
       <div className="w-1/6">
         <FormField
           control={form.control}

@@ -5,6 +5,14 @@ import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 export default function RepoVis({ repos }: { repos: Repo[] }) {
@@ -33,10 +41,12 @@ export default function RepoVis({ repos }: { repos: Repo[] }) {
   }, [supabase, router]);
 
   return (
-    <div className="border border-amber-500 my-4">
-      <div className="bg-amber-100 ">
-        <pre>{JSON.stringify(repos, null, 2)}</pre>
-      </div>
-    </div>
+    <Card>
+      <CardContent>
+        <div className="bg-amber-100 ">
+          <pre>{JSON.stringify(repos, null, 2)}</pre>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

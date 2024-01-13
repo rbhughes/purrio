@@ -30,6 +30,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+
+//import { Toaster } from "@/components/ui/toaster";
+//import { toast } from "@/components/ui/use-toast";
 
 import { RepoReconFormSchema } from "../repo-recon-form-schema";
 import { addRepoReconTask } from "@/lib/actions";
@@ -42,18 +46,18 @@ type Inputs = z.infer<typeof RepoReconFormSchema>;
 export function RepoReconForm({
   email,
   geotypes,
-  hostnames,
+  workers,
 }: {
   email: string;
   geotypes: string[];
-  hostnames: string[];
+  workers: string[];
 }) {
   const [data, setData] = React.useState<Inputs>();
 
   let defaults = {
     geo_type: geotypes[0],
     recon_root: "",
-    hostname: hostnames[0],
+    worker: workers[0],
     ggx_host: "",
   };
 
@@ -72,26 +76,36 @@ export function RepoReconForm({
     const result = await addRepoReconTask(formData);
 
     if (!result) {
-      console.log("Something went wrong");
+      toast.error("No results returned when trying to enqueue task.");
       return;
     }
 
     if (result.error) {
-      // set local error state
-      console.log(result.error);
+      toast.error(JSON.stringify(result.error, null, 2));
       return;
     }
+
+    //TODO: 2024-01-12: custom colors are not working for error/warning, etc
+    // a re-init of shadcn didn't resolve
+    // https://github.com/emilkowalski/sonner/issues/242
+    // https://sonner.emilkowal.ski/
+    toast.error(JSON.stringify(result.data, null, 2));
 
     setData(result.data);
     form.reset();
   };
 
+  const cardDesc = `
+  Crawl a directory to locate and automatically collect a metadata inventory 
+  for the specified project (repo) type`;
+
+  // return <MyAlert message="blah" kind="info" />
   return (
     // <div className="border bg-slate-100 border-amber-500 rounded-lg my-4 p-4">
     <Card>
       <CardHeader>
         <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <CardDescription>{cardDesc}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -170,7 +184,7 @@ export function RepoReconForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {hostnames.map((hostname: string) => {
+                          {workers.map((hostname: string) => {
                             return (
                               <SelectItem key={hostname} value={hostname}>
                                 {hostname}

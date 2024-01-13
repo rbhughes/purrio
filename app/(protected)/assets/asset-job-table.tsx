@@ -4,6 +4,7 @@ import React from "react";
 import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { Card } from "@/components/ui/card";
 
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
@@ -39,13 +40,9 @@ export default function AssetJobTable({
     };
   }, [supabase, router]);
 
-  return <DataTable data={assetJobs} columns={columns} />;
-
-  // return (
-  //   <ul>
-  //     {assetJobs?.map((aj: AssetJob) => (
-  //       <li key={aj.id}>{JSON.stringify(aj)}</li>
-  //     ))}
-  //   </ul>
-  // );
+  return (
+    <Card>
+      <DataTable data={assetJobs} columns={columns} />
+    </Card>
+  );
 }

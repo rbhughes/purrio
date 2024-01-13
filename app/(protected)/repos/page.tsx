@@ -5,9 +5,11 @@ import { RepoReconForm } from "./components/repo-recon-form";
 import RepoTable from "./repo-table";
 import RepoVis from "./repo-vis";
 
-import { fetchGeoTypes, fetchHostnames } from "@/lib/actions";
+import { fetchGeoTypes, fetchWorkers } from "@/lib/actions";
 
 import { TableVisSwitch } from "@/components/table-vis-switch";
+import { Toaster } from "@/components/ui/sonner";
+//import { Toaster } from "sonner";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +18,7 @@ export default async function Page() {
   const supabase = createClient(cookieStore);
 
   const geotypes = await fetchGeoTypes(supabase);
-  const hostnames = await fetchHostnames(supabase);
+  const workers = await fetchWorkers(supabase);
 
   const {
     data: { user },
@@ -32,16 +34,14 @@ export default async function Page() {
   return (
     user && (
       <div>
-        <RepoReconForm
-          email={email}
-          geotypes={geotypes}
-          hostnames={hostnames}
-        />
+        <RepoReconForm email={email} geotypes={geotypes} workers={workers} />
 
         <TableVisSwitch
           compA={<RepoTable repos={repos!} />}
           compB={<RepoVis repos={repos!} />}
         />
+
+        <Toaster />
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-amber-400 mt-20 w-fit ">

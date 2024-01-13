@@ -4,6 +4,7 @@ import React from "react";
 import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { Card } from "@/components/ui/card";
 
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -36,8 +37,8 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
   }, [supabase, router]);
 
   return (
-    <div className="border border-amber-500 my-4">
+    <Card>
       <DataTable data={repos} columns={columns} />
-    </div>
+    </Card>
   );
 }

@@ -23,7 +23,7 @@ export const TableVisSwitch = ({
 
   return (
     <>
-      <div className=" flex items-center space-x-4 rounded-md border my-4 p-4 w-fit">
+      <div className=" flex items-center space-x-4 rounded-lg border shadow my-4 p-4 w-fit">
         <Table />
         <Switch id="toggle" onClick={handleToggle}></Switch>
         <AreaChart />

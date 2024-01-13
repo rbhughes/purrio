@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const RepoSchema = z.object({
   id: z.string(),
+  //conn: z.object({dbf: z.string()}),
+  conn_aux: z.object({ ggx_host: z.string() }).nullable(),
   geo_type: z.string(),
   name: z.string(),
   fs_path: z.string(),

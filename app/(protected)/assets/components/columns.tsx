@@ -26,7 +26,7 @@ type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import { humanFileSize } from "@/lib/utils";
+import { humanFileSize } from "@/lib/purr_utils";
 
 export const labels = [
   {

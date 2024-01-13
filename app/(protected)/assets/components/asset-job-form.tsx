@@ -266,7 +266,7 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
 
               <div className="w-1/6 mt-8">
                 <Button type="submit" className="purr-button">
-                  save
+                  save job
                 </Button>
               </div>
             </div>

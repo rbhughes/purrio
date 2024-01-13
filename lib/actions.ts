@@ -17,13 +17,13 @@ type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
 export async function addRepoReconTask(formData: RepoReconFormInputs) {
   const cookieStore = cookies();
-  console.log("____top of addEntry_____(written to SERVER) formData_______");
-  console.log(formData);
-  console.log("___________________safeParse result___________________________");
+  //console.log("____top of addEntry_____(written to SERVER) formData_______");
+  //console.log(formData);
+  //console.log("___________________safeParse result___________________________");
 
   const result = RepoReconFormSchema.safeParse(formData);
-  console.log(result);
-  console.log("__________________________________________________");
+  //console.log(result);
+  //console.log("__________________________________________________");
 
   if (result.success) {
     const supabase = createClient(cookieStore);
@@ -50,7 +50,7 @@ export async function addRepoReconTask(formData: RepoReconFormInputs) {
 }
 
 // TODO: make this random?
-const pickWorker = async (): Promise<string> => {
+export const pickWorker = async (): Promise<string> => {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
@@ -98,6 +98,15 @@ export async function addAssetJobTask(assetJob: AssetJob) {
   }
 }
 
+export async function deleteRepo(id: string) {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+  const { error } = await supabase.from("repo").delete().eq("id", id);
+  if (error) {
+    console.log("deleteRepo WAS NOT A SUCCESS");
+  }
+}
+
 export async function deleteAssetJob(id: number) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -137,7 +146,7 @@ export async function saveAssetJob(formData: AssetJobFormInputs) {
   }
 }
 
-export async function fetchHostnames(
+export async function fetchWorkers(
   supabase: SupabaseClient
 ): Promise<string[]> {
   const { data, error } = await supabase.from("worker").select("hostname");
@@ -145,8 +154,8 @@ export async function fetchHostnames(
     console.error(error);
     return [];
   } else {
-    const hostnames: string[] = data.map((x) => String(x.hostname));
-    return hostnames;
+    const workers: string[] = data.map((x) => String(x.hostname));
+    return workers;
   }
 }
 

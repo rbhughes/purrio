@@ -4,17 +4,13 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import {
-  Row,
-  RowModel,
-  RowSelectionTableState,
-  Table,
-} from "@tanstack/react-table";
+import { Row, Table } from "@tanstack/react-table";
+
+import { toast } from "sonner";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-//import { Button } from "@/registry/new-york/ui/button";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,15 +20,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import * as XLSX from "xlsx";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
-// TODO: refine the selectedRows type (it's not just Row<Repo>[])
-const formatRowSelection = (selectedRows: any) => {
-  let x = selectedRows.map((r: any) => {
-    console.log(r.original.id);
-  });
+const handleExcelExport = (repos: Repo[]) => {
+  let fileName = "repos";
+  const ws = XLSX.utils.json_to_sheet(repos);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+  XLSX.writeFile(wb, fileName + ".xlsx");
+};
+
+const handleCSVExport = (repos: Repo[]) => {
+  let fileName = "repos";
+  const ws = XLSX.utils.json_to_sheet(repos);
+  const csv = XLSX.utils.sheet_to_csv(ws);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 };
 
 export function DataTablePagination<TData>({
@@ -45,23 +66,51 @@ export function DataTablePagination<TData>({
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
 
-      {/* //experiment */}
-      <Button
-        variant="outline"
-        className="hidden h-8 p-0 mr-10 lg:flex bg-yellow-300"
-        //onClick={() => console.log(table.getFilteredSelectedRowModel())}
-        onClick={() => {
-          //let fr: RowModel<TData> = table.getFilteredSelectedRowModel();
-          //let frr: Row<TData>[] = fr.rows;
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="hidden h-8 p-0 lg:flex my-2 px-4 mr-10 data-[state=open]:bg-muted"
+          >
+            Export Selected
+          </Button>
+        </DropdownMenuTrigger>
 
-          let selected: Row<TData>[] = table.getFilteredSelectedRowModel().rows;
+        <DropdownMenuContent side="bottom" align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              let selectedRows: Row<TData>[] =
+                table.getFilteredSelectedRowModel().rows;
+              let selectedRepos = selectedRows.map((r: any) => r.original);
 
-          formatRowSelection(selected);
-        }}
-      >
-        SELECT ME
-      </Button>
-      {/* //experiment */}
+              if (selectedRepos.length > 0) {
+                handleExcelExport(selectedRepos);
+              } else {
+                toast.error("No rows selected");
+              }
+            }}
+          >
+            Excel...
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={(e) => {
+              let selectedRows: Row<TData>[] =
+                table.getFilteredSelectedRowModel().rows;
+              let selectedRepos = selectedRows.map((r: any) => r.original);
+
+              if (selectedRepos.length > 0) {
+                handleCSVExport(selectedRepos);
+              } else {
+                toast.error("No rows selected");
+              }
+            }}
+          >
+            CSV...
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>

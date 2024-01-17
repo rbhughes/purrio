@@ -80,9 +80,9 @@
 }
 
 .purr-navbar-button {
-  @apply w-44 bg-slate-500 font-mono font-extrabold;
+  @apply w-32 bg-slate-500 font-mono font-extrabold;
 }
 
 .purr-activity-button {
-  @apply w-44 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
+  @apply w-32 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
 }

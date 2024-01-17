@@ -14,10 +14,5 @@ export default async function RootLayout({
     redirect("/");
   }
 
-  return (
-    <section>{children}</section>
-    // <main className="min-h-screen flex flex-col items-center">
-    //   {session ? children : <p>no session</p>}
-    // </main>
-  );
+  return <div>{children}</div>;
 }

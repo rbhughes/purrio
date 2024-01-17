@@ -1,6 +1,6 @@
 "use client";
 
-import { CopyIcon, DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
 import { addRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
@@ -13,41 +13,47 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { RepoSchema, Repo } from "../repo-schema";
+//import { Database } from "@/lib/sb_types";
+//type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-//import { createClient } from "@/utils/supabase/client";
+//import { RepoSchema, Repo } from "../repo-schema";
+import { RepoSchema, Repo } from "../repo-schema";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
+//----------
 const handleRepoRefresh = async (repo: Repo) => {
-  // NOTE: may not be the same worker used by repo recon
+  // NOTE: pickWorker may not yield the same worker used by repo recon
   const worker = await pickWorker();
 
   let refreshOpts = {
     geo_type: repo.geo_type,
     recon_root: repo.fs_path, // equivalent to a refresh
-    hostname: worker,
+    worker: worker,
     ggx_host: "",
   };
 
   if (repo.geo_type === "geographix") {
     refreshOpts.ggx_host = repo.conn_aux?.ggx_host || "localhost"; //kosher?
   } else if (repo.geo_type === "kingdom") {
+    // TODO: fill this in for kingdom
   }
 
   const result = await addRepoReconTask(refreshOpts);
+  console.log("addRepoReconTask", result);
 };
 
+//----------
 const handleRepoForget = async (repo: Repo) => {
   const result = await deleteRepo(repo.id);
   console.log(result);
 };
 
-const doThing = (x: any, r: any) => {
-  console.log("I should be doing a thing:", x);
-  console.log(r);
+//----------
+const handleRepoDetail = async (repo: Repo) => {
+  console.log("pop up a dialog");
 };
 
 export function DataTableRowActions<TData>({
@@ -67,26 +73,13 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-
-        {/* what's up with asChild?:
-           https://www.radix-ui.com/primitives/docs/guides/composition*/}
-        {/* <DropdownMenuItem asChild> */}
-        {/* // but another, simpler solution is to just remove DropDownMenuItem
-          https://github.com/shadcn-ui/ui/issues/1128 */}
-
-        {/* // */}
-        {/* <AssetBatchDialog repo_id={"a repo id"} /> */}
-        {/* // */}
-
-        {/* ================================ */}
         <DropdownMenuItem
           onClick={(e) => {
             //e.preventDefault();
             handleRepoRefresh(row.original as Repo);
           }}
         >
-          Refresh
+          Refresh...
         </DropdownMenuItem>
 
         <DropdownMenuItem
@@ -95,27 +88,17 @@ export function DataTableRowActions<TData>({
             handleRepoForget(row.original as Repo);
           }}
         >
-          Forget
+          Forget...
         </DropdownMenuItem>
-        {/* ================================ */}
-        {/* <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup value={repo.geo_type}>
-                {labels.map((label) => (
-                  <DropdownMenuRadioItem key={label.value} value={label.value}>
-                    {label.label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          <DropdownMenuSeparator /> */}
-        {/* <DropdownMenuItem>
-            Delete
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-          </DropdownMenuItem> */}
+
+        <DropdownMenuItem
+          onClick={(e) => {
+            //e.preventDefault();
+            handleRepoDetail(row.original as Repo);
+          }}
+        >
+          Detail View...
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

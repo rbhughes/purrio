@@ -32,9 +32,6 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-//import { Toaster } from "@/components/ui/toaster";
-//import { toast } from "@/components/ui/use-toast";
-
 import { RepoReconFormSchema } from "../repo-recon-form-schema";
 import { addRepoReconTask } from "@/lib/actions";
 
@@ -99,9 +96,7 @@ export function RepoReconForm({
   Crawl a directory to locate and automatically collect a metadata inventory 
   for the specified project (repo) type`;
 
-  // return <MyAlert message="blah" kind="info" />
   return (
-    // <div className="border bg-slate-100 border-amber-500 rounded-lg my-4 p-4">
     <Card>
       <CardHeader>
         <CardTitle>Card Title</CardTitle>
@@ -148,6 +143,8 @@ export function RepoReconForm({
                 />
               </div>
 
+              {/* ---------- */}
+
               <div className="w-2/6">
                 <FormField
                   control={form.control}
@@ -167,10 +164,12 @@ export function RepoReconForm({
                 />
               </div>
 
+              {/* ---------- */}
+
               <div className="w-1/6">
                 <FormField
                   control={form.control}
-                  name="hostname"
+                  name="worker"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Worker</FormLabel>
@@ -202,12 +201,14 @@ export function RepoReconForm({
                 />
               </div>
 
-              <div className="w-1/6"></div>
-              <div className="w-1/6 mt-8">
+              {/* ---------- */}
+
+              <div className="w-1/6 mt-8 ml-10">
                 <Button type="submit" className="purr-button">
                   repo recon
                 </Button>
               </div>
+              <div className="w-1/6"></div>
             </div>
 
             {watchedGeoType === "geographix" && <AuxGeographix form={form} />}

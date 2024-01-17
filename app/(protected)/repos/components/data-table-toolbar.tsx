@@ -3,71 +3,63 @@
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Table } from "@tanstack/react-table";
 
-//import { Button } from "@/registry/new-york/ui/button";
 import { Button } from "@/components/ui/button";
-//import { Input } from "@/registry/new-york/ui/input";
 import { Input } from "@/components/ui/input";
-//import { DataTableViewOptions } from "@/app/examples/tasks/components/data-table-view-options";
 import { DataTableViewOptions } from "./data-table-view-options";
 
 import {
   ArrowDownIcon,
   ArrowRightIcon,
   ArrowUpIcon,
-  CheckCircledIcon,
-  CircleIcon,
-  CrossCircledIcon,
-  QuestionMarkCircledIcon,
-  StopwatchIcon,
 } from "@radix-ui/react-icons";
 
 //import { priorities, statuses } from "../data/data";
 
-export const statuses = [
-  {
-    value: "backlog",
-    label: "Backlog",
-    icon: QuestionMarkCircledIcon,
-  },
-  {
-    value: "todo",
-    label: "Todo",
-    icon: CircleIcon,
-  },
-  {
-    value: "in progress",
-    label: "In Progress",
-    icon: StopwatchIcon,
-  },
-  {
-    value: "done",
-    label: "Done",
-    icon: CheckCircledIcon,
-  },
-  {
-    value: "canceled",
-    label: "Canceled",
-    icon: CrossCircledIcon,
-  },
-];
+// export const statuses = [
+//   {
+//     value: "backlog",
+//     label: "Backlog",
+//     icon: QuestionMarkCircledIcon,
+//   },
+//   {
+//     value: "todo",
+//     label: "Todo",
+//     icon: CircleIcon,
+//   },
+//   {
+//     value: "in progress",
+//     label: "In Progress",
+//     icon: StopwatchIcon,
+//   },
+//   {
+//     value: "done",
+//     label: "Done",
+//     icon: CheckCircledIcon,
+//   },
+//   {
+//     value: "canceled",
+//     label: "Canceled",
+//     icon: CrossCircledIcon,
+//   },
+// ];
 
-export const priorities = [
-  {
-    label: "Low",
-    value: "low",
-    icon: ArrowDownIcon,
-  },
-  {
-    label: "Medium",
-    value: "medium",
-    icon: ArrowRightIcon,
-  },
-  {
-    label: "High",
-    value: "high",
-    icon: ArrowUpIcon,
-  },
-];
+// export const priorities = [
+//   {
+//     label: "Low",
+//     value: "low",
+//     icon: ArrowDownIcon,
+//   },
+//   {
+//     label: "Medium",
+//     value: "medium",
+//     icon: ArrowRightIcon,
+//   },
+//   {
+//     label: "High",
+//     value: "high",
+//     icon: ArrowUpIcon,
+//   },
+// ];
 
 export const geo_types = [
   {
@@ -115,13 +107,6 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
 
-        {/* {table.getColumn("status") && (
-          <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Status"
-            options={statuses}
-          />
-        )} */}
         {table.getColumn("geo_type") && (
           <DataTableFacetedFilter
             column={table.getColumn("geo_type")}
@@ -129,6 +114,7 @@ export function DataTableToolbar<TData>({
             options={geo_types}
           />
         )}
+
         {isFiltered && (
           <Button
             variant="ghost"

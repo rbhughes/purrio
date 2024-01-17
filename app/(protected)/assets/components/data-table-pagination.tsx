@@ -28,7 +28,6 @@ interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
-// TODO: refine the selectedRows type (it's not just Row<Repo>[])
 const formatRowSelection = (selectedRows: any) => {
   let x = selectedRows.map((r: any) => {
     console.log(r.original.id);

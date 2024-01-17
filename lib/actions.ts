@@ -29,7 +29,7 @@ export async function addRepoReconTask(formData: RepoReconFormInputs) {
     const supabase = createClient(cookieStore);
 
     await supabase.from("task").insert({
-      hostname: formData.hostname,
+      worker: formData.worker,
       directive: "recon",
       body: {
         geo_type: formData.geo_type,
@@ -81,7 +81,7 @@ export async function addAssetJobTask(assetJob: AssetJob) {
   const supabase = createClient(cookieStore);
 
   const { error } = await supabase.from("task").insert({
-    hostname: await pickWorker(),
+    worker: await pickWorker(),
     directive: "batcher",
     status: "PENDING",
     body: {

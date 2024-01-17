@@ -9,7 +9,6 @@ import { fetchGeoTypes, fetchWorkers } from "@/lib/actions";
 
 import { TableVisSwitch } from "@/components/table-vis-switch";
 import { Toaster } from "@/components/ui/sonner";
-//import { Toaster } from "sonner";
 
 export const dynamic = "force-dynamic";
 
@@ -47,19 +46,7 @@ export default async function Page() {
           <div className="bg-amber-400 mt-20 w-fit ">
             TODO
             <ul>
-              <li>move view/toggle column list</li>
-              <li>clean up repo-recon form</li>
-              <li>add recon-root to repo model</li>
-              <li>toggle: table vs some kinda datavis</li>
-              <li>row action: refresh</li>
-              <li>row action: forget</li>
-              <li>table action: export selected to csv</li>
-              <li>table action: refresh selected</li>
-              <li>icon for geographix</li>
-              <li>icon for petra</li>
-              <li>icon for kingdom</li>
-              <li>icon for las</li>
-              <li>icon for toggle</li>
+              <li>add recon-root to repo model?</li>
             </ul>
           </div>
         )}

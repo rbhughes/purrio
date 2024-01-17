@@ -30,24 +30,27 @@ const Logo = () => {
 
 const SidebarContent = ({ user }: { user: User }) => {
   return (
-    // <div className="flex w-48 p-2 gap-2 flex-col bg-slate-200 rounded-lg items-center h-screen ">
-    <div className="flex w-48 p-2 gap-2 flex-col bg-slate-200 rounded-lg items-center  ">
-      <Logo />
+    <div className="flex flex-1 flex-col items-center grow-0  gap-2 p-2 justify-between bg-slate-200 rounded-lg">
+      <div className="flex flex-col gap-2 w-32 ">
+        <Logo />
 
-      <Button asChild className="purr-navbar-button">
-        <Link href={"/search"}>search</Link>
-      </Button>
-      <Button asChild className="purr-navbar-button">
-        <Link href={"/repos"}>repos</Link>
-      </Button>
-      <Button asChild className="purr-navbar-button">
-        <Link href={"/assets"}>assets</Link>
-      </Button>
-      <Button asChild className="purr-navbar-button">
-        <Link href={"/system"}>system</Link>
-      </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/search"}>search</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/repos"}>repos</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/assets"}>assets</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/system"}>system</Link>
+        </Button>
+      </div>
 
-      <div className="fixed flex flex-col gap-2 bottom-2 ">
+      {/* */}
+
+      <div className="flex flex-col gap-2">
         <RealtimeMessenger user={user} directive={"recon"} />
         <LogInOut />
       </div>

@@ -3,9 +3,7 @@ import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
 import { Column } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
-//import { Badge } from "@/registry/new-york/ui/badge";
 import { Badge } from "@/components/ui/badge";
-//import { Button } from "@/registry/new-york/ui/button";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,14 +14,12 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-//} from "@/registry/new-york/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-//} from "@/registry/new-york/ui/popover";
-//import { Separator } from "@/registry/new-york/ui/separator";
+
 import { Separator } from "@/components/ui/separator";
 
 interface DataTableFacetedFilterProps<TData, TValue> {

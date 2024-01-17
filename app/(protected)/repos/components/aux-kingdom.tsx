@@ -12,7 +12,7 @@ import {
 export function AuxKingdom({ form }: { form: any }) {
   return (
     <div className="flex flex-row gap-2">
-      <div className="w-2/6">
+      <div className="w-1/6">
         <FormField
           control={form.control}
           name="kingdom_server"

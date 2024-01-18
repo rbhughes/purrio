@@ -13,6 +13,8 @@ import {
   ArrowUpIcon,
 } from "@radix-ui/react-icons";
 
+import { GeoTypeUI } from "@/lib/misc";
+
 //import { priorities, statuses } from "../data/data";
 
 // export const statuses = [
@@ -61,28 +63,28 @@ import {
 //   },
 // ];
 
-export const geo_types = [
-  {
-    label: "GeoGraphix",
-    value: "geographix",
-    icon: ArrowDownIcon,
-  },
-  {
-    label: "Petra",
-    value: "petra",
-    icon: ArrowRightIcon,
-  },
-  {
-    label: "Kingdom",
-    value: "kingdom",
-    icon: ArrowUpIcon,
-  },
-  {
-    label: "LAS",
-    value: "las",
-    icon: ArrowUpIcon,
-  },
-];
+// export const geo_types = [
+//   {
+//     label: "GeoGraphix",
+//     value: "geographix",
+//     icon: ArrowDownIcon,
+//   },
+//   {
+//     label: "Petra",
+//     value: "petra",
+//     icon: ArrowRightIcon,
+//   },
+//   {
+//     label: "Kingdom",
+//     value: "kingdom",
+//     icon: ArrowUpIcon,
+//   },
+//   {
+//     label: "LAS",
+//     value: "las",
+//     icon: ArrowUpIcon,
+//   },
+// ];
 
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 
@@ -111,7 +113,7 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             column={table.getColumn("geo_type")}
             title="geo_type"
-            options={geo_types}
+            options={GeoTypeUI}
           />
         )}
 

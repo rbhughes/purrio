@@ -11,37 +11,41 @@ import { cookies } from "next/headers";
 
 import { Database } from "@/lib/sb_types";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
+// this should match purrio_client:
+interface ReconBody {
+  recon_root: string;
+  geo_type: string;
+  ggx_host?: string;
+  kingdom_server?: string;
+  kingdom_username?: string;
+  kingdom_password?: string;
+  worker?: string;
+}
+
 export async function addRepoReconTask(formData: RepoReconFormInputs) {
   const cookieStore = cookies();
-  //console.log("____top of addEntry_____(written to SERVER) formData_______");
-  //console.log(formData);
-  //console.log("___________________safeParse result___________________________");
-
   const result = RepoReconFormSchema.safeParse(formData);
-  //console.log(result);
-  //console.log("__________________________________________________");
 
   if (result.success) {
     const supabase = createClient(cookieStore);
+    const body: ReconBody = { ...formData };
 
     await supabase.from("task").insert({
       worker: formData.worker,
       directive: "recon",
-      body: {
-        geo_type: formData.geo_type,
-        ggx_host: "scarab",
-        recon_root: formData.recon_root,
-      },
+      body: body,
       status: "PENDING",
     });
 
     return { success: true, data: result.data };
   } else {
     console.log("addRepoReconTask WAS NOT A SUCCESS");
+    console.log(result);
   }
 
   if (result.error) {

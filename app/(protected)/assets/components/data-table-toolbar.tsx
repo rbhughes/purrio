@@ -21,6 +21,8 @@ import {
   StopwatchIcon,
 } from "@radix-ui/react-icons";
 
+import { GeoTypeUI } from "@/lib/misc";
+
 //import { priorities, statuses } from "../data/data";
 
 export const statuses = [

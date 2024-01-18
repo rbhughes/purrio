@@ -1,8 +1,26 @@
-import { z } from "zod";
+import { z, ZodUnion } from "zod";
+
+const dbisamSchema = z.object({
+  driver: z.string(),
+  catalogname: z.string(),
+});
+
+const sqlanySchema = z.object({
+  dbf: z.string(),
+  dbn: z.string(),
+  pwd: z.string(),
+  uid: z.string(),
+  host: z.string(),
+  astart: z.string(),
+  driver: z.string(),
+  server: z.string(),
+});
+
+const connSchema = z.union([dbisamSchema, sqlanySchema]);
 
 export const RepoSchema = z.object({
   id: z.string(),
-  //conn: z.object({dbf: z.string()}),
+  conn: connSchema,
   conn_aux: z.object({ ggx_host: z.string() }).nullable(),
   geo_type: z.string(),
   name: z.string(),

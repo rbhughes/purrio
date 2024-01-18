@@ -13,42 +13,50 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-//import { Database } from "@/lib/sb_types";
-//type Repo = Database["public"]["Tables"]["repo"]["Row"];
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-//import { RepoSchema, Repo } from "../repo-schema";
-import { RepoSchema, Repo } from "../repo-schema";
+import { RepoSchema } from "../repo-schema";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
+interface Fake {
+  ggx_host: string;
+}
+
 //----------
 const handleRepoRefresh = async (repo: Repo) => {
-  // NOTE: pickWorker may not yield the same worker used by repo recon
+  // NOTE: pickWorker may not yield the same worker first used by repo recon
+  // TS example: const repoConnAux: Repo["conn_aux"] = { ggx_host: "scarab" };
+
   const worker = await pickWorker();
 
-  let refreshOpts = {
-    geo_type: repo.geo_type,
-    recon_root: repo.fs_path, // equivalent to a refresh
+  let formData = {
+    recon_root: repo.fs_path!, // equivalent to a refresh
+    geo_type: repo.geo_type!,
     worker: worker,
     ggx_host: "",
+    kingdom_server: "",
+    kingdom_username: "",
+    kingdom_password: "",
   };
 
   if (repo.geo_type === "geographix") {
-    refreshOpts.ggx_host = repo.conn_aux?.ggx_host || "localhost"; //kosher?
+    formData.ggx_host = (repo.conn_aux as any).ggx_host || "localhost";
   } else if (repo.geo_type === "kingdom") {
-    // TODO: fill this in for kingdom
+    formData.kingdom_server = (repo.conn_aux as any).kingdom_server || "";
+    formData.kingdom_username = (repo.conn_aux as any).kingdom_username || "";
+    formData.kingdom_password = (repo.conn_aux as any).kingdom_password || "";
   }
-
-  const result = await addRepoReconTask(refreshOpts);
-  console.log("addRepoReconTask", result);
+  const result = await addRepoReconTask(formData);
+  // console.log("addRepoReconTask", result);
 };
 
 //----------
 const handleRepoForget = async (repo: Repo) => {
   const result = await deleteRepo(repo.id);
-  console.log(result);
 };
 
 //----------
@@ -59,7 +67,7 @@ const handleRepoDetail = async (repo: Repo) => {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const repo = RepoSchema.parse(row.original);
+  const repo = RepoSchema.parse(row.original); //it's a zod thing
 
   return (
     <DropdownMenu>
@@ -74,8 +82,7 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem
-          onClick={(e) => {
-            //e.preventDefault();
+          onClick={() => {
             handleRepoRefresh(row.original as Repo);
           }}
         >
@@ -83,8 +90,7 @@ export function DataTableRowActions<TData>({
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={(e) => {
-            //e.preventDefault();
+          onClick={() => {
             handleRepoForget(row.original as Repo);
           }}
         >

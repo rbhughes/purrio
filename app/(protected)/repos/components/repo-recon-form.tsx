@@ -151,7 +151,7 @@ export function RepoReconForm({
                   name="recon_root"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Repo Recon</FormLabel>
+                      <FormLabel>Repo Parent Directory</FormLabel>
                       <FormControl>
                         <Input placeholder="recon root" {...field} />
                       </FormControl>
@@ -205,7 +205,7 @@ export function RepoReconForm({
 
               <div className="w-1/6 mt-8 ml-10">
                 <Button type="submit" className="purr-button">
-                  repo recon
+                  repo recon test
                 </Button>
               </div>
               <div className="w-1/6"></div>

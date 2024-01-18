@@ -10,40 +10,41 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 
 import { humanFileSize } from "@/lib/purr_utils";
+import { GeoTypeUI } from "@/lib/misc";
 
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 //TODO: move to util
-export const geo_types = [
-  {
-    label: "GeoGraphix",
-    value: "geographix",
-    icon: () => (
-      <Cylinder color="lime" className="mx-1" size={20} strokeWidth={3} />
-    ),
-  },
-  {
-    label: "Petra",
-    value: "petra",
-    icon: () => (
-      <Cylinder color="turquoise" className="mx-1" size={20} strokeWidth={3} />
-    ),
-  },
-  {
-    label: "Kingdom",
-    value: "kingdom",
-    icon: () => (
-      <Cylinder color="red" className="mx-1" size={20} strokeWidth={3} />
-    ),
-  },
-  {
-    label: "LAS",
-    value: "las",
-    icon: () => (
-      <Cylinder color="grey" className="mx-1" size={20} strokeWidth={3} />
-    ),
-  },
-];
+// export const geo_types = [
+//   {
+//     label: "GeoGraphix",
+//     value: "geographix",
+//     icon: () => (
+//       <Cylinder color="lime" className="mx-1" size={20} strokeWidth={3} />
+//     ),
+//   },
+//   {
+//     label: "Petra",
+//     value: "petra",
+//     icon: () => (
+//       <Cylinder color="turquoise" className="mx-1" size={20} strokeWidth={3} />
+//     ),
+//   },
+//   {
+//     label: "Kingdom",
+//     value: "kingdom",
+//     icon: () => (
+//       <Cylinder color="red" className="mx-1" size={20} strokeWidth={3} />
+//     ),
+//   },
+//   {
+//     label: "LAS",
+//     value: "las",
+//     icon: () => (
+//       <Cylinder color="grey" className="mx-1" size={20} strokeWidth={3} />
+//     ),
+//   },
+// ];
 
 export const columns: ColumnDef<Repo>[] = [
   {
@@ -74,7 +75,7 @@ export const columns: ColumnDef<Repo>[] = [
       <DataTableColumnHeader column={column} title="geo_type" />
     ),
     cell: ({ row }) => {
-      const geo_type = geo_types.find(
+      const geo_type = GeoTypeUI.find(
         (geo_type) => geo_type.value === row.getValue("geo_type")
       );
 

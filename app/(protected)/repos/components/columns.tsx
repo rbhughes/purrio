@@ -1,50 +1,13 @@
 "use client";
 
-import { Database } from "@/lib/sb_types";
-import { Cylinder } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
-
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-
 import { humanFileSize } from "@/lib/purr_utils";
-import { GeoTypeUI } from "@/lib/misc";
-
+import { GeoTypeUI } from "@/lib/purr_ui";
+import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
-//TODO: move to util
-// export const geo_types = [
-//   {
-//     label: "GeoGraphix",
-//     value: "geographix",
-//     icon: () => (
-//       <Cylinder color="lime" className="mx-1" size={20} strokeWidth={3} />
-//     ),
-//   },
-//   {
-//     label: "Petra",
-//     value: "petra",
-//     icon: () => (
-//       <Cylinder color="turquoise" className="mx-1" size={20} strokeWidth={3} />
-//     ),
-//   },
-//   {
-//     label: "Kingdom",
-//     value: "kingdom",
-//     icon: () => (
-//       <Cylinder color="red" className="mx-1" size={20} strokeWidth={3} />
-//     ),
-//   },
-//   {
-//     label: "LAS",
-//     value: "las",
-//     icon: () => (
-//       <Cylinder color="grey" className="mx-1" size={20} strokeWidth={3} />
-//     ),
-//   },
-// ];
 
 export const columns: ColumnDef<Repo>[] = [
   {

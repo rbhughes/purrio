@@ -163,17 +163,18 @@ export async function fetchWorkers(
   }
 }
 
-export async function fetchGeoTypes(
-  supabase: SupabaseClient
-): Promise<string[]> {
-  const { data, error } = await supabase.rpc("get_geo_type_values");
-  if (error) {
-    console.error(error);
-    return [];
-  } else {
-    return data;
-  }
-}
+// 2024-01-18 | just use constant in purr_utils, no need for this complexity
+// export async function fetchGeoTypes(
+//   supabase: SupabaseClient
+// ): Promise<string[]> {
+//   const { data, error } = await supabase.rpc("get_geo_type_values");
+//   if (error) {
+//     console.error(error);
+//     return [];
+//   } else {
+//     return data;
+//   }
+// }
 
 // export async function fetchBatches(supabase: SupabaseClient): Promise<Batch[]> {
 //   const { data, error } = await supabase

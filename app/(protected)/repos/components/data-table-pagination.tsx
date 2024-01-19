@@ -5,12 +5,6 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import { Row, Table } from "@tanstack/react-table";
-
-import { toast } from "sonner";
-
-import { Database } from "@/lib/sb_types";
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,9 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import * as XLSX from "xlsx";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,10 +20,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
+
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
+// TODO: move to purr_utils
 const handleExcelExport = (repos: Repo[]) => {
   let fileName = "repos";
   const ws = XLSX.utils.json_to_sheet(repos);
@@ -41,6 +38,7 @@ const handleExcelExport = (repos: Repo[]) => {
   XLSX.writeFile(wb, fileName + ".xlsx");
 };
 
+// TODO: move to purr_utils
 const handleCSVExport = (repos: Repo[]) => {
   let fileName = "repos";
   const ws = XLSX.utils.json_to_sheet(repos);

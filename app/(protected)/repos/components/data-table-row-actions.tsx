@@ -3,8 +3,6 @@
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
 
-import { addRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,20 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { RepoSchema } from "../repo-schema";
+
+import { addRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
-import { RepoSchema } from "../repo-schema";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
-interface Fake {
-  ggx_host: string;
-}
-
-//----------
 const handleRepoRefresh = async (repo: Repo) => {
   // NOTE: pickWorker may not yield the same worker first used by repo recon
   // TS example: const repoConnAux: Repo["conn_aux"] = { ggx_host: "scarab" };
@@ -34,7 +28,7 @@ const handleRepoRefresh = async (repo: Repo) => {
   const worker = await pickWorker();
 
   let formData = {
-    recon_root: repo.fs_path!, // equivalent to a refresh
+    recon_root: repo.fs_path!, // repo.fs_path ~ equivalent to a refresh
     geo_type: repo.geo_type!,
     worker: worker,
     ggx_host: "",
@@ -54,12 +48,10 @@ const handleRepoRefresh = async (repo: Repo) => {
   // console.log("addRepoReconTask", result);
 };
 
-//----------
 const handleRepoForget = async (repo: Repo) => {
   const result = await deleteRepo(repo.id);
 };
 
-//----------
 const handleRepoDetail = async (repo: Repo) => {
   console.log("pop up a dialog");
 };
@@ -67,7 +59,7 @@ const handleRepoDetail = async (repo: Repo) => {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const repo = RepoSchema.parse(row.original); //it's a zod thing
+  const repo = RepoSchema.parse(row.original); // it's a zod thing
 
   return (
     <DropdownMenu>
@@ -98,8 +90,7 @@ export function DataTableRowActions<TData>({
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={(e) => {
-            //e.preventDefault();
+          onClick={() => {
             handleRepoDetail(row.original as Repo);
           }}
         >

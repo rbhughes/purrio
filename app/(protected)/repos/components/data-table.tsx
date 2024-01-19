@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,7 +16,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -34,8 +33,11 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
-let xxx: RowSelectionState = { "1": true };
-let yyy: VisibilityState = {
+// set which rows are selected by default
+let rowSel: RowSelectionState = { "1": true };
+
+// set visible columns (commmented out means "always on")
+let colViz: VisibilityState = {
   //bytes: false,
   conn: false,
   conn_aux: false,
@@ -71,8 +73,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState(xxx);
-  const [columnVisibility, setColumnVisibility] = React.useState(yyy);
+  const [rowSelection, setRowSelection] = React.useState(rowSel);
+  const [columnVisibility, setColumnVisibility] = React.useState(colViz);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );

@@ -6,20 +6,20 @@ import { Switch } from "@/components/ui/switch";
 import { Table } from "lucide-react";
 import { AreaChart } from "lucide-react";
 
-export const TableVisSwitch = ({
+export default function TableVisSwitch({
   compA,
   compB,
 }: {
   compA: any;
   compB: any;
-}) => {
+}) {
   const [showCompA, setShowCompA] = React.useState(true);
 
   const handleToggle = () => {
     setShowCompA(!showCompA);
   };
 
-  const activeComponent = showCompA ? compA : compB;
+  //const activeComponent = showCompA ? compA : compB;
 
   return (
     <>
@@ -32,4 +32,4 @@ export const TableVisSwitch = ({
       {showCompA ? compA : compB}
     </>
   );
-};
+}

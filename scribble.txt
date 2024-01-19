@@ -1,0 +1,20 @@
+
+function getValueByKey(jsonArray: string, searchKey: string): number | null {
+  const parsedArray: JsonObject[] = JSON.parse(jsonArray);
+
+  const resultObject = parsedArray.find((item) => searchKey in item);
+
+  if (resultObject) {
+    return resultObject[searchKey];
+  }
+
+  return null; // or any default value if the key is not found
+}
+
+const expandInventoryToColumns = (inventory: JsonObject[]) => {
+  inventory.forEach((i) => {
+    for (const [key, val] of Object.entries(i)) {
+      console.log(key, "--------", val);
+    }
+  });
+};

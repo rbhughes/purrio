@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-export function AuxGeographix({ form }: { form: any }) {
+export default function AuxGeographix({ form }: { form: any }) {
   return (
     <div className="flex flex-row">
       <div className="w-1/6">

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// TODO: if this doesn't match the react hook form validation, it eats the error
+// TODO: if this doesn't match the RHF validation, it swallows the error
 
 export const RepoReconFormSchema = z.object({
   recon_root: z

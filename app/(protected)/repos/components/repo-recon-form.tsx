@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,35 +29,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
 
-import { RepoReconFormSchema } from "../repo-recon-form-schema";
 import { addRepoReconTask } from "@/lib/actions";
+import { toast } from "sonner";
+import { GEOTYPES } from "@/lib/purr_utils";
+import { RepoReconFormSchema } from "../repo-recon-form-schema";
+import AuxGeographix from "./aux-geographix";
+import AuxKingdom from "./aux-kingdom";
 
-import { AuxGeographix } from "./aux-geographix";
-import { AuxKingdom } from "./aux-kingdom";
+type FormInputs = z.infer<typeof RepoReconFormSchema>;
 
-type Inputs = z.infer<typeof RepoReconFormSchema>;
-
-export function RepoReconForm({
-  email,
-  geotypes,
-  workers,
-}: {
-  email: string;
-  geotypes: string[];
-  workers: string[];
-}) {
-  const [data, setData] = React.useState<Inputs>();
+export default function RepoReconForm({ workers }: { workers: string[] }) {
+  // 2024-01-18 | just skip state and reset to defaults after submit
+  //const [data, setData] = React.useState<FormInputs>();
 
   let defaults = {
-    geo_type: geotypes[0],
+    geo_type: GEOTYPES[0],
     recon_root: "",
     worker: workers[0],
     ggx_host: "",
   };
 
-  const form = useForm<Inputs>({
+  const form = useForm<FormInputs>({
     resolver: zodResolver(RepoReconFormSchema),
     defaultValues: defaults,
   });
@@ -66,14 +58,14 @@ export function RepoReconForm({
   let watchedGeoType = useWatch({
     control: form.control,
     name: "geo_type",
-    defaultValue: geotypes[0],
+    defaultValue: GEOTYPES[0],
   });
 
-  const processForm: SubmitHandler<Inputs> = async (formData) => {
+  const processForm: SubmitHandler<FormInputs> = async (formData) => {
     const result = await addRepoReconTask(formData);
 
     if (!result) {
-      toast.error("No results returned when trying to enqueue task.");
+      toast.error("No results returned when trying to enqueue task");
       return;
     }
 
@@ -86,20 +78,18 @@ export function RepoReconForm({
     // a re-init of shadcn didn't resolve
     // https://github.com/emilkowalski/sonner/issues/242
     // https://sonner.emilkowal.ski/
-    toast.error(JSON.stringify(result.data, null, 2));
-
-    setData(result.data);
+    toast.info(JSON.stringify(result.data, null, 2));
     form.reset();
   };
 
   const cardDesc = `
-  Crawl a directory to locate and automatically collect a metadata inventory 
-  for the specified project (repo) type`;
+  Crawl a directory to locate and automatically create a metadata inventory for
+  the specified Repo type.`;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
+        <CardTitle>Repo Recon</CardTitle>
         <CardDescription>{cardDesc}</CardDescription>
       </CardHeader>
       <CardContent>
@@ -128,7 +118,7 @@ export function RepoReconForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {geotypes.map((geotype: string) => {
+                          {GEOTYPES.map((geotype: string) => {
                             return (
                               <SelectItem key={geotype} value={geotype}>
                                 {geotype}

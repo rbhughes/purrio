@@ -21,7 +21,7 @@ import {
   StopwatchIcon,
 } from "@radix-ui/react-icons";
 
-import { GeoTypeUI } from "@/lib/misc";
+import { GeoTypeUI } from "@/lib/purr_ui";
 
 //import { priorities, statuses } from "../data/data";
 

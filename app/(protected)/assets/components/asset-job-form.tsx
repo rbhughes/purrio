@@ -1,17 +1,12 @@
 "use client";
 
 import React from "react";
-
 import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-
-import { Database } from "@/lib/sb_types";
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -36,29 +31,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { AssetJobFormSchema } from "../asset-job-form-schema";
 import { saveAssetJob } from "@/lib/actions";
+import { toast } from "sonner";
+import { ASSETS } from "@/lib/purr_utils";
+import { AssetJobFormSchema } from "../asset-job-form-schema";
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-type Inputs = z.infer<typeof AssetJobFormSchema>;
+type FormInputs = z.infer<typeof AssetJobFormSchema>;
 
-//TODO: move to lib
-const ASSETS = [
-  "core",
-  "dst",
-  "formation",
-  "ip",
-  "perforation",
-  "production",
-  "raster_log",
-  "survey",
-  "vector_log",
-  "well",
-  "zone",
-];
-
-export function AssetJobForm({ repos }: { repos: Repo[] }) {
-  const [data, setData] = React.useState<Inputs>();
-
+export default function AssetJobForm({ repos }: { repos: Repo[] }) {
   let defaults = {
     active: true,
     asset: ASSETS[0],
@@ -72,7 +54,7 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
     repo_id: repos[0].id,
   };
 
-  const form = useForm<Inputs>({
+  const form = useForm<FormInputs>({
     resolver: zodResolver(AssetJobFormSchema),
     defaultValues: defaults,
   });
@@ -84,36 +66,37 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
   //   defaultValue: geotypes[0],
   // });
 
-  // add repo fs_path and name here (joins not supported for sb subscription)
-  const processForm: SubmitHandler<Inputs> = async (formData) => {
-    console.log("PROCESSFORM", formData);
+  // we add repo fs_path and name here (joins not supported in subscription)
+  const processForm: SubmitHandler<FormInputs> = async (formData) => {
     const repo = repos.filter((r) => r.id === formData.repo_id)[0];
-
     formData.repo_fs_path = repo.fs_path;
     formData.repo_geo_type = repo.geo_type!;
     formData.repo_name = repo.name;
     const result = await saveAssetJob(formData);
 
     if (!result) {
-      console.log("Something went wrong");
+      toast.error("No results returned when trying to save AssetJob");
       return;
     }
 
     if (result.error) {
-      // set local error state
-      console.log(result.error);
+      toast.error(JSON.stringify(result.error, null, 2));
       return;
     }
 
-    setData(result.data);
+    toast.info(JSON.stringify(result.data, null, 2));
     form.reset();
   };
+
+  const cardDesc = `
+  Define an Asset collection job for a specific Repo. The optional filter
+  creates a SQL "WHERE" clause to limit results.`;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <CardTitle>Asset Jobs</CardTitle>
+        <CardDescription>{cardDesc}</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -132,15 +115,14 @@ export function AssetJobForm({ repos }: { repos: Repo[] }) {
                     <FormItem>
                       <FormLabel>Active</FormLabel>
                       <FormControl>
-                        {/* <div className="flex h-9 items-center justify-center"> */}
                         <div className="flex h-9 items-center ml-4">
                           <Checkbox
+                            className="h-8 w-8"
                             checked={field.value}
                             onCheckedChange={field.onChange}
                           />
                         </div>
                       </FormControl>
-                      {/* <FormDescription>(default on)</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}

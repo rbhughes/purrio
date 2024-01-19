@@ -10,3 +10,19 @@ export function humanFileSize(num: number, suffix: string = "B"): string {
   }
   return `${num.toFixed(1)}Y${suffix}`;
 }
+
+export const ASSETS = [
+  "well",
+  "core",
+  "dst",
+  "formation",
+  "ip",
+  "perforation",
+  "production",
+  "raster_log",
+  "survey",
+  "vector_log",
+  "zone",
+];
+
+export const GEOTYPES = ["geographix", "petra", "kingdom", "las"];

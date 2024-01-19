@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+// TODO: if this doesn't match the RHF validation, it swallows the error
+
 export const AssetJobFormSchema = z.object({
   active: z.boolean({
     required_error: "active is required",
@@ -20,5 +22,4 @@ export const AssetJobFormSchema = z.object({
     required_error: "select a repo_id",
   }),
   repo_name: z.string().nullable(),
-  // row_created: z.string().datetime({ offset: true }),
 });

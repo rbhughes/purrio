@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-export function AuxKingdom({ form }: { form: any }) {
+export default function AuxKingdom({ form }: { form: any }) {
   return (
     <div className="flex flex-row gap-2">
       <div className="w-1/6">

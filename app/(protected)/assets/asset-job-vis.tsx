@@ -1,18 +1,10 @@
 "use client";
 
 import React from "react";
-import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
+import { Database } from "@/lib/sb_types";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 export default function AssetJobVis({ assetJobs }: { assetJobs: AssetJob[] }) {

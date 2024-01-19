@@ -1,18 +1,10 @@
 "use client";
 
 import React from "react";
-import { Database } from "@/lib/sb_types";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
+import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 export default function RepoVis({ repos }: { repos: Repo[] }) {

@@ -1,13 +1,11 @@
-import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-
-import { AssetJobForm } from "./components/asset-job-form";
-//import AssetJobs from "./components/asset-jobs";
-
+import { createClient } from "@/utils/supabase/server";
+import { Toaster } from "@/components/ui/sonner";
+import TableVisSwitch from "@/components/table-vis-switch";
+import AssetJobForm from "./components/asset-job-form";
 import AssetJobTable from "./asset-job-table";
 import AssetJobVis from "./asset-job-vis";
 
-import { TableVisSwitch } from "@/components/table-vis-switch";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -17,8 +15,6 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  //const email = user ? user.email! : "guest";
 
   const { data: assetJobs } = await supabase
     .from("asset_job")
@@ -30,17 +26,17 @@ export default async function Page() {
     .select()
     .order("row_changed", { ascending: false });
 
-  //return <AssetJobTable assetJobs={assetJobs!} />;
   return (
     user && (
-      <>
+      <div>
         <AssetJobForm repos={repos!} />
-        {/* <AssetJobTable assetJobs={assetJobs!} /> */}
 
         <TableVisSwitch
           compA={<AssetJobTable assetJobs={assetJobs!} />}
           compB={<AssetJobVis assetJobs={assetJobs!} />}
         />
+
+        <Toaster />
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-amber-400 mt-20 w-fit ">
@@ -60,7 +56,7 @@ export default async function Page() {
             </ul>
           </div>
         )}
-      </>
+      </div>
     )
   );
 }

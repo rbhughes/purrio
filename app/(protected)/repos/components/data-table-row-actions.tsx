@@ -2,7 +2,6 @@
 
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 import { Row } from "@tanstack/react-table";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +11,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { RepoSchema } from "../repo-schema";
-
 import { addRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -21,6 +19,7 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
+//TODO: better toasty error handling
 const handleRepoRefresh = async (repo: Repo) => {
   // NOTE: pickWorker may not yield the same worker first used by repo recon
   // TS example: const repoConnAux: Repo["conn_aux"] = { ggx_host: "scarab" };
@@ -48,10 +47,12 @@ const handleRepoRefresh = async (repo: Repo) => {
   // console.log("addRepoReconTask", result);
 };
 
+//TODO: better toasty error handling
 const handleRepoForget = async (repo: Repo) => {
   const result = await deleteRepo(repo.id);
 };
 
+//TODO: better toasty error handling
 const handleRepoDetail = async (repo: Repo) => {
   console.log("pop up a dialog");
 };
@@ -73,6 +74,8 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
+        {/* ---------- */}
+
         <DropdownMenuItem
           onClick={() => {
             handleRepoRefresh(row.original as Repo);
@@ -81,6 +84,8 @@ export function DataTableRowActions<TData>({
           Refresh...
         </DropdownMenuItem>
 
+        {/* ---------- */}
+
         <DropdownMenuItem
           onClick={() => {
             handleRepoForget(row.original as Repo);
@@ -88,6 +93,8 @@ export function DataTableRowActions<TData>({
         >
           Forget...
         </DropdownMenuItem>
+
+        {/* ---------- */}
 
         <DropdownMenuItem
           onClick={() => {

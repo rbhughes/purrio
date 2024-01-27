@@ -16,89 +16,62 @@ type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
-// this should match purrio_client:
-interface ReconBody {
-  recon_root: string;
-  geo_type: string;
-  ggx_host?: string;
-  kingdom_server?: string;
-  kingdom_username?: string;
-  kingdom_password?: string;
-  worker?: string;
-}
+// // this should match purrio_client:
+// interface ReconBody {
+//   recon_root: string;
+//   geo_type: string;
+//   ggx_host?: string;
+//   kingdom_server?: string;
+//   kingdom_username?: string;
+//   kingdom_password?: string;
+//   worker?: string;
+// }
 
-export async function addRepoReconTask(formData: RepoReconFormInputs) {
+///////////////////////////////////////////////////////////////////////////////
+
+export async function enqueueRepoReconTask(formData: RepoReconFormInputs) {
   const cookieStore = cookies();
-  const result = RepoReconFormSchema.safeParse(formData);
-
-  if (result.success) {
+  const zodRes = RepoReconFormSchema.safeParse(formData);
+  if (!zodRes.success) {
+    return { data: null, error: zodRes.error };
+  } else {
     const supabase = createClient(cookieStore);
-    const body: ReconBody = { ...formData };
 
-    await supabase.from("task").insert({
-      worker: formData.worker,
+    const supRes = await supabase.from("task").insert({
+      worker: await pickWorker(),
       directive: "recon",
-      body: body,
+      body: formData,
       status: "PENDING",
     });
 
-    return { success: true, data: result.data };
-  } else {
-    console.log("addRepoReconTask WAS NOT A SUCCESS");
-    console.log(result);
-  }
-
-  if (result.error) {
-    return { success: false, error: result.error.format() };
+    if (supRes.status !== 201) {
+      return { data: supRes.statusText, error: null };
+    } else {
+      return { data: null, error: supRes.statusText };
+    }
   }
 }
 
-// TODO: make this random?
-export const pickWorker = async (): Promise<string> => {
+export async function enqueueAssetJobTask(formData: AssetJobFormInputs) {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-
-  const { data, error } = await supabase
-    .from("worker")
-    .select("hostname")
-    .limit(1)
-    .single();
-
-  if (error) {
-    console.error(error);
-    return "localhost";
+  const zodRes = AssetJobFormSchema.safeParse(formData);
+  if (!zodRes.success) {
+    return { data: null, error: zodRes.error };
   } else {
-    return data.hostname;
-  }
-};
+    const supabase = createClient(cookieStore);
 
-// {
-//   "geo_type": "geographix",
-//   "repo_id": "d4aac149-ca2a-100b-83ec-7a5b70a73457",
-//   "asset": "well",
-//   "chunk": 100,
-//   "filter": "w_row_changed_date > CONVERT(DATE, GETDATE() - 1790)"
-// }
-export async function addAssetJobTask(assetJob: AssetJob) {
-  const cookieStore = cookies();
+    const supRes = await supabase.from("task").insert({
+      worker: await pickWorker(),
+      directive: "batcher",
+      status: "PENDING",
+      body: formData,
+    });
 
-  const supabase = createClient(cookieStore);
-
-  const { error } = await supabase.from("task").insert({
-    worker: await pickWorker(),
-    directive: "batcher",
-    status: "PENDING",
-    body: {
-      geo_type: assetJob.repo_geo_type,
-      repo_id: assetJob.repo_id,
-      asset: assetJob.asset,
-      chunk: assetJob.chunk,
-      filter: assetJob.filter,
-    },
-  });
-
-  if (error) {
-    console.error(error);
+    if (supRes.status !== 201) {
+      return { data: supRes.statusText, error: null };
+    } else {
+      return { data: null, error: supRes.statusText };
+    }
   }
 }
 
@@ -120,35 +93,70 @@ export async function deleteAssetJob(id: number) {
   }
 }
 
-export async function saveAssetJob(formData: AssetJobFormInputs) {
+export async function updateAssetJob(formData: AssetJobFormInputs) {
   const cookieStore = cookies();
   const result = AssetJobFormSchema.safeParse(formData);
 
-  if (result.success) {
-    const supabase = createClient(cookieStore);
+  if (!result.success) {
+    return { status: false, error: JSON.stringify(result) };
+  }
 
-    await supabase.from("asset_job").upsert({
+  const supabase = createClient(cookieStore);
+
+  const res = await supabase
+    .from("asset_job")
+    .update({
       active: formData.active,
       asset: formData.asset,
       chunk: formData.chunk,
-      //cron: formData.cron,
+      cron: formData.cron,
       filter: formData.filter,
-      //last_invoked: formData.last_invoked,
       repo_fs_path: formData.repo_fs_path,
-      repo_geo_type: formData.repo_geo_type,
+      //repo_geo_type: formData.repo_geo_type,
+      geo_type: formData.geo_type,
       repo_id: formData.repo_id,
       repo_name: formData.repo_name,
-    });
+    })
+    .eq("id", formData.id);
 
-    return { success: true, data: result.data };
+  if (res.status === 204) {
+    return { status: true, error: null };
   } else {
-    console.log("saveAssetJob WAS NOT A SUCCESS");
-  }
-
-  if (result.error) {
-    return { success: false, error: result.error.format() };
+    return { status: false, error: JSON.stringify(res) };
   }
 }
+
+export async function createAssetJob(formData: AssetJobFormInputs) {
+  const cookieStore = cookies();
+  const result = AssetJobFormSchema.safeParse(formData);
+
+  if (!result.success) {
+    return { status: false, error: JSON.stringify(result) };
+  }
+
+  const supabase = createClient(cookieStore);
+
+  const res = await supabase.from("asset_job").insert({
+    active: formData.active,
+    asset: formData.asset,
+    chunk: formData.chunk,
+    cron: formData.cron,
+    filter: formData.filter,
+    repo_fs_path: formData.repo_fs_path,
+    //repo_geo_type: formData.repo_geo_type,
+    geo_type: formData.geo_type,
+    repo_id: formData.repo_id,
+    repo_name: formData.repo_name,
+  });
+
+  if (res.status === 204) {
+    return { status: true, error: null };
+  } else {
+    return { status: false, error: JSON.stringify(res) };
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 export async function fetchWorkers(
   supabase: SupabaseClient
@@ -163,28 +171,21 @@ export async function fetchWorkers(
   }
 }
 
-// 2024-01-18 | just use constant in purr_utils, no need for this complexity
-// export async function fetchGeoTypes(
-//   supabase: SupabaseClient
-// ): Promise<string[]> {
-//   const { data, error } = await supabase.rpc("get_geo_type_values");
-//   if (error) {
-//     console.error(error);
-//     return [];
-//   } else {
-//     return data;
-//   }
-// }
+// TODO: make this random?
+export const pickWorker = async (): Promise<string> => {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
 
-// export async function fetchBatches(supabase: SupabaseClient): Promise<Batch[]> {
-//   const { data, error } = await supabase
-//     .from("batch")
-//     .select()
-//     .order("row_created", { ascending: false });
-//   if (error) {
-//     console.error(error);
-//     return [];
-//   } else {
-//     return data as Batch[];
-//   }
-// }
+  const { data, error } = await supabase
+    .from("worker")
+    .select("hostname")
+    .limit(1)
+    .single();
+
+  if (error) {
+    console.error(error);
+    return "localhost";
+  } else {
+    return data.hostname;
+  }
+};

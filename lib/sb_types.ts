@@ -16,10 +16,10 @@ export interface Database {
           chunk: number | null
           cron: string | null
           filter: string | null
+          geo_type: Database["public"]["Enums"]["geo_type"] | null
           id: number
           last_invoked: string | null
           repo_fs_path: string | null
-          repo_geo_type: Database["public"]["Enums"]["geo_type"] | null
           repo_id: string
           repo_name: string | null
           row_created: string | null
@@ -30,10 +30,10 @@ export interface Database {
           chunk?: number | null
           cron?: string | null
           filter?: string | null
+          geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null
-          repo_geo_type?: Database["public"]["Enums"]["geo_type"] | null
           repo_id: string
           repo_name?: string | null
           row_created?: string | null
@@ -44,10 +44,10 @@ export interface Database {
           chunk?: number | null
           cron?: string | null
           filter?: string | null
+          geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null
-          repo_geo_type?: Database["public"]["Enums"]["geo_type"] | null
           repo_id?: string
           repo_name?: string | null
           row_created?: string | null
@@ -249,23 +249,23 @@ export interface Database {
         Row: {
           body: Json | null
           directive: string | null
-          hostname: string | null
           id: number
           status: string | null
+          worker: string | null
         }
         Insert: {
           body?: Json | null
           directive?: string | null
-          hostname?: string | null
           id?: number
           status?: string | null
+          worker?: string | null
         }
         Update: {
           body?: Json | null
           directive?: string | null
-          hostname?: string | null
           id?: number
           status?: string | null
+          worker?: string | null
         }
         Relationships: []
       }

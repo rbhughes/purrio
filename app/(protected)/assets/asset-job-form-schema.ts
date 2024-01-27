@@ -3,6 +3,7 @@ import { z } from "zod";
 // TODO: if this doesn't match the RHF validation, it swallows the error
 
 export const AssetJobFormSchema = z.object({
+  id: z.coerce.number().optional(),
   active: z.boolean({
     required_error: "active is required",
   }),
@@ -12,14 +13,13 @@ export const AssetJobFormSchema = z.object({
   chunk: z.coerce.number({
     required_error: "enter a chunk value",
   }),
+  cron: z.string().optional(),
   filter: z.string().optional(),
-  // cron: z.string().optional(),
-  // //last_invoked: z.date().nullable(),
-  // last_invoked: z.string().datetime({ offset: true }).nullable(),
   repo_fs_path: z.string().nullable(),
-  repo_geo_type: z.string(),
-  repo_id: z.string({
-    required_error: "select a repo_id",
-  }),
+  geo_type: z.string(),
+  repo_id: z.string().min(1, { message: "Select a source repo" }),
   repo_name: z.string().nullable(),
 });
+
+// //last_invoked: z.date().nullable(),
+// last_invoked: z.string().datetime({ offset: true }).nullable(),

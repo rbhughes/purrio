@@ -4,17 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-import {
-  Row,
-  RowModel,
-  RowSelectionTableState,
-  Table,
-} from "@tanstack/react-table";
-
-import { Database } from "@/lib/sb_types";
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
-//import { Button } from "@/registry/new-york/ui/button";
+import { Row, Table } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,6 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { Database } from "@/lib/sb_types";
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -44,23 +45,53 @@ export function DataTablePagination<TData>({
         {table.getFilteredRowModel().rows.length} row(s) selected.
       </div>
 
-      {/* //experiment */}
-      <Button
-        variant="outline"
-        className="hidden h-8 p-0 mr-10 lg:flex bg-yellow-300"
-        //onClick={() => console.log(table.getFilteredSelectedRowModel())}
-        onClick={() => {
-          //let fr: RowModel<TData> = table.getFilteredSelectedRowModel();
-          //let frr: Row<TData>[] = fr.rows;
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="hidden h-8 p-0 lg:flex my-2 px-4 mr-10 data-[state=open]:bg-muted"
+          >
+            Export Selected
+          </Button>
+        </DropdownMenuTrigger>
 
-          let selected: Row<TData>[] = table.getFilteredSelectedRowModel().rows;
+        <DropdownMenuContent side="bottom" align="end">
+          <DropdownMenuItem
+            onClick={(e) => {
+              let selectedRows: Row<TData>[] =
+                table.getFilteredSelectedRowModel().rows;
+              let selectedAssetJobs = selectedRows.map((r: any) => r.original);
 
-          formatRowSelection(selected);
-        }}
-      >
-        SELECT ME
-      </Button>
-      {/* //experiment */}
+              if (selectedAssetJobs.length > 0) {
+                //handleExcelExport(selectedRepos);
+                console.log(selectedAssetJobs);
+              } else {
+                toast.error("No rows selected");
+              }
+            }}
+          >
+            Excel...
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={(e) => {
+              let selectedRows: Row<TData>[] =
+                table.getFilteredSelectedRowModel().rows;
+              let selectedAssetJobs = selectedRows.map((r: any) => r.original);
+
+              if (selectedAssetJobs.length > 0) {
+                //handleCSVExport(selectedRepos);
+                console.log(selectedAssetJobs);
+              } else {
+                toast.error("No rows selected");
+              }
+            }}
+          >
+            CSV...
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>

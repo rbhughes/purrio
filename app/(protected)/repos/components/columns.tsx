@@ -49,7 +49,7 @@ export const columns: ColumnDef<Repo>[] = [
       return (
         <div className="flex items-center w-[120px]">
           {geo_type.icon()}
-          <span>{geo_type.label}</span>
+          {geo_type.label}
         </div>
       );
     },

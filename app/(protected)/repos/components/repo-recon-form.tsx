@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { addRepoReconTask } from "@/lib/actions";
+import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
 import { GEOTYPES } from "@/lib/purr_utils";
 import { RepoReconFormSchema } from "../repo-recon-form-schema";
@@ -62,7 +62,7 @@ export default function RepoReconForm({ workers }: { workers: string[] }) {
   });
 
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
-    const result = await addRepoReconTask(formData);
+    const result = await enqueueRepoReconTask(formData);
 
     if (!result) {
       toast.error("No results returned when trying to enqueue task");
@@ -195,7 +195,7 @@ export default function RepoReconForm({ workers }: { workers: string[] }) {
 
               <div className="w-1/6 mt-8 ml-10">
                 <Button type="submit" className="purr-button">
-                  repo recon test
+                  repo recon
                 </Button>
               </div>
               <div className="w-1/6"></div>

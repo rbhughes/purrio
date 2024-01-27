@@ -5,14 +5,28 @@ export const GeoTypeUI = [
     label: "GeoGraphix",
     value: "geographix",
     icon: () => (
-      <Cylinder color="lime" className="mx-1" size={20} strokeWidth={3} />
+      <Cylinder
+        color="lime"
+        className="mx-1"
+        size={20}
+        strokeWidth={3}
+        fill="lime"
+        fillOpacity="0.2"
+      />
     ),
   },
   {
     label: "Petra",
     value: "petra",
     icon: () => (
-      <Cylinder color="turquoise" className="mx-1" size={20} strokeWidth={3} />
+      <Cylinder
+        color="teal"
+        className="mx-1"
+        size={20}
+        strokeWidth={3}
+        fill="teal"
+        fillOpacity="0.2"
+      />
     ),
   },
   {

@@ -34,24 +34,43 @@ export const columns: ColumnDef<AssetJob>[] = [
     enableHiding: false,
   },
 
+  // {
+  //   id: "expander",
+  //   header: () => null,
+  //   cell: ({ row }) => {
+  //     return row.getCanExpand() ? (
+  //       <button
+  //         {...{
+  //           onClick: row.getToggleExpandedHandler(),
+  //           style: { cursor: "pointer" },
+  //         }}
+  //       >
+  //         {row.getIsExpanded() ? "👇" : "👉"}
+  //       </button>
+  //     ) : (
+  //       "🔵"
+  //     );
+  //   },
+  // },
+
   {
-    accessorKey: "repo_geo_type",
+    accessorKey: "geo_type",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="repo_geo_type" />
+      <DataTableColumnHeader column={column} title="geo_type" />
     ),
     cell: ({ row }) => {
-      const repo_geo_type = GeoTypeUI.find(
-        (repo_geo_type) => repo_geo_type.value === row.getValue("repo_geo_type")
+      const geo_type = GeoTypeUI.find(
+        (geo_type) => geo_type.value === row.getValue("geo_type")
       );
 
-      if (!repo_geo_type) {
+      if (!geo_type) {
         return null;
       }
 
       return (
-        <div className="flex items-center w-[120px]">
-          {repo_geo_type.icon()}
-          <span>{repo_geo_type.label}</span>
+        <div className="flex  w-[120px]">
+          {geo_type.icon()}
+          {geo_type.label}
         </div>
       );
     },
@@ -108,6 +127,14 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
+    accessorKey: "cron",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="cron" />
+    ),
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("cron")}</div>,
+  },
+
+  {
     accessorKey: "filter",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="filter" />
@@ -122,6 +149,16 @@ export const columns: ColumnDef<AssetJob>[] = [
     ),
     cell: ({ row }) => <div>{row.getValue("row_created")}</div>,
   },
+
+  ///
+  {
+    accessorKey: "active",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="active" />
+    ),
+    cell: ({ row }) => <div>{JSON.stringify(row.getValue("active"))}</div>,
+  },
+  ///
 
   {
     id: "actions",

@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import TableVisSwitch from "@/components/table-vis-switch";
 import AssetJobForm from "./components/asset-job-form";
-import AssetJobTable from "./asset-job-table";
+import { AssetJobTable } from "./asset-job-table";
 import AssetJobVis from "./asset-job-vis";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +15,15 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  ///
+  // const { data: dna, error: error } = await supabase.functions.invoke("petra", {
+  //   body: { asset: "well", filter: "" },
+  // });
+  // console.log("---------------------------------------");
+  // console.log(dna);
+  // console.log("---------------------------------------");
+  ///
 
   const { data: assetJobs } = await supabase
     .from("asset_job")
@@ -29,30 +38,21 @@ export default async function Page() {
   return (
     user && (
       <div>
-        <AssetJobForm repos={repos!} />
+        <AssetJobForm repos={repos!} assetJobs={assetJobs!} />
 
         <TableVisSwitch
-          compA={<AssetJobTable assetJobs={assetJobs!} />}
+          //compA={<AssetJobTable assetJobs={assetJobs!} />}
+          compA={<h1>used to be table</h1>}
           compB={<AssetJobVis assetJobs={assetJobs!} />}
         />
 
         <Toaster />
 
         {process.env.NODE_ENV === "development" && (
-          <div className="bg-amber-400 mt-20 w-fit ">
+          <div className="bg-red-600 mt-20 p-4 w-fit text-white">
             TODO
             <ul>
-              <li>move view/toggle column list</li>
-              <li>clean up asset-job form</li>
               <li>show current asset holdings (above form?)</li>
-              <li>row action: enqueue</li>
-              <li>row action: delete</li>
-              <li>table action: delete selected</li>
-              <li>table action: enqueue selected</li>
-              <li>icon for geographix</li>
-              <li>icon for petra</li>
-              <li>icon for kingdom</li>
-              <li>icon for las</li>
             </ul>
           </div>
         )}

@@ -9,7 +9,7 @@ export const AssetJobSchema = z.object({
   filter: z.string().nullable(),
   last_invoked: z.string().datetime({ offset: true }).nullable(),
   repo_fs_path: z.string(),
-  repo_geo_type: z.string(),
+  geo_type: z.string(),
   repo_id: z.string(),
   repo_name: z.string(),
   row_created: z.string().datetime({ offset: true }),

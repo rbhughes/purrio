@@ -9,14 +9,15 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  Row,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -25,18 +26,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-//} from "@/registry/new-york/ui/table";
 
 import { DataTablePagination } from "../components/data-table-pagination";
 import { DataTableToolbar } from "../components/data-table-toolbar";
 
+import AssetJobForm from "../components/asset-job-form";
+
+import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
+
+import { Database } from "@/lib/sb_types";
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  //renderSubComponent: (props: { row: Row<TData> }) => React.ReactElement;
+  //getRowCanExpand: (row: Row<TData>) => boolean;
+  setValue: any;
 }
 
-let xxx: RowSelectionState = { "1": true };
-let yyy: VisibilityState = {
+// sets which rows are selected by default
+//let rowsSelected: RowSelectionState = { "1": true };
+let rowsSelected: RowSelectionState = {};
+
+// set visible columns (commmented out means "always on")
+let colsVisible: VisibilityState = {
   active: false,
   //asset: false,
   chunk: false,
@@ -51,12 +65,34 @@ let yyy: VisibilityState = {
   row_created: false,
 };
 
+///
+const setFormFromTable = async (setValue: any, row: any) => {
+  let assetJob = row.original as AssetJob;
+  setValue("geo_type", assetJob.geo_type);
+  setTimeout(() => {
+    setValue("id", assetJob.id || null);
+    setValue("repo_id", assetJob.repo_id || "");
+    setValue("active", assetJob.active || true);
+    setValue("asset", assetJob.asset || ASSETS[0]);
+    setValue("chunk", assetJob.chunk || 100);
+    setValue("cron", assetJob.cron || "");
+    setValue("filter", assetJob.filter || "");
+    //setValue("id", aj.filter);
+    setValue("repo_fs_path", assetJob.repo_fs_path || null);
+    setValue("repo_name", assetJob.repo_name || null);
+  }, 300);
+};
+///
+
 export function DataTable<TData, TValue>({
   columns,
   data,
+  //renderSubComponent,
+  //getRowCanExpand,
+  setValue,
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState(xxx);
-  const [columnVisibility, setColumnVisibility] = React.useState(yyy);
+  const [rowSelection, setRowSelection] = React.useState(rowsSelected);
+  const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -65,6 +101,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    //getRowCanExpand,
     state: {
       sorting,
       columnVisibility,
@@ -109,22 +146,48 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
+              ///
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    onDoubleClick={() => setFormFromTable(setValue, row)}
+                    // onDoubleClick={() => {
+                    //   let aj = row.original as AssetJob;
+                    //   setValue("active", aj.active);
+                    //   setValue("asset", aj.asset);
+                    //   setValue("chunk", aj.chunk);
+                    //   setValue("cron", aj.cron);
+                    //   setValue("filter", aj.filter);
+                    //   //setValue("id", aj.filter);
+                    //   setValue("repo_fs_path", aj.repo_fs_path);
+                    //   setValue("repo_geo_type", aj.repo_geo_type);
+                    //   setValue("repo_id", aj.repo_id);
+                    //   setValue("repo_name", aj.repo_name);
+                    //   //console.log(row);
+                    // }}
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {/* {row.getIsExpanded() && (
+                    <TableRow key={`${row.id}_aj`}>
+                      <td colSpan={row.getVisibleCells().length}>
+                        {renderSubComponent({ row })}
+                      </td>
+                    </TableRow>
+                  )} */}
+                </React.Fragment>
               ))
             ) : (
+              ///
               <TableRow>
                 <TableCell
                   colSpan={columns.length}

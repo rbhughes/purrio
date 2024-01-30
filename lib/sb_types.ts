@@ -11,12 +11,12 @@ export interface Database {
     Tables: {
       asset_job: {
         Row: {
-          active: boolean | null
-          asset: string | null
+          active: boolean
+          asset: string
           chunk: number | null
           cron: string | null
           filter: string | null
-          geo_type: Database["public"]["Enums"]["geo_type"] | null
+          geo_type: Database["public"]["Enums"]["geo_type"]
           id: number
           last_invoked: string | null
           repo_fs_path: string | null
@@ -25,12 +25,12 @@ export interface Database {
           row_created: string | null
         }
         Insert: {
-          active?: boolean | null
-          asset?: string | null
+          active?: boolean
+          asset: string
           chunk?: number | null
           cron?: string | null
           filter?: string | null
-          geo_type?: Database["public"]["Enums"]["geo_type"] | null
+          geo_type: Database["public"]["Enums"]["geo_type"]
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null
@@ -39,12 +39,12 @@ export interface Database {
           row_created?: string | null
         }
         Update: {
-          active?: boolean | null
-          asset?: string | null
+          active?: boolean
+          asset?: string
           chunk?: number | null
           cron?: string | null
           filter?: string | null
-          geo_type?: Database["public"]["Enums"]["geo_type"] | null
+          geo_type?: Database["public"]["Enums"]["geo_type"]
           id?: number
           last_invoked?: string | null
           repo_fs_path?: string | null

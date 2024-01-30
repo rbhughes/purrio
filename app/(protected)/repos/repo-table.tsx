@@ -10,7 +10,13 @@ import { DataTable } from "./components/data-table";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-export default function RepoTable({ repos }: { repos: Repo[] }) {
+export function RepoTable({
+  repos,
+  setValue,
+}: {
+  repos: Repo[];
+  setValue: any;
+}) {
   const supabase = createClient();
   const router = useRouter();
 
@@ -37,7 +43,7 @@ export default function RepoTable({ repos }: { repos: Repo[] }) {
 
   return (
     <Card>
-      <DataTable data={repos} columns={columns} />
+      <DataTable data={repos} columns={columns} setValue={setValue} />
     </Card>
   );
 }

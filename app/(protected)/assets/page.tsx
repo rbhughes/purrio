@@ -2,8 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import TableVisSwitch from "@/components/table-vis-switch";
-import AssetJobForm from "./components/asset-job-form";
-import { AssetJobTable } from "./asset-job-table";
+import AssetJobs from "./components/asset-jobs";
 import AssetJobVis from "./asset-job-vis";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +37,7 @@ export default async function Page() {
   return (
     user && (
       <div>
-        <AssetJobForm repos={repos!} assetJobs={assetJobs!} />
+        <AssetJobs repos={repos!} assetJobs={assetJobs!} />
 
         <TableVisSwitch
           //compA={<AssetJobTable assetJobs={assetJobs!} />}

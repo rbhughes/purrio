@@ -31,6 +31,7 @@ import { DataTableToolbar } from "../components/data-table-toolbar";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setValue: any;
 }
 
 // sets which rows are selected by default
@@ -70,9 +71,12 @@ let colsVisible: VisibilityState = {
   wells_with_zone: false,
 };
 
+const setFormFromTable = async (setValue: any, row: any) => {};
+
 export function DataTable<TData, TValue>({
   columns,
   data,
+  setValue,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);

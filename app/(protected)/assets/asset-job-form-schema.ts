@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// TODO: if this doesn't match the RHF validation, it swallows the error
+// TODO: 2024-01-28 | revisit the any() types. janky nonsense behavior
 
 export const AssetJobFormSchema = z.object({
   id: z.coerce.number().optional(),
@@ -10,11 +10,20 @@ export const AssetJobFormSchema = z.object({
   asset: z.string({
     required_error: "select an asset",
   }),
-  chunk: z.coerce.number({
-    required_error: "enter a chunk value",
-  }),
-  cron: z.string().optional(),
-  filter: z.string().optional(),
+  /////////
+  // chunk: z.coerce
+  //   .number({
+  //     required_error: "enter a chunk value",
+  //   })
+  //   .nullable(),
+  // cron: z.string().nullable(),
+
+  // filter: z.string().nullable(),
+  chunk: z.any().nullable(),
+  cron: z.any().nullable(),
+  filter: z.any().nullable(),
+
+  /////////
   repo_fs_path: z.string().nullable(),
   geo_type: z.string(),
   repo_id: z.string().min(1, { message: "Select a source repo" }),

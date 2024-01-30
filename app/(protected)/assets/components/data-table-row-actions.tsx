@@ -22,18 +22,28 @@ interface DataTableRowActionsProps<TData> {
 
 //TODO: better toasty error handling
 const handleAssetJobDelete = async (assetJob: AssetJob) => {
-  await deleteAssetJob(assetJob.id);
+  const { data, error } = await deleteAssetJob(assetJob.id);
+  if (error) {
+    toast.error(data);
+  } else {
+    toast.info(data);
+  }
 };
 
 //TODO: better toasty error handling
 const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
-  await enqueueAssetJobTask(assetJob);
+  const { data, error } = await enqueueAssetJobTask(assetJob);
+  if (error) {
+    toast.error(data);
+  } else {
+    toast.info(data);
+  }
 };
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const assetJob = AssetJobSchema.parse(row.original); // zod thing
+  //const assetJob = AssetJobSchema.parse(row.original); // zod thing
 
   return (
     <DropdownMenu>

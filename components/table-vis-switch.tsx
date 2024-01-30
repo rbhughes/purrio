@@ -6,6 +6,10 @@ import { Switch } from "@/components/ui/switch";
 import { Table } from "lucide-react";
 import { AreaChart } from "lucide-react";
 
+///
+import { usePathname } from "next/navigation";
+///
+
 export default function TableVisSwitch({
   compA,
   compB,
@@ -13,6 +17,8 @@ export default function TableVisSwitch({
   compA: any;
   compB: any;
 }) {
+  const pathname = usePathname();
+
   const [showCompA, setShowCompA] = React.useState(true);
 
   const handleToggle = () => {
@@ -27,6 +33,7 @@ export default function TableVisSwitch({
         <Table />
         <Switch id="toggle" onClick={handleToggle}></Switch>
         <AreaChart />
+        {pathname}
       </div>
 
       {showCompA ? compA : compB}

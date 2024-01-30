@@ -38,55 +38,17 @@ import { AssetJobFormSchema } from "../asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
-///
 import { AssetJobTable } from "../asset-job-table";
-///
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 type FormInputs = z.infer<typeof AssetJobFormSchema>;
 
-//const renderSubComponent = ({ row }: { row: any<AssetJob> }) => {
-//const renderSubComponent = ({ row }: { row: Row<AssetJob> }) => {
-export const renderSubComponent = ({
-  row,
-}: //repos,
-{
-  row: any;
-  //repos: Repo[];
-}) => {
-  //return <AssetJobForm repos={[row]} />;
-
-  return (
-    <pre style={{ fontSize: "10px" }}>
-      <code>{JSON.stringify(row.original, null, 2)}</code>
-    </pre>
-  );
-};
-
-// export const renderAssetJobForm = ({
-//   repos,
-//   asset_job,
-// }: {
-//   repos: Repo[];
-//   asset_job?: AssetJob;
-// }) => {
-//   return (
-//     <pre style={{ fontSize: "10px" }}>
-//       {/* <code>{JSON.stringify(row.original, null, 2)}</code> */}
-//       <code>{JSON.stringify(repos, null, 2)}</code>
-//       <code>{JSON.stringify(asset_job, null, 2)}</code>
-//     </pre>
-//   );
-// };
-
 ///////////////////////////////////////////////////////////
 
-export default function AssetJobForm({
+export default function AssetJobs({
   repos,
   assetJobs,
 }: {
@@ -106,11 +68,11 @@ export default function AssetJobForm({
     chunk: 100,
     cron: "",
     filter: "",
-    //last_invoked: null,
     repo_fs_path: null,
     geo_type: [...new Set(repos!.map((repo) => repo.geo_type as string))][0],
     repo_name: null,
     repo_id: "",
+    //last_invoked: null,
     //row_created: null,
   };
 
@@ -134,9 +96,6 @@ export default function AssetJobForm({
   });
 
   const refGeoType = React.useRef(GEOTYPES[0]);
-  // const [selectedGeoType, setSelectedGeoType] = React.useState(
-  //   refGeoType.current
-  // );
 
   React.useEffect(() => {
     form.setValue("repo_id", "");
@@ -145,38 +104,22 @@ export default function AssetJobForm({
 
   // we add repo fs_path and name here (joins not supported in subscription)
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
-    console.log("################################");
-    console.log(formData);
-    console.log("################################");
-
     const repo = repos!.filter((r) => r.id === formData.repo_id)[0];
     formData.repo_fs_path = repo.fs_path;
     formData.geo_type = repo.geo_type!;
     formData.repo_name = repo.name;
 
-    //const result = await updateAssetJob(formData)
-    // if (formData.id === 1e10) {
-
-    // } else {
-
-    // }
-
-    const result =
+    const { data, error } =
       formData.id === 2e63
         ? await createAssetJob(formData)
         : await updateAssetJob(formData);
 
-    if (!result) {
-      toast.error("No results returned when trying to save AssetJob");
-      return;
+    if (error) {
+      toast.error(data);
+    } else {
+      toast.info(data);
     }
 
-    // if (result.error) {
-    //   toast.error(JSON.stringify(result.error, null, 2));
-    //   return;
-    // }
-
-    //toast.info(JSON.stringify(result.status, null, 2));
     form.reset();
   };
 
@@ -436,6 +379,7 @@ export default function AssetJobForm({
           </Form>
         </CardContent>
       </Card>
+
       <AssetJobTable assetJobs={assetJobs!} setValue={form.setValue} />
     </div>
   );

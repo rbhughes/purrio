@@ -5,6 +5,8 @@ import RealtimeMessenger from "@/components/realtime-messenger";
 import { Button } from "./ui/button";
 import { User } from "@supabase/supabase-js";
 
+//import TableVisSwitch from "./table-vis-switch";
+
 export const Sidebar = ({
   user,
   children,
@@ -46,9 +48,11 @@ const SidebarContent = ({ user }: { user: User }) => {
         <Button asChild className="purr-navbar-button">
           <Link href={"/system"}>system</Link>
         </Button>
+        <div id="table-or-viz"></div>
       </div>
 
       {/* */}
+      {/* <TableVisSwitch compA={<h1>COMP A</h1>} compB={<h1>COMP B</h1>} /> */}
 
       <div className="flex flex-col gap-2">
         <RealtimeMessenger user={user} directive={"recon"} />

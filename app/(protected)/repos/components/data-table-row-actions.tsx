@@ -10,8 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { RepoSchema } from "../repo-schema";
-import { addRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
+//import { RepoSchema } from "../repo-schema";
+import { toast } from "sonner";
+import { enqueueRepoReconTask, deleteRepo, pickWorker } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -43,24 +44,33 @@ const handleRepoRefresh = async (repo: Repo) => {
     formData.kingdom_username = (repo.conn_aux as any).kingdom_username || "";
     formData.kingdom_password = (repo.conn_aux as any).kingdom_password || "";
   }
-  const result = await addRepoReconTask(formData);
-  // console.log("addRepoReconTask", result);
+  const { data, error } = await enqueueRepoReconTask(formData);
+  if (error) {
+    toast.error(error);
+  } else {
+    toast.info(data);
+  }
 };
 
 //TODO: better toasty error handling
 const handleRepoForget = async (repo: Repo) => {
-  const result = await deleteRepo(repo.id);
+  const { data, error } = await deleteRepo(repo.id);
+  if (error) {
+    toast.error(error);
+  } else {
+    toast.info(data);
+  }
 };
 
 //TODO: better toasty error handling
 const handleRepoDetail = async (repo: Repo) => {
-  console.log("pop up a dialog");
+  console.log("pop up a dialog or something");
 };
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const repo = RepoSchema.parse(row.original); // it's a zod thing
+  //const repo = RepoSchema.parse(row.original); // it's a zod thing
 
   return (
     <DropdownMenu>
@@ -77,8 +87,8 @@ export function DataTableRowActions<TData>({
         {/* ---------- */}
 
         <DropdownMenuItem
-          onClick={() => {
-            handleRepoRefresh(row.original as Repo);
+          onClick={async () => {
+            await handleRepoRefresh(row.original as Repo);
           }}
         >
           Refresh...
@@ -87,8 +97,8 @@ export function DataTableRowActions<TData>({
         {/* ---------- */}
 
         <DropdownMenuItem
-          onClick={() => {
-            handleRepoForget(row.original as Repo);
+          onClick={async () => {
+            await handleRepoForget(row.original as Repo);
           }}
         >
           Forget...
@@ -97,8 +107,8 @@ export function DataTableRowActions<TData>({
         {/* ---------- */}
 
         <DropdownMenuItem
-          onClick={() => {
-            handleRepoDetail(row.original as Repo);
+          onClick={async () => {
+            await handleRepoDetail(row.original as Repo);
           }}
         >
           Detail View...

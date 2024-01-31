@@ -75,14 +75,22 @@
   }
 }
 
+.purr-navbar {
+  @apply bg-slate-200;
+}
+
 .purr-button {
   @apply bg-slate-500 font-mono font-extrabold;
 }
 
 .purr-navbar-button {
-  @apply w-32 bg-slate-500 font-mono font-extrabold;
+  @apply w-28 bg-slate-500 font-mono font-extrabold;
 }
 
 .purr-activity-button {
-  @apply w-32 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
+  @apply w-28 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
+}
+
+.purr-table-viz-toggle {
+  @apply w-32 h-20 bg-blue-500;
 }

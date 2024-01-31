@@ -2,41 +2,31 @@
 import React from "react";
 
 import { Switch } from "@/components/ui/switch";
-
 import { Table } from "lucide-react";
 import { AreaChart } from "lucide-react";
 
-///
-import { usePathname } from "next/navigation";
-///
+interface TableVisToggleProps {
+  onToggle?: (checked: boolean) => void;
+}
 
-export default function TableVisSwitch({
-  compA,
-  compB,
-}: {
-  compA: any;
-  compB: any;
-}) {
-  const pathname = usePathname();
-
-  const [showCompA, setShowCompA] = React.useState(true);
+const TableVisSwitch: React.FC<TableVisToggleProps> = ({ onToggle }) => {
+  const [toggle, setToggle] = React.useState(false); // <-- look
 
   const handleToggle = () => {
-    setShowCompA(!showCompA);
+    setToggle(!toggle);
+    if (onToggle) {
+      onToggle(toggle);
+    }
   };
 
-  //const activeComponent = showCompA ? compA : compB;
-
   return (
-    <>
-      <div className=" flex items-center space-x-4 rounded-lg border shadow my-4 p-4 w-fit">
-        <Table />
-        <Switch id="toggle" onClick={handleToggle}></Switch>
-        <AreaChart />
-        {pathname}
-      </div>
-
-      {showCompA ? compA : compB}
-    </>
+    //<div className="flex bg-white items-center space-x-2 rounded-lg border shadow my-4 p-2 w-fit">
+    <div className="flex justify-evenly items-center rounded-md bg-slate-500 w-28  p-2 ">
+      <Table className="text-slate-200" size={20} />
+      <Switch id="toggle" onClick={handleToggle}></Switch>
+      <AreaChart className="text-slate-200" size={20} />
+    </div>
   );
-}
+};
+
+export default TableVisSwitch;

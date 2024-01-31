@@ -29,6 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
@@ -36,11 +41,12 @@ import { GEOTYPES } from "@/lib/purr_utils";
 import { RepoReconFormSchema } from "../repo-recon-form-schema";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
-import { RepoTable } from "../repo-table";
+import { RepoTable } from "./repo-table";
 
-//import TableVisSwitch from "@/components/table-vis-switch";
-import TableVisToggle from "@/components/table-vis-toggle";
-import RepoVis from "../repo-vis";
+import { ArrowDownRightSquare } from "lucide-react";
+
+import TableVisSwitch from "@/components/table-vis-switch";
+import RepoVis from "./repo-vis";
 import { createPortal } from "react-dom";
 
 import { Database } from "@/lib/sb_types";
@@ -58,11 +64,12 @@ export default function Repos({
   // 2024-01-18 | just skip state and reset to defaults after submit
   //const [data, setData] = React.useState<FormInputs>();
 
-  // console.log(tableOrViz);
   //const tableOrViz = document.getElementById("table-or-viz");
   const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   const [showTable, setShowTable] = React.useState<boolean>(true);
+  const [showForm, setShowForm] = React.useState<boolean>(false);
 
+  // because "document" may not exist in nextjs client for some reason...
   React.useEffect(() => {
     const tve: HTMLElement = document.getElementById("table-or-viz")!;
     if (tve) {
@@ -70,11 +77,9 @@ export default function Repos({
     }
   });
 
-  ///
   const handleToggle = (checked: boolean) => {
     setShowTable(checked);
   };
-  ///
 
   let defaults = {
     geo_type: GEOTYPES[0],
@@ -118,130 +123,151 @@ export default function Repos({
     <div>
       {tableVizElement &&
         createPortal(
-          <TableVisToggle onToggle={handleToggle} />,
+          <TableVisSwitch onToggle={handleToggle} />,
           tableVizElement
         )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Repo Recon</CardTitle>
-          <CardDescription>{cardDesc}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(processForm)}
-              className=" space-y-6 "
-            >
-              <div className="flex flex-row gap-2">
-                {/* ---------- */}
+      <Collapsible
+        open={showForm}
+        onOpenChange={setShowForm}
+        //className="w-[350px] space-y-2"
+      >
+        <CollapsibleTrigger asChild>
+          {/* <Button variant="ghost" size="sm"> */}
+          <Button className="" variant="ghost">
+            <span className="sr-only">Toggle</span>
+            <ArrowDownRightSquare />
+            Do some Repo Recon
+          </Button>
+        </CollapsibleTrigger>
 
-                <div className="w-1/6">
-                  <FormField
-                    control={form.control}
-                    name="geo_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repo Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a geo_type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {GEOTYPES.map((geotype: string) => {
-                              return (
-                                <SelectItem key={geotype} value={geotype}>
-                                  {geotype}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+        <CollapsibleContent>
+          <Card>
+            <CardHeader>
+              <CardTitle>Repo Recon</CardTitle>
+              <CardDescription>{cardDesc}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(processForm)}
+                  className=" space-y-6 "
+                >
+                  <div className="flex flex-row gap-2">
+                    {/* ---------- */}
 
-                {/* ---------- */}
+                    <div className="w-1/6">
+                      <FormField
+                        control={form.control}
+                        name="geo_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Repo Type</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a geo_type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {GEOTYPES.map((geotype: string) => {
+                                  return (
+                                    <SelectItem key={geotype} value={geotype}>
+                                      {geotype}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                <div className="w-2/6">
-                  <FormField
-                    control={form.control}
-                    name="recon_root"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repo Parent Directory</FormLabel>
-                        <FormControl>
-                          <Input placeholder="recon root" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          Directory containing projects
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                    {/* ---------- */}
 
-                {/* ---------- */}
+                    <div className="w-2/6">
+                      <FormField
+                        control={form.control}
+                        name="recon_root"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Repo Parent Directory</FormLabel>
+                            <FormControl>
+                              <Input placeholder="recon root" {...field} />
+                            </FormControl>
+                            <FormDescription>
+                              Directory containing projects
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                <div className="w-1/6">
-                  <FormField
-                    control={form.control}
-                    name="worker"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Worker</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a hostname" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {workers.map((hostname: string) => {
-                              return (
-                                <SelectItem key={hostname} value={hostname}>
-                                  {hostname}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Assign a specific worker
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                    {/* ---------- */}
 
-                {/* ---------- */}
+                    <div className="w-1/6">
+                      <FormField
+                        control={form.control}
+                        name="worker"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Worker</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a hostname" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {workers.map((hostname: string) => {
+                                  return (
+                                    <SelectItem key={hostname} value={hostname}>
+                                      {hostname}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>
+                              Assign a specific worker
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
 
-                <div className="w-1/6 mt-8 ml-10">
-                  <Button type="submit" className="purr-button">
-                    repo recon
-                  </Button>
-                </div>
-                <div className="w-1/6"></div>
-              </div>
+                    {/* ---------- */}
 
-              {watchedGeoType === "geographix" && <AuxGeographix form={form} />}
-              {watchedGeoType === "kingdom" && <AuxKingdom form={form} />}
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                    <div className="w-1/6 mt-8 ml-10">
+                      <Button type="submit" className="purr-button">
+                        repo recon
+                      </Button>
+                    </div>
+                    <div className="w-1/6"></div>
+                  </div>
+
+                  {watchedGeoType === "geographix" && (
+                    <AuxGeographix form={form} />
+                  )}
+                  {watchedGeoType === "kingdom" && <AuxKingdom form={form} />}
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <div className="my-6" />
 
       {showTable ? (
         <RepoTable repos={repos} setValue={form.setValue} />

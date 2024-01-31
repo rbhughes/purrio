@@ -32,8 +32,8 @@ const Logo = () => {
 
 const SidebarContent = ({ user }: { user: User }) => {
   return (
-    <div className="flex flex-1 flex-col items-center grow-0  gap-2 p-2 justify-between bg-slate-200 rounded-lg">
-      <div className="flex flex-col gap-2 w-32 ">
+    <div className="purr-navbar flex flex-1 flex-col items-center grow-0 gap-2 p-2 justify-between">
+      <div className="flex flex-col gap-2  ">
         <Logo />
 
         <Button asChild className="purr-navbar-button">

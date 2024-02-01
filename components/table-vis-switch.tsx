@@ -2,6 +2,7 @@
 import React from "react";
 
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Table } from "lucide-react";
 import { AreaChart } from "lucide-react";
 
@@ -20,12 +21,18 @@ const TableVisSwitch: React.FC<TableVisToggleProps> = ({ onToggle }) => {
   };
 
   return (
-    //<div className="flex bg-white items-center space-x-2 rounded-lg border shadow my-4 p-2 w-fit">
-    <div className="flex justify-evenly items-center rounded-md bg-slate-500 w-28  p-2 ">
-      <Table className="text-slate-200" size={20} />
-      <Switch id="toggle" onClick={handleToggle}></Switch>
-      <AreaChart className="text-slate-200" size={20} />
-    </div>
+    <Button className="purr-navbar-button">
+      <div className="flex items-center justify-evenly space-x-2">
+        <Table className="text-slate-200" size={20} />
+        <Switch id="toggle" onClick={handleToggle}></Switch>
+        <AreaChart className="text-slate-200" size={20} />
+      </div>
+    </Button>
+    // <div className="flex justify-evenly items-center rounded-md bg-slate-500 w-28  p-2 ">
+    //   <Table className="text-slate-200" size={20} />
+    //   <Switch id="toggle" onClick={handleToggle}></Switch>
+    //   <AreaChart className="text-slate-200" size={20} />
+    // </div>
   );
 };
 

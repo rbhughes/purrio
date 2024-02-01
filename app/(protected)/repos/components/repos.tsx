@@ -116,8 +116,8 @@ export default function Repos({
   };
 
   const cardDesc = `
-  Crawl a directory to locate and automatically create a metadata inventory for
-  the specified Repo type.`;
+  Recursively crawl a directory path (i.e. Project Home) to locate and collect 
+  metadata inventories for the specified Repo type.`;
 
   return (
     <div>
@@ -133,18 +133,16 @@ export default function Repos({
         //className="w-[350px] space-y-2"
       >
         <CollapsibleTrigger asChild>
-          {/* <Button variant="ghost" size="sm"> */}
-          <Button className="" variant="ghost">
-            <span className="sr-only">Toggle</span>
-            <ArrowDownRightSquare />
-            Do some Repo Recon
+          <Button className="" variant="outline">
+            <ArrowDownRightSquare className="mx-2" />
+            Discover Projects on your Network...
           </Button>
         </CollapsibleTrigger>
 
         <CollapsibleContent>
           <Card>
             <CardHeader>
-              <CardTitle>Repo Recon</CardTitle>
+              {/* <CardTitle>Repo Recon</CardTitle> */}
               <CardDescription>{cardDesc}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -190,7 +188,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-2/6">
+                    <div className="w-3/6">
                       <FormField
                         control={form.control}
                         name="recon_root"
@@ -201,7 +199,7 @@ export default function Repos({
                               <Input placeholder="recon root" {...field} />
                             </FormControl>
                             <FormDescription>
-                              Directory containing projects
+                              UNC or drive letter path
                             </FormDescription>
                             <FormMessage />
                           </FormItem>

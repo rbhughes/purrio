@@ -30,6 +30,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 import { createAssetJob, updateAssetJob } from "@/lib/actions";
 import { toast } from "sonner";
@@ -38,7 +43,12 @@ import { AssetJobFormSchema } from "../asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AssetJobTable } from "../asset-job-table";
+import { AssetJobTable } from "./asset-job-table";
+import { createPortal } from "react-dom";
+import TableVisSwitch from "@/components/table-vis-switch";
+import AssetJobVis from "./asset-job-vis";
+
+import { ArrowDownRightSquare } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -55,7 +65,22 @@ export default function AssetJobs({
   repos?: Repo[];
   assetJobs?: AssetJob[];
 }) {
+  const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
+  const [showTable, setShowTable] = React.useState<boolean>(true);
+  const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
+
+  // because "document" may not exist in nextjs client for some reason...
+  React.useEffect(() => {
+    const tve: HTMLElement = document.getElementById("table-or-viz")!;
+    if (tve) {
+      setTableVizElement(tve);
+    }
+  });
+
+  const handleToggle = (checked: boolean) => {
+    setShowTable(checked);
+  };
 
   const handleToggleAdvancedForm = () => {
     setShowAdvancedForm(!showAdvancedForm);
@@ -124,202 +149,84 @@ export default function AssetJobs({
   };
 
   const cardDesc = `
-  Define an Asset collection job for a specific Repo. The optional filter
-  creates a SQL "WHERE" clause to limit results.`;
+  Define Asset Collection Jobs for a specific Repo and asset type. Add an
+  optional SQL "WHERE" clause filter to limit results.`;
 
   return (
     <div>
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Asset Jobs
-            <span className="flex items-center space-x-2 float-right">
-              <Label htmlFor="advToggle">Advanced </Label>
-              <Switch id="advToggle" onClick={handleToggleAdvancedForm} />
-            </span>
-          </CardTitle>
-          <CardDescription>{cardDesc}</CardDescription>
-        </CardHeader>
+      {tableVizElement &&
+        createPortal(
+          <TableVisSwitch onToggle={handleToggle} />,
+          tableVizElement
+        )}
 
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(processForm)}
-              className=" space-y-6 "
-            >
-              {/* -------------------- */}
+      <Collapsible
+        open={showForm}
+        onOpenChange={setShowForm}
+        //className="w-[350px] space-y-2"
+      >
+        <CollapsibleTrigger asChild>
+          <Button className="" variant="outline">
+            <ArrowDownRightSquare className="mx-2" />
+            Define Asset Collection Jobs...
+          </Button>
+        </CollapsibleTrigger>
 
-              <FormField
-                control={form.control}
-                name="id"
-                defaultValue={2e63} //
-                render={({ field }) => (
-                  <FormControl>
-                    <Input type="hidden" {...field} />
-                  </FormControl>
-                )}
-              />
+        <CollapsibleContent>
+          <Card>
+            <CardHeader>
+              {/* <CardTitle>
+                Asset Jobs
+                <span className="flex items-center space-x-2 float-right">
+                  <Label htmlFor="advToggle">Advanced </Label>
+                  <Switch id="advToggle" onClick={handleToggleAdvancedForm} />
+                </span>
+              </CardTitle> */}
+              <CardDescription>
+                {cardDesc}
 
-              {/* -------------------- */}
-              <div className="flex flex-row gap-2">
-                <div className="w-1/12">
+                <span className="flex items-center space-x-2 float-right">
+                  <Label htmlFor="advToggle">Advanced </Label>
+                  <Switch id="advToggle" onClick={handleToggleAdvancedForm} />
+                </span>
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(processForm)}
+                  className=" space-y-6 "
+                >
+                  {/* -------------------- */}
+
                   <FormField
                     control={form.control}
-                    name="active"
+                    name="id"
+                    defaultValue={2e63} //
                     render={({ field }) => (
-                      <FormItem className="w-1/12">
-                        <FormLabel>Active</FormLabel>
-                        <FormControl>
-                          <Checkbox
-                            className="h-9 w-9"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                      <FormControl>
+                        <Input type="hidden" {...field} />
+                      </FormControl>
                     )}
                   />
-                </div>
 
-                {/* ---------- */}
-
-                <div className="w-1/6">
-                  <FormField
-                    control={form.control}
-                    name="geo_type" //this should match repo.geo_type, no?
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repo Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a geo_type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[
-                              ...new Set(
-                                repos!.map((repo) => repo.geo_type as string)
-                              ),
-                            ].map((gt: string) => {
-                              return (
-                                <SelectItem key={gt} value={gt}>
-                                  {gt}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* ---------- */}
-
-                <div className="w-1/6">
-                  <FormField
-                    control={form.control}
-                    name="repo_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Repo</FormLabel>
-
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a repo" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {repos!
-                              .filter(
-                                (repo: Repo) => repo.geo_type === watchedGeoType
-                              )
-                              .map((repo: Repo) => (
-                                <SelectItem key={repo.id} value={repo.id}>
-                                  {repo.name}
-                                </SelectItem>
-                              ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>Source project</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* ---------- */}
-
-                <div className="w-1/6">
-                  <FormField
-                    control={form.control}
-                    name="asset"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Asset</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an asset" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {ASSETS.map((asset: string) => {
-                              return (
-                                <SelectItem key={asset} value={asset}>
-                                  {asset}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>Data to collect</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* ---------- */}
-
-                <div className="w-1/12 mt-8">
-                  <Button type="submit" className="purr-button">
-                    save job
-                  </Button>
-                </div>
-              </div>
-
-              {showAdvancedForm && (
-                <>
                   {/* -------------------- */}
                   <div className="flex flex-row gap-2">
-                    <div className="w-1/12"></div>
-
-                    {/* ---------- */}
-                    <div className="w-1/6">
+                    <div className="w-1/12">
                       <FormField
                         control={form.control}
-                        name="chunk"
+                        name="active"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>chunk</FormLabel>
+                          <FormItem className="w-1/12">
+                            <FormLabel>Active</FormLabel>
                             <FormControl>
-                              <Input placeholder="chunk" {...field} />
+                              <Checkbox
+                                className="h-9 w-9"
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
                             </FormControl>
-                            <FormDescription></FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -328,17 +235,38 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="flex basis-1/6">
+                    <div className="w-1/6">
                       <FormField
                         control={form.control}
-                        name="cron"
+                        name="geo_type" //this should match repo.geo_type, no?
                         render={({ field }) => (
-                          <FormItem className="w-full">
-                            <FormLabel>cron</FormLabel>
-                            <FormControl>
-                              <Input placeholder="cron" {...field} />
-                            </FormControl>
-                            <FormDescription>This is cron</FormDescription>
+                          <FormItem>
+                            <FormLabel>Repo Type</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a geo_type" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {[
+                                  ...new Set(
+                                    repos!.map(
+                                      (repo) => repo.geo_type as string
+                                    )
+                                  ),
+                                ].map((gt: string) => {
+                                  return (
+                                    <SelectItem key={gt} value={gt}>
+                                      {gt}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -350,37 +278,179 @@ export default function AssetJobs({
                     <div className="w-2/6">
                       <FormField
                         control={form.control}
-                        name="filter"
+                        name="repo_id"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>filter</FormLabel>
-                            <FormControl>
-                              <Textarea placeholder="filter" {...field} />
-                            </FormControl>
+                            <FormLabel>Repo</FormLabel>
+
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a repo" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {repos!
+                                  .filter(
+                                    (repo: Repo) =>
+                                      repo.geo_type === watchedGeoType
+                                  )
+                                  .map((repo: Repo) => (
+                                    <SelectItem key={repo.id} value={repo.id}>
+                                      {repo.name}
+                                    </SelectItem>
+                                  ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription>Source project</FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* ---------- */}
+
+                    <div className="w-1/6">
+                      <FormField
+                        control={form.control}
+                        name="asset"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Asset</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select an asset" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {ASSETS.map((asset: string) => {
+                                  return (
+                                    <SelectItem key={asset} value={asset}>
+                                      {asset}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
                             <FormDescription>
-                              SQL "WHERE" clause stub
+                              Asset type to collect
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
+
+                    {/* ---------- */}
+
+                    <div className="w-1/12 mt-8 ml-10">
+                      <Button type="submit" className="purr-button">
+                        save job
+                      </Button>
+                    </div>
                   </div>
 
-                  {/* -------------------- */}
+                  {showAdvancedForm && (
+                    <>
+                      {/* -------------------- */}
+                      <div className="flex flex-row gap-2">
+                        <div className="w-1/12"></div>
 
-                  <div className="flex flex-row gap-2">
-                    <div className="w-1/12"></div>
-                    <div className="w-11/12">{watchedAsset}</div>
-                  </div>
-                </>
-              )}
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                        {/* ---------- */}
+                        <div className="w-1/6">
+                          <FormField
+                            control={form.control}
+                            name="chunk"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>chunk</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="chunk" {...field} />
+                                </FormControl>
+                                <FormDescription></FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
-      <AssetJobTable assetJobs={assetJobs!} setValue={form.setValue} />
+                        {/* ---------- */}
+
+                        <div className="flex basis-1/6">
+                          <FormField
+                            control={form.control}
+                            name="cron"
+                            render={({ field }) => (
+                              <FormItem className="w-full">
+                                <FormLabel>cron</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    placeholder="cron"
+                                    disabled
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormDescription>
+                                  cron expression
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+
+                        {/* ---------- */}
+
+                        <div className="w-2/6">
+                          <FormField
+                            control={form.control}
+                            name="filter"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>filter</FormLabel>
+                                <FormControl>
+                                  <Textarea placeholder="filter" {...field} />
+                                </FormControl>
+                                <FormDescription>
+                                  SQL "WHERE" clause stub
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      {/* -------------------- */}
+
+                      <div className="flex flex-row gap-2">
+                        <div className="w-1/12"></div>
+                        <div className="w-11/12">{watchedAsset}</div>
+                      </div>
+                    </>
+                  )}
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </CollapsibleContent>
+      </Collapsible>
+
+      <div className="my-6" />
+
+      {showTable ? (
+        <AssetJobTable assetJobs={assetJobs!} setValue={form.setValue} />
+      ) : (
+        <AssetJobVis assetJobs={assetJobs!} />
+      )}
     </div>
   );
 }

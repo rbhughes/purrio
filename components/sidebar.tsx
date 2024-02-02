@@ -46,7 +46,7 @@ const SidebarContent = ({ user }: { user: User }) => {
           <Link href={"/assets"}>assets</Link>
         </Button>
         <Button asChild className="purr-navbar-button">
-          <Link href={"/system"}>system</Link>
+          <Link href={"/settings"}>settings</Link>
         </Button>
         <div id="table-or-viz"></div>
       </div>

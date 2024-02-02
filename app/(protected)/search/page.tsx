@@ -1,3 +1,11 @@
-export default async function Search() {
-  return <>I am a not-implemented search page</>;
+import SearchForm from "./components/search-form";
+import { Toaster } from "@/components/ui/sonner";
+
+export default async function Page() {
+  return (
+    <div>
+      <SearchForm placeholder="search..." />
+      <Toaster />
+    </div>
+  );
 }

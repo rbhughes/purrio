@@ -90,6 +90,7 @@ export default function AssetJobs({
     id: undefined,
     active: true,
     asset: ASSETS[0],
+    tag: "",
     chunk: 100,
     cron: "",
     filter: "",
@@ -363,6 +364,24 @@ export default function AssetJobs({
                       {/* -------------------- */}
                       <div className="flex flex-row gap-2">
                         <div className="w-1/12"></div>
+
+                        {/* ---------- */}
+                        <div className="w-1/6">
+                          <FormField
+                            control={form.control}
+                            name="tag"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>tag</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="tag" {...field} />
+                                </FormControl>
+                                <FormDescription></FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
                         {/* ---------- */}
                         <div className="w-1/6">

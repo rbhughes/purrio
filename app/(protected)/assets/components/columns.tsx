@@ -125,6 +125,13 @@ export const columns: ColumnDef<AssetJob>[] = [
     ),
     cell: ({ row }) => <div>{row.getValue("id")}</div>,
   },
+  {
+    accessorKey: "tag",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="tag" />
+    ),
+    cell: ({ row }) => <div className="w-[80px]">{row.getValue("tag")}</div>,
+  },
 
   {
     accessorKey: "cron",

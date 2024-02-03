@@ -13,6 +13,7 @@ export const AssetJobSchema = z.object({
   repo_id: z.string(),
   repo_name: z.string(),
   row_created: z.string().datetime({ offset: true }),
+  tag: z.string().nullable(),
 });
 
 export type AssetJob = z.infer<typeof AssetJobSchema>;

@@ -19,6 +19,7 @@ export const AssetJobFormSchema = z.object({
   // cron: z.string().nullable(),
 
   // filter: z.string().nullable(),
+  tag: z.string().optional(),
   chunk: z.any().nullable(),
   cron: z.any().nullable(),
   filter: z.any().nullable(),

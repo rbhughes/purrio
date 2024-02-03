@@ -23,8 +23,10 @@ import {
   FontItalicIcon,
   UnderlineIcon,
 } from "@radix-ui/react-icons";
+import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Toggle } from "@/components/ui/toggle";
 
 import { Search } from "lucide-react";
 
@@ -56,7 +58,7 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
   let defaults = {
     asset: ASSETS[0],
     term: "",
-    geotypes: GEOTYPES,
+    geo_types: [],
   };
 
   const form = useForm<FormInputs>({
@@ -123,43 +125,86 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
               </div>
 
               {/* ---------- */}
-              <div className="w-1/6">
+              {/* ---------- */}
+              {/* ---------- */}
+              <div className="w-1/6 ">
                 <FormField
                   control={form.control}
-                  name="geotypes"
+                  name="geo_types"
                   render={({ field }) => (
-                    <FormItem>
+                    <ToggleGroup
+                      type="multiple"
+                      variant="outline"
+                      {...field}
+                      onValueChange={(value) =>
+                        form.setValue(field.name, value)
+                      }
+                    >
                       <FormLabel>my form label</FormLabel>
-                      <FormControl>
-                        <ToggleGroup type="multiple" variant="outline">
-                          <ToggleGroupItem
-                            //value="bold"
-                            aria-label="Toggle bold"
-                            {...field}
-                          >
-                            <FontBoldIcon className="h-4 w-4" />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem
-                            //value="italic"
-                            aria-label="Toggle italic"
-                            {...field}
-                          >
-                            <FontItalicIcon className="h-4 w-4" />
-                          </ToggleGroupItem>
-                          <ToggleGroupItem
-                            //value="strikethrough"
-                            aria-label="Toggle strikethrough"
-                            {...field}
-                          >
-                            <UnderlineIcon className="h-4 w-4" />
-                          </ToggleGroupItem>
-                        </ToggleGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                      <ToggleGroupItem
+                        value="geographix"
+                        aria-label="geographix"
+                      >
+                        {GeoTypeUI.find(
+                          (x) => x.value === "geographix"
+                        )!.icon()}
+                      </ToggleGroupItem>
+
+                      <ToggleGroupItem value="italic" aria-label="Tog italic">
+                        <FontItalicIcon className="h-4 w-4" />
+                      </ToggleGroupItem>
+
+                      <ToggleGroupItem value="strike" aria-label="strike">
+                        <UnderlineIcon className="h-4 w-4" />
+                      </ToggleGroupItem>
+                    </ToggleGroup>
                   )}
                 />
               </div>
+
+              {/* ---------- */}
+              {/* ---------- */}
+              {/* ---------- */}
+              {/* <div className="w-1/6 flex flex-row">
+                <FormField
+                  control={form.control}
+                  name="pet"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Toggle
+                          variant="outline"
+                          pressed={field.value}
+                          onPressedChange={field.onChange}
+                          aria-label="Toggle italic"
+                        >
+                          {GeoTypeUI.find(
+                            (x) => x.value === "geographix"
+                          )!.icon()}
+                        </Toggle>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="ggx"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Toggle
+                          variant="outline"
+                          pressed={field.value}
+                          onPressedChange={field.onChange}
+                          aria-label="Toggle italic"
+                        >
+                          <FontItalicIcon className="" />
+                        </Toggle>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div> */}
 
               {/* ---------- */}
               <div className="w-3/6">

@@ -21,7 +21,7 @@ const TableVisSwitch: React.FC<TableVisToggleProps> = ({ onToggle }) => {
   };
 
   return (
-    <Button className="purr-navbar-button">
+    <Button asChild className="purr-navbar-button">
       <div className="flex items-center justify-evenly space-x-2">
         <Table className="text-slate-200" size={20} />
         <Switch id="toggle" onClick={handleToggle}></Switch>

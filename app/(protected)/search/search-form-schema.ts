@@ -2,9 +2,9 @@ import { z } from "zod";
 
 export const SearchFormSchema = z.object({
   term: z.string(),
-
   asset: z.string({
     required_error: "select an asset",
   }),
-  geotypes: z.string().array(),
+  tag: z.string(),
+  geo_types: z.string().array(),
 });

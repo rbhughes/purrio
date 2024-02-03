@@ -48,6 +48,7 @@ let rowsSelected: RowSelectionState = {};
 let colsVisible: VisibilityState = {
   active: false,
   //asset: false,
+  //tag: false
   chunk: false,
   cron: false,
   //filter: false,
@@ -71,6 +72,7 @@ const setFormFromTable = async (setValue: any, row: any) => {
     setValue("repo_id", assetJob.repo_id || "");
     setValue("active", assetJob.active || true);
     setValue("asset", assetJob.asset || ASSETS[0]);
+    setValue("tag", assetJob.tag || "");
     setValue("chunk", assetJob.chunk || 100);
     setValue("cron", assetJob.cron || "");
     setValue("filter", assetJob.filter || "");

@@ -23,6 +23,7 @@ export interface Database {
           repo_id: string
           repo_name: string | null
           row_created: string | null
+          tag: string | null
         }
         Insert: {
           active?: boolean
@@ -37,6 +38,7 @@ export interface Database {
           repo_id: string
           repo_name?: string | null
           row_created?: string | null
+          tag?: string | null
         }
         Update: {
           active?: boolean
@@ -51,6 +53,7 @@ export interface Database {
           repo_id?: string
           repo_name?: string | null
           row_created?: string | null
+          tag?: string | null
         }
         Relationships: []
       }

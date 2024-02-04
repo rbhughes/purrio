@@ -26,7 +26,7 @@ export default async function Page() {
       <div>
         <Repos workers={workers} repos={repos!} />
 
-        <Toaster />
+        <Toaster richColors />
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">

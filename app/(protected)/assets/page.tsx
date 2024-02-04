@@ -3,7 +3,12 @@ import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./components/asset-jobs";
 
-export const dynamic = "force-dynamic";
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+//import { toast } from "sonner";
+
+//export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -32,12 +37,33 @@ export default async function Page() {
     .select()
     .order("row_changed", { ascending: false });
 
+  // Some AssetJobs may exist when their associated Repo is missing. Hide them.
+  const extantReposOnly = (repos: Repo[], assetJobs: AssetJob[]) => {
+    const missing: AssetJob[] = [];
+    const extants: AssetJob[] = [];
+    const repoIds = new Set(repos.map((repo) => repo.id));
+    assetJobs.filter((aj: AssetJob) => {
+      if (repoIds.has(aj.repo_id)) {
+        extants.push(aj);
+      } else {
+        missing.push(aj);
+      }
+    });
+    return { extants: extants, missing: missing };
+  };
+
+  const filteredAssetJobs = extantReposOnly(repos!, assetJobs!);
+
   return (
     user && (
       <div>
-        <AssetJobs repos={repos!} assetJobs={assetJobs!} />
+        <AssetJobs
+          repos={repos!}
+          assetJobs={filteredAssetJobs.extants}
+          withMissingRepos={filteredAssetJobs.missing}
+        />
 
-        <Toaster />
+        <Toaster richColors />
 
         {process.env.NODE_ENV === "development" && (
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">

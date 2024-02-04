@@ -39,6 +39,8 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   setValue: any;
+  setShowForm: any;
+  setShowAdvancedForm: any;
 }
 
 //let rowsSelected: RowSelectionState = { "1": true };
@@ -65,6 +67,9 @@ let colsVisible: VisibilityState = {
 
 // setting geo_type resets the repo selection, so wait a bit
 const setFormFromTable = async (setValue: any, row: any) => {
+  console.log("rrrrrrrrrrrrrr");
+  console.log(row.original);
+  console.log("rrrrrrrrrrrrrr");
   let assetJob = row.original as AssetJob;
   setValue("geo_type", assetJob.geo_type);
   setTimeout(() => {
@@ -78,7 +83,7 @@ const setFormFromTable = async (setValue: any, row: any) => {
     setValue("filter", assetJob.filter || "");
     setValue("repo_fs_path", assetJob.repo_fs_path || null);
     setValue("repo_name", assetJob.repo_name || null);
-  }, 300);
+  }, 500);
 };
 ///
 
@@ -86,6 +91,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   setValue,
+  setShowForm,
+  setShowAdvancedForm,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
@@ -145,7 +152,11 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
-                    onDoubleClick={() => setFormFromTable(setValue, row)}
+                    onDoubleClick={() => {
+                      setShowForm(true);
+                      setShowAdvancedForm(true);
+                      setFormFromTable(setValue, row);
+                    }}
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >

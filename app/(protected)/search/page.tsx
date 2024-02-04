@@ -5,7 +5,7 @@ export default async function Page() {
   return (
     <div>
       <SearchForm placeholder="search..." />
-      <Toaster />
+      <Toaster richColors />
     </div>
   );
 }

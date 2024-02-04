@@ -13,9 +13,13 @@ type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 export function AssetJobTable({
   assetJobs,
   setValue,
+  setShowForm,
+  setShowAdvancedForm,
 }: {
   assetJobs: AssetJob[];
   setValue: any;
+  setShowForm: any;
+  setShowAdvancedForm: any;
 }) {
   const supabase = createClient();
   const router = useRouter();
@@ -43,7 +47,13 @@ export function AssetJobTable({
 
   return (
     <Card>
-      <DataTable data={assetJobs} columns={columns} setValue={setValue} />
+      <DataTable
+        data={assetJobs}
+        columns={columns}
+        setValue={setValue}
+        setShowForm={setShowForm}
+        setShowAdvancedForm={setShowAdvancedForm}
+      />
     </Card>
   );
 }

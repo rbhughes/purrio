@@ -47,6 +47,7 @@ import { AssetJobTable } from "./asset-job-table";
 import { createPortal } from "react-dom";
 import TableVisSwitch from "@/components/table-vis-switch";
 import AssetJobVis from "./asset-job-vis";
+import MissingReposWarning from "./missing-repos-warning";
 
 import { ArrowDownRightSquare } from "lucide-react";
 
@@ -61,9 +62,11 @@ type FormInputs = z.infer<typeof AssetJobFormSchema>;
 export default function AssetJobs({
   repos,
   assetJobs,
+  withMissingRepos,
 }: {
   repos?: Repo[];
   assetJobs?: AssetJob[];
+  withMissingRepos?: AssetJob[];
 }) {
   const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   const [showTable, setShowTable] = React.useState<boolean>(true);
@@ -465,10 +468,25 @@ export default function AssetJobs({
 
       <div className="my-6" />
 
+      {/* {JSON.stringify(assetJobs)}
+      {JSON.stringify(repos)} */}
+
       {showTable ? (
-        <AssetJobTable assetJobs={assetJobs!} setValue={form.setValue} />
+        <AssetJobTable
+          assetJobs={assetJobs!}
+          setValue={form.setValue}
+          setShowForm={setShowForm}
+          setShowAdvancedForm={setShowAdvancedForm}
+        />
       ) : (
         <AssetJobVis assetJobs={assetJobs!} />
+      )}
+
+      {withMissingRepos!.length > 0 && (
+        <>
+          <div className="my-6" />
+          <MissingReposWarning withMissingRepos={withMissingRepos!} />
+        </>
       )}
     </div>
   );

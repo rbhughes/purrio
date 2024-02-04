@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-// TODO: 2024-01-28 | revisit the any() types. janky nonsense behavior
-
 export const AssetJobFormSchema = z.object({
   id: z.coerce.number().optional(),
   active: z.boolean({
@@ -18,8 +16,12 @@ export const AssetJobFormSchema = z.object({
   //   .nullable(),
   // cron: z.string().nullable(),
 
+  // TODO: 2024-01-28 | revisit the any() types. janky nonsense behavior
+  // conflict with supabase-assigned type inference?
+  // Type 'null' is not assignable to type 'string | number | readonly string[] | undefined'.
+
   // filter: z.string().nullable(),
-  tag: z.string().optional(),
+  tag: z.any().nullable(),
   chunk: z.any().nullable(),
   cron: z.any().nullable(),
   filter: z.any().nullable(),

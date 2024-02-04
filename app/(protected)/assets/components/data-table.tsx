@@ -67,9 +67,6 @@ let colsVisible: VisibilityState = {
 
 // setting geo_type resets the repo selection, so wait a bit
 const setFormFromTable = async (setValue: any, row: any) => {
-  console.log("rrrrrrrrrrrrrr");
-  console.log(row.original);
-  console.log("rrrrrrrrrrrrrr");
   let assetJob = row.original as AssetJob;
   setValue("geo_type", assetJob.geo_type);
   setTimeout(() => {

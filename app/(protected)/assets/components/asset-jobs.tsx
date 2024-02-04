@@ -191,7 +191,11 @@ export default function AssetJobs({
 
                 <span className="flex items-center space-x-2 float-right">
                   <Label htmlFor="advToggle">Advanced </Label>
-                  <Switch id="advToggle" onClick={handleToggleAdvancedForm} />
+                  <Switch
+                    id="advToggle"
+                    onClick={handleToggleAdvancedForm}
+                    checked={showAdvancedForm}
+                  />
                 </span>
               </CardDescription>
             </CardHeader>

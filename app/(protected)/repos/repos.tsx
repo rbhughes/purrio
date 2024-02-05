@@ -38,7 +38,7 @@ import {
 import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
 import { GEOTYPES } from "@/lib/purr_utils";
-import { RepoReconFormSchema } from "../repo-recon-form-schema";
+import { RepoReconFormSchema } from "./repo-recon-form-schema";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
 import { RepoTable } from "./repo-table";
@@ -108,10 +108,6 @@ export default function Repos({
       toast.info(data);
     }
 
-    //TODO: 2024-01-12: custom colors are not working for error/warning, etc
-    // a re-init of shadcn didn't resolve
-    // https://github.com/emilkowalski/sonner/issues/242
-    // https://sonner.emilkowal.ski/
     form.reset();
   };
 

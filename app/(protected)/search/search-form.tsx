@@ -18,15 +18,9 @@ import {
 import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
 import { toast } from "sonner";
 
-import {
-  FontBoldIcon,
-  FontItalicIcon,
-  UnderlineIcon,
-} from "@radix-ui/react-icons";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Toggle } from "@/components/ui/toggle";
 
 import { Search } from "lucide-react";
 
@@ -47,7 +41,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { SearchFormSchema } from "../search-form-schema";
+import { SearchFormSchema } from "./search-form-schema";
 type FormInputs = z.infer<typeof SearchFormSchema>;
 
 export default function SearchForm({ placeholder }: { placeholder: string }) {
@@ -82,9 +76,14 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
     form.reset();
   };
 
+  const cardDesc = `
+  Limit search by Asset type, GeoType, tag and text terms.`;
+
   return (
     <Card>
-      cardy b
+      <CardHeader>
+        <CardDescription>{cardDesc}</CardDescription>
+      </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
@@ -118,15 +117,13 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                           })}
                         </SelectContent>
                       </Select>
-                      <FormDescription>Asset type to collect</FormDescription>
+                      {/* <FormDescription>Asset type to collect</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
-              {/* ---------- */}
-              {/* ---------- */}
               {/* ---------- */}
               <div className="w-2/6 flex-1">
                 <FormField
@@ -137,8 +134,6 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                       <FormLabel>geotypes</FormLabel>
                       <ToggleGroup
                         type="multiple"
-                        //size="lg"
-                        //orientation="horizontal"
                         variant="outline"
                         {...field}
                         onValueChange={(value) =>
@@ -175,7 +170,6 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                   )}
                 />
               </div>
-              {/* ---------- */}
 
               {/* ---------- */}
               <div className="w-3/6">
@@ -184,9 +178,16 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                   name="term"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>my form label</FormLabel>
+                      <FormLabel>
+                        my form label
+                        <Search className="absolute mt-3.5 ml-1 text-muted-foreground" />
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder="placeholder??" {...field} />
+                        <Input
+                          placeholder="placeholder??"
+                          {...field}
+                          className="ml-10"
+                        />
                       </FormControl>
                       {/* <FormDescription>
                               UNC or drive letter path
@@ -200,7 +201,7 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
 
               <div className="w-1/6 mt-8 ml-10">
                 <Button type="submit" className="purr-button">
-                  repo recon
+                  search
                 </Button>
               </div>
             </div>

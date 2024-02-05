@@ -39,7 +39,7 @@ import {
 import { createAssetJob, updateAssetJob } from "@/lib/actions";
 import { toast } from "sonner";
 import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
-import { AssetJobFormSchema } from "../asset-job-form-schema";
+import { AssetJobFormSchema } from "./asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { AssetJobSchema } from "../asset-job-schema";
+import { AssetJobSchema } from "./asset-job-schema";
 import { enqueueAssetJobTask, deleteAssetJob } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 import { toast } from "sonner";

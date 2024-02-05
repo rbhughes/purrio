@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { fetchWorkers } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
-import Repos from "./components/repos";
+import Repos from "./repos";
 
 export const dynamic = "force-dynamic";
 

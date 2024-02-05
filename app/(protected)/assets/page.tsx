@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
-import AssetJobs from "./components/asset-jobs";
+import AssetJobs from "./asset-jobs";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];

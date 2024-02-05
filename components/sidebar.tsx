@@ -32,8 +32,8 @@ const Logo = () => {
 
 const SidebarContent = ({ user }: { user: User }) => {
   return (
-    <div className="purr-navbar flex flex-1 flex-col items-center grow-0 gap-2 p-2 justify-between">
-      <div className="flex flex-col gap-2  ">
+    <div className="purr-navbar flex flex-1 flex-col items-center grow-0 gap-2 p-2 justify-between min-h-screen">
+      <div className="flex flex-col gap-2 flex-grow ">
         <Logo />
 
         <Button asChild className="purr-navbar-button">
@@ -50,9 +50,6 @@ const SidebarContent = ({ user }: { user: User }) => {
         </Button>
         <div id="table-or-viz"></div>
       </div>
-
-      {/* */}
-      {/* <TableVisSwitch compA={<h1>COMP A</h1>} compB={<h1>COMP B</h1>} /> */}
 
       <div className="flex flex-col gap-2">
         <RealtimeMessenger user={user} directive={"recon"} />

@@ -1,10 +1,18 @@
 import { Cylinder } from "lucide-react";
 
-export const GeoTypeUI = [
-  {
+interface GTUI {
+  [key: string]: {
+    label: string;
+    value: string;
+    icon: JSX.Element;
+  };
+}
+
+export const GeoTypeUI: GTUI = {
+  geographix: {
     label: "GeoGraphix",
     value: "geographix",
-    icon: () => (
+    icon: (
       <Cylinder
         color="lime"
         className="mx-1"
@@ -15,10 +23,10 @@ export const GeoTypeUI = [
       />
     ),
   },
-  {
+  petra: {
     label: "Petra",
     value: "petra",
-    icon: () => (
+    icon: (
       <Cylinder
         color="teal"
         className="mx-1"
@@ -29,18 +37,53 @@ export const GeoTypeUI = [
       />
     ),
   },
-  {
+  kingdom: {
     label: "Kingdom",
     value: "kingdom",
-    icon: () => (
-      <Cylinder color="red" className="mx-1" size={20} strokeWidth={3} />
+    icon: (
+      <Cylinder
+        color="red"
+        className="mx-1"
+        size={20}
+        strokeWidth={3}
+        fill="red"
+        fillOpacity="0.2"
+      />
     ),
   },
-  {
+  las: {
     label: "LAS",
     value: "las",
-    icon: () => (
-      <Cylinder color="grey" className="mx-1" size={20} strokeWidth={3} />
+    icon: (
+      <Cylinder
+        color="grey"
+        className="mx-1"
+        size={20}
+        strokeWidth={3}
+        fill="grey"
+        fillOpacity="0.2"
+      />
     ),
   },
-];
+};
+
+// easier than using the weird format used by DataTable everywhere
+const formatForDataTableFacetFilter = (obj: GTUI) => {
+  const result: { label: string; value: string; icon: () => JSX.Element }[] =
+    [];
+
+  for (const key in obj) {
+    //if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    const { label, value, icon } = obj[key];
+    result.push({
+      label,
+      value,
+      icon: () => icon,
+    });
+    //}
+  }
+
+  return result;
+};
+
+export const facetOptions = formatForDataTableFacetFilter(GeoTypeUI);

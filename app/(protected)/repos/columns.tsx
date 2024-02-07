@@ -38,18 +38,21 @@ export const columns: ColumnDef<Repo>[] = [
       <DataTableColumnHeader column={column} title="geo_type" />
     ),
     cell: ({ row }) => {
-      const geo_type = GeoTypeUI.find(
-        (geo_type) => geo_type.value === row.getValue("geo_type")
-      );
+      // const geo_type = GeoTypeUI.find(
+      //   (geo_type) => geo_type.value === row.getValue("geo_type")
+      // );
+      const gt: string = row.getValue("geo_type");
 
-      if (!geo_type) {
-        return null;
-      }
+      // if (!geo_type) {
+      //   return null;
+      // }
 
       return (
         <div className="flex items-center w-[120px]">
-          {geo_type.icon()}
-          {geo_type.label}
+          {GeoTypeUI[gt].icon}
+          {GeoTypeUI[gt].label}
+          {/* {geo_type.icon()}
+          {geo_type.label} */}
         </div>
       );
     },

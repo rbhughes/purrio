@@ -142,7 +142,8 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                       >
                         {GEOTYPES.map((gt: string) => (
                           <ToggleGroupItem key={gt} value={gt} aria-label={gt}>
-                            {GeoTypeUI.find((x) => x.value === gt)!.icon()}
+                            {GeoTypeUI[gt].icon}
+                            {/* {GeoTypeUI.find((x) => x.value === gt)!.icon()} */}
                           </ToggleGroupItem>
                         ))}
                       </ToggleGroup>

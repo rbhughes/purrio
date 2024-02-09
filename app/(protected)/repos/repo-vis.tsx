@@ -24,12 +24,17 @@ import {
 } from "@/components/ui/table";
 
 import { Map as MapIcon, Globe } from "lucide-react";
+import { humanFileSize, polygonCentroid } from "@/lib/purr_utils";
 
-import { Map, Marker } from "pigeon-maps";
+import { Map, Marker, GeoJson, ZoomControl } from "pigeon-maps";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
+
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
 
 function VisEPSG({ repo }: { repo: Repo }) {
   return (
@@ -64,7 +69,7 @@ function VisConn({ repo }: { repo: Repo }) {
   );
 }
 
-function VisCounts({ repo }: { repo: Repo }) {
+function VisWellCounts({ repo }: { repo: Repo }) {
   const filteredKeys = Object.keys(repo).filter(
     (key) => key.startsWith("wells_with_") || key.startsWith("well_count")
   );
@@ -93,13 +98,109 @@ function VisCounts({ repo }: { repo: Repo }) {
   );
 }
 
-function VisMap() {
+function VisFSCounts({ repo }: { repo: Repo }) {
   return (
-    <Map defaultCenter={[50.879, 4.6997]} defaultZoom={11}>
-      <Marker width={50} anchor={[50.879, 4.6997]} />
-    </Map>
+    <Table>
+      {/* <TableHeader>
+        <TableRow>
+          <TableHead className="text-center">asset</TableHead>
+          <TableHead className="text-center">count</TableHead>
+        </TableRow>
+      </TableHeader> */}
+      <TableBody>
+        <TableRow>
+          <TableCell className="text-right">files</TableCell>
+          <TableCell className="text-center">{repo.files}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">directories</TableCell>
+          <TableCell className="text-center">{repo.directories}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">size</TableCell>
+          <TableCell className="text-center">
+            {humanFileSize(repo.bytes!)}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">last mod</TableCell>
+          <TableCell className="text-center">{repo.repo_mod}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">last touched</TableCell>
+          <TableCell className="text-center">{repo.row_touched}</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
   );
 }
+
+////////////////////////////////
+
+// 2024-02-09 | pigeon maps (and similar) relies on being able to calculate
+// div width/height to render the svg. Since RepoVis is hidden by default, the
+// calculation barfs and throws some viewbox errors. As a workaround, useRef
+// tells us the parent div width/height. If it's actually gettable, we just set
+// the Map width and height to undefined, which tells pigeon to use 100%.
+function VisMap({ repo }: { repo: Repo }) {
+  const mapContainerRef = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState(0);
+  const [width, setWidth] = React.useState(0);
+
+  React.useEffect(() => {
+    if (mapContainerRef.current) {
+      setHeight(mapContainerRef.current.clientHeight);
+      setWidth(mapContainerRef.current.clientWidth);
+    }
+  }, [mapContainerRef]);
+
+  const repoConvexHull = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "LineString",
+          coordinates: repo.outline,
+        },
+        properties: { name: repo.name },
+      },
+    ],
+  };
+  const centroid = polygonCentroid(repo.outline as number[][]);
+  console.log("ccccccccc", centroid);
+
+  return (
+    <div ref={mapContainerRef} className="flex h-full w-full">
+      <Map
+        width={width ? undefined : 200}
+        height={height ? undefined : 200}
+        //defaultCenter={[-97, 26]}
+        defaultCenter={centroid}
+        defaultZoom={13}
+      >
+        <GeoJson
+          data={repoConvexHull}
+          styleCallback={(feature: any, hover: boolean) => {
+            if (feature.geometry.type === "LineString") {
+              return { strokeWidth: "2", stroke: "red", fill: "#d4e777" };
+            }
+            return {
+              fill: "#d4e6ec99",
+              strokeWidth: "1",
+              stroke: "white",
+              r: "20",
+            };
+          }}
+        />
+        <ZoomControl />
+        {width}
+      </Map>
+    </div>
+  );
+}
+
+////////////////////////////////
 
 function VisCard({ repo }: { repo: Repo }) {
   return (
@@ -118,13 +219,14 @@ function VisCard({ repo }: { repo: Repo }) {
 
       <VisEPSG repo={repo} />
       <VisConn repo={repo} />
+      <VisFSCounts repo={repo} />
 
       <CardContent className="flex flex-row justify-between">
         <div className="border border-1 rounded-lg w-3/12 m-2">
-          <VisCounts repo={repo} />
+          <VisWellCounts repo={repo} />
         </div>
-        <div className="border border-1 rounded-lg w-9/12 m-2">
-          <VisMap />
+        <div className="border border-1 rounded-lg w-9/12 m-2 inline-block">
+          <VisMap repo={repo} />
         </div>
       </CardContent>
     </Card>
@@ -157,9 +259,12 @@ export default function RepoVis({ repos }: { repos: Repo[] }) {
   }, [supabase, router]);
 
   return (
+    // <div className="w-[1000px] h-[1000px]">
+    // <div className="w-12/12 h-screen block">
+    //   <VisMap repo={repos[0]} />
+    // </div>
     <div className="flex flex-col gap-4">
       {repos.map((repo) => {
-        //return <>{repo.name}</>;
         return <VisCard key={repo.id} repo={repo} />;
       })}
     </div>

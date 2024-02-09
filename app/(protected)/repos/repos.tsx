@@ -123,11 +123,7 @@ export default function Repos({
           tableVizElement
         )}
 
-      <Collapsible
-        open={showForm}
-        onOpenChange={setShowForm}
-        //className="w-[350px] space-y-2"
-      >
+      <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
           <Button className="" variant="outline">
             <ArrowDownRightSquare className="mx-2" />

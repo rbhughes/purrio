@@ -28,11 +28,6 @@ const TableVisSwitch: React.FC<TableVisToggleProps> = ({ onToggle }) => {
         <AreaChart className="text-slate-200" size={20} />
       </div>
     </Button>
-    // <div className="flex justify-evenly items-center rounded-md bg-slate-500 w-28  p-2 ">
-    //   <Table className="text-slate-200" size={20} />
-    //   <Switch id="toggle" onClick={handleToggle}></Switch>
-    //   <AreaChart className="text-slate-200" size={20} />
-    // </div>
   );
 };
 

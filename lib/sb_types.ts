@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       asset_job: {
@@ -165,6 +165,7 @@ export interface Database {
           geo_type: Database["public"]["Enums"]["geo_type"] | null
           id: string
           name: string | null
+          outline: Json | null
           repo_mod: string | null
           row_changed: string | null
           row_created: string | null
@@ -196,6 +197,7 @@ export interface Database {
           geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id: string
           name?: string | null
+          outline?: Json | null
           repo_mod?: string | null
           row_changed?: string | null
           row_created?: string | null
@@ -227,6 +229,7 @@ export interface Database {
           geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id?: string
           name?: string | null
+          outline?: Json | null
           repo_mod?: string | null
           row_changed?: string | null
           row_created?: string | null

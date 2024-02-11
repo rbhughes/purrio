@@ -24,15 +24,13 @@ import {
 } from "@/components/ui/table";
 
 import { Map as MapIcon, Globe } from "lucide-react";
-import { humanFileSize, polygonCentroid } from "@/lib/purr_utils";
+import { humanFileSize, polygonCentroid, polygonZoom } from "@/lib/purr_utils";
 
 import { Map, Marker, GeoJson, ZoomControl } from "pigeon-maps";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
-////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
 
@@ -140,12 +138,12 @@ function VisFSCounts({ repo }: { repo: Repo }) {
 // 2024-02-09 | pigeon maps (and similar) relies on being able to calculate
 // div width/height to render the svg. Since RepoVis is hidden by default, the
 // calculation barfs and throws some viewbox errors. As a workaround, useRef
-// tells us the parent div width/height. If it's actually gettable, we just set
-// the Map width and height to undefined, which tells pigeon to use 100%.
+// can tell us the parent div width/height; use them to calculate zoom level.
 function VisMap({ repo }: { repo: Repo }) {
   const mapContainerRef = React.useRef<HTMLDivElement>(null);
   const [height, setHeight] = React.useState(0);
   const [width, setWidth] = React.useState(0);
+  const [zoom, setZoom] = React.useState(0);
 
   React.useEffect(() => {
     if (mapContainerRef.current) {
@@ -153,6 +151,12 @@ function VisMap({ repo }: { repo: Repo }) {
       setWidth(mapContainerRef.current.clientWidth);
     }
   }, [mapContainerRef]);
+
+  React.useEffect(() => {
+    if (width + height > 0) {
+      setZoom(polygonZoom(repo.outline as number[][], width, height, 10));
+    }
+  }, [width, height]);
 
   const repoConvexHull = {
     type: "FeatureCollection",
@@ -168,34 +172,33 @@ function VisMap({ repo }: { repo: Repo }) {
     ],
   };
   const centroid = polygonCentroid(repo.outline as number[][]);
-  console.log("ccccccccc", centroid);
 
   return (
     <div ref={mapContainerRef} className="flex h-full w-full">
-      <Map
-        width={width ? undefined : 200}
-        height={height ? undefined : 200}
-        //defaultCenter={[-97, 26]}
-        defaultCenter={centroid}
-        defaultZoom={13}
-      >
-        <GeoJson
-          data={repoConvexHull}
-          styleCallback={(feature: any, hover: boolean) => {
-            if (feature.geometry.type === "LineString") {
-              return { strokeWidth: "2", stroke: "red", fill: "#d4e777" };
-            }
-            return {
-              fill: "#d4e6ec99",
-              strokeWidth: "1",
-              stroke: "white",
-              r: "20",
-            };
-          }}
-        />
-        <ZoomControl />
-        {width}
-      </Map>
+      {zoom > 0 && width > 0 && height > 0 && (
+        <Map
+          width={width}
+          height={height}
+          defaultCenter={centroid}
+          defaultZoom={zoom}
+        >
+          <GeoJson
+            data={repoConvexHull}
+            styleCallback={(feature: any, hover: boolean) => {
+              if (feature.geometry.type === "LineString") {
+                return { strokeWidth: "2", stroke: "red", fill: "#d4e777" };
+              }
+              return {
+                fill: "#d4e6ec99",
+                strokeWidth: "1",
+                stroke: "white",
+                r: "20",
+              };
+            }}
+          />
+          <ZoomControl />
+        </Map>
+      )}
     </div>
   );
 }
@@ -259,28 +262,10 @@ export default function RepoVis({ repos }: { repos: Repo[] }) {
   }, [supabase, router]);
 
   return (
-    // <div className="w-[1000px] h-[1000px]">
-    // <div className="w-12/12 h-screen block">
-    //   <VisMap repo={repos[0]} />
-    // </div>
     <div className="flex flex-col gap-4">
       {repos.map((repo) => {
         return <VisCard key={repo.id} repo={repo} />;
       })}
     </div>
   );
-  // {
-  //   repos.map((repo) => <h1>{repo.fs_path}</h1>);
-  // }
-  // )
-
-  // return (
-  //   <Card>
-  //     <CardContent>
-  //       <div className="bg-amber-100 ">
-  //         <pre>{JSON.stringify(repos, null, 2)}</pre>
-  //       </div>
-  //     </CardContent>
-  //   </Card>
-  // );
 }

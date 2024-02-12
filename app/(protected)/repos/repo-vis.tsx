@@ -23,13 +23,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Map as MapIcon, Globe } from "lucide-react";
-import { humanFileSize, polygonCentroid, polygonZoom } from "@/lib/purr_utils";
+import { Map as MapIcon, Ban, Globe } from "lucide-react";
+import {
+  humanFileSize,
+  polygonCentroid,
+  polygonZoom,
+  parseDateTime,
+} from "@/lib/purr_utils";
 
 import { Map, Marker, GeoJson, ZoomControl } from "pigeon-maps";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
+import { parse } from "path";
+import { useMeasure } from "@uidotdev/usehooks";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 ////////////////////////////////////////////////////////////
@@ -97,6 +104,8 @@ function VisWellCounts({ repo }: { repo: Repo }) {
 }
 
 function VisFSCounts({ repo }: { repo: Repo }) {
+  const mod_dates = parseDateTime(repo.repo_mod!);
+  const touched_dates = parseDateTime(repo.row_touched!);
   return (
     <Table>
       {/* <TableHeader>
@@ -122,11 +131,16 @@ function VisFSCounts({ repo }: { repo: Repo }) {
         </TableRow>
         <TableRow>
           <TableCell className="text-right">last mod</TableCell>
-          <TableCell className="text-center">{repo.repo_mod}</TableCell>
+          <TableCell className="text-center">
+            {mod_dates.formattedDateTime}({mod_dates.daysAgoDescription})
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell className="text-right">last touched</TableCell>
-          <TableCell className="text-center">{repo.row_touched}</TableCell>
+          <TableCell className="text-center">
+            {touched_dates.formattedDateTime}({touched_dates.daysAgoDescription}
+            )
+          </TableCell>
         </TableRow>
       </TableBody>
     </Table>
@@ -137,26 +151,26 @@ function VisFSCounts({ repo }: { repo: Repo }) {
 
 // 2024-02-09 | pigeon maps (and similar) relies on being able to calculate
 // div width/height to render the svg. Since RepoVis is hidden by default, the
-// calculation barfs and throws some viewbox errors. As a workaround, useRef
-// can tell us the parent div width/height; use them to calculate zoom level.
+// calculation barfs and throws some viewbox errors unless we assign some
+// width and height values we get from the useMeasure hook. Also use for Zoom
 function VisMap({ repo }: { repo: Repo }) {
-  const mapContainerRef = React.useRef<HTMLDivElement>(null);
-  const [height, setHeight] = React.useState(0);
-  const [width, setWidth] = React.useState(0);
+  const [ref, { width, height }] = useMeasure();
   const [zoom, setZoom] = React.useState(0);
 
   React.useEffect(() => {
-    if (mapContainerRef.current) {
-      setHeight(mapContainerRef.current.clientHeight);
-      setWidth(mapContainerRef.current.clientWidth);
-    }
-  }, [mapContainerRef]);
-
-  React.useEffect(() => {
-    if (width + height > 0) {
+    if (width && height && width + height > 0) {
       setZoom(polygonZoom(repo.outline as number[][], width, height, 10));
     }
   }, [width, height]);
+
+  if (!repo.outline) {
+    return (
+      <div className="flex flex-col min-h-full justify-center items-center">
+        <Ban size={200} color="lightgrey" />
+        <p className="italic">insufficient valid Lat/Lon</p>
+      </div>
+    );
+  }
 
   const repoConvexHull = {
     type: "FeatureCollection",
@@ -171,11 +185,12 @@ function VisMap({ repo }: { repo: Repo }) {
       },
     ],
   };
+
   const centroid = polygonCentroid(repo.outline as number[][]);
 
   return (
-    <div ref={mapContainerRef} className="flex h-full w-full">
-      {zoom > 0 && width > 0 && height > 0 && (
+    <div ref={ref} className="flex h-full w-full">
+      {zoom > 0 && width && height && width > 0 && height > 0 && (
         <Map
           width={width}
           height={height}
@@ -221,14 +236,16 @@ function VisCard({ repo }: { repo: Repo }) {
       </CardTitle>
 
       <VisEPSG repo={repo} />
-      <VisConn repo={repo} />
-      <VisFSCounts repo={repo} />
 
       <CardContent className="flex flex-row justify-between">
         <div className="border border-1 rounded-lg w-3/12 m-2">
           <VisWellCounts repo={repo} />
         </div>
-        <div className="border border-1 rounded-lg w-9/12 m-2 inline-block">
+        <div className="border border-1 rounded-lg w-3/12 m-2">
+          <VisFSCounts repo={repo} />
+          <VisConn repo={repo} />
+        </div>
+        <div className="border border-1 rounded-lg w-6/12 m-2 inline-block">
           <VisMap repo={repo} />
         </div>
       </CardContent>

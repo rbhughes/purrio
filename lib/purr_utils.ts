@@ -27,6 +27,24 @@ export const ASSETS = [
 
 export const GEOTYPES = ["geographix", "petra", "kingdom", "las"];
 
+export function parseDateTime(input: string): {
+  formattedDateTime: string;
+  daysAgoDescription: string;
+} {
+  const inputDate = new Date(input);
+  const currentDate = new Date();
+  const timeDiff = currentDate.getTime() - inputDate.getTime();
+  const daysAgo = Math.floor(timeDiff / (1000 * 3600 * 24));
+
+  const formattedDateTime = inputDate
+    .toISOString()
+    .replace(/T/, " ")
+    .replace(/\..+/, "");
+  const daysAgoDescription = `${daysAgo} day${daysAgo !== 1 ? "s" : ""} ago`;
+
+  return { formattedDateTime, daysAgoDescription };
+}
+
 function calculateSignedArea(polygon: number[][]): number {
   let sum = 0;
   const n = polygon.length;

@@ -22,8 +22,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 
-import { Map as MapIcon, Ban, Globe } from "lucide-react";
+import {
+  Map as MapIcon,
+  Ban,
+  FolderTree,
+  Globe,
+  CalendarSearch,
+  CalendarDays,
+} from "lucide-react";
 import {
   humanFileSize,
   polygonCentroid,
@@ -35,42 +43,65 @@ import { Map, Marker, GeoJson, ZoomControl } from "pigeon-maps";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
-import { parse } from "path";
+//import { parse } from "path";
 import { useMeasure } from "@uidotdev/usehooks";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 ////////////////////////////////////////////////////////////
 
-function VisEPSG({ repo }: { repo: Repo }) {
-  return (
-    <div className="flex flex-row justify-between mx-4 mb-2">
-      <Badge variant="outline" className="rounded-lg justify-between gap-2">
-        storage
-        <Globe />
-        <span className="text-lg">{repo.storage_epsg}</span>
-        <span className="text-muted-foreground italic text-xs">
-          ({repo.storage_name})
-        </span>
-      </Badge>
-      <Badge variant="outline" className="rounded-lg justify-between gap-2">
-        display
-        <MapIcon />
-        <span className="text-lg">{repo.display_epsg}</span>
-        <span className="text-muted-foreground italic text-xs">
-          <pre>({repo.display_name})</pre>
-        </span>
-      </Badge>
-    </div>
-  );
-}
+// function VisEPSG({ repo }: { repo: Repo }) {
+//   return (
+//     <>
+//       <Badge variant="outline" className="flex flex-col w-fit gap-1 p-2 w-2/12">
+//         <div className="flex justify-center items-center gap-2">
+//           <Globe />
+//           storage
+//           <span className="text-xl">{repo.storage_epsg}</span>
+//         </div>
+//         <span className="text-muted-foreground italic text-xs">
+//           ({repo.storage_name})
+//         </span>
+//       </Badge>
+
+//       <Badge variant="outline" className="flex flex-col w-fit gap-1 p-2 w-2/12">
+//         <div className="flex justify-center items-center gap-2">
+//           <MapIcon />
+//           storage
+//           <span className="text-xl">{repo.display_epsg}</span>
+//         </div>
+//         <span className="text-muted-foreground italic text-xs">
+//           ({repo.display_name})
+//         </span>
+//       </Badge>
+//     </>
+//   );
+//   // return (
+//   //   <div className="flex flex-row justify-between mx-4 mb-2">
+//   //     <Badge variant="outline" className="rounded-lg justify-between gap-2">
+//   //       storage
+//   //       <Globe />
+//   //       <span className="text-lg">{repo.storage_epsg}</span>
+//   //       <span className="text-muted-foreground italic text-xs">
+//   //         ({repo.storage_name})
+//   //       </span>
+//   //     </Badge>
+//   //     <Badge variant="outline" className="rounded-lg justify-between gap-2">
+//   //       display
+//   //       <MapIcon />
+//   //       <span className="text-lg">{repo.display_epsg}</span>
+//   //       <span className="text-muted-foreground italic text-xs">
+//   //         <pre>({repo.display_name})</pre>
+//   //       </span>
+//   //     </Badge>
+//   //   </div>
+//   // );
+// }
 
 function VisConn({ repo }: { repo: Repo }) {
   return (
-    <Card>
-      <pre className="text-muted-foreground text-xs">
-        {JSON.stringify(repo.conn, null, 2)}
-      </pre>
-    </Card>
+    <pre className="text-muted-foreground text-xs">
+      {JSON.stringify(repo.conn, null, 2)}
+    </pre>
   );
 }
 
@@ -80,66 +111,90 @@ function VisWellCounts({ repo }: { repo: Repo }) {
   );
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-center">asset</TableHead>
-          <TableHead className="text-center">count</TableHead>
-        </TableRow>
-      </TableHeader>
       <TableBody>
         {filteredKeys.map((key) => {
           const colName = key.replace("wells_with_", "");
           return (
             <TableRow key={key}>
-              <TableCell className="text-right">{colName}</TableCell>
-              <TableCell className="text-center">
+              <TableCell className="text-right italic">{colName}</TableCell>
+              <TableCell className="text-left font-black">
                 {(repo as any)[key]}
               </TableCell>
             </TableRow>
           );
         })}
+        {/* <TableRow>
+          <TableCell colSpan={2} className="py-5"></TableCell>
+        </TableRow>
+
+        <TableRow>
+          <TableCell className="text-right italic">files</TableCell>
+          <TableCell className="text-left font-black">{repo.files}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">directories</TableCell>
+          <TableCell className="text-left font-black">
+            {repo.directories}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell className="text-right">size</TableCell>
+          <TableCell className="text-left font-black">
+            {humanFileSize(repo.bytes!)}
+          </TableCell>
+        </TableRow> */}
       </TableBody>
     </Table>
   );
 }
 
+// function VisDates({ repo }: { repo: Repo }) {
+//   const mod_dates = parseDateTime(repo.repo_mod!);
+//   const touched_dates = parseDateTime(repo.row_touched!);
+//   return (
+//     <Table>
+//       <TableBody>
+//         <TableRow>
+//           <TableCell className="text-right">last modified</TableCell>
+//           <TableCell className="text-left">
+//             <span className="italic">{mod_dates.formattedDateTime}</span>
+//             <Separator />
+//             <span className="font-black">({mod_dates.daysAgoDescription})</span>
+//           </TableCell>
+//         </TableRow>
+//         <TableRow>
+//           <TableCell className="text-right">last touched</TableCell>
+//           <TableCell className="text-left">
+//             <span className="italic">{touched_dates.formattedDateTime}</span>
+//             <Separator />
+//             <span className="font-black">
+//               ({touched_dates.daysAgoDescription})
+//             </span>
+//           </TableCell>
+//         </TableRow>
+//       </TableBody>
+//     </Table>
+//   );
+// }
+
 function VisFSCounts({ repo }: { repo: Repo }) {
-  const mod_dates = parseDateTime(repo.repo_mod!);
-  const touched_dates = parseDateTime(repo.row_touched!);
   return (
     <Table>
-      {/* <TableHeader>
-        <TableRow>
-          <TableHead className="text-center">asset</TableHead>
-          <TableHead className="text-center">count</TableHead>
-        </TableRow>
-      </TableHeader> */}
       <TableBody>
         <TableRow>
-          <TableCell className="text-right">files</TableCell>
-          <TableCell className="text-center">{repo.files}</TableCell>
+          <TableCell className="text-right italic">files</TableCell>
+          <TableCell className="text-left font-black">{repo.files}</TableCell>
         </TableRow>
         <TableRow>
           <TableCell className="text-right">directories</TableCell>
-          <TableCell className="text-center">{repo.directories}</TableCell>
+          <TableCell className="text-left font-black">
+            {repo.directories}
+          </TableCell>
         </TableRow>
         <TableRow>
           <TableCell className="text-right">size</TableCell>
-          <TableCell className="text-center">
+          <TableCell className="text-left font-black">
             {humanFileSize(repo.bytes!)}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="text-right">last mod</TableCell>
-          <TableCell className="text-center">
-            {mod_dates.formattedDateTime}({mod_dates.daysAgoDescription})
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="text-right">last touched</TableCell>
-          <TableCell className="text-center">
-            {touched_dates.formattedDateTime}({touched_dates.daysAgoDescription}
-            )
           </TableCell>
         </TableRow>
       </TableBody>
@@ -221,32 +276,123 @@ function VisMap({ repo }: { repo: Repo }) {
 ////////////////////////////////
 
 function VisCard({ repo }: { repo: Repo }) {
+  const mod_dates = parseDateTime(repo.repo_mod!);
+  const touched_dates = parseDateTime(repo.row_touched!);
+
   return (
-    <Card>
-      <CardTitle>
-        <div className="flex p-2 justify-between">
-          <div className="flex">
-            <span className="mt-2  mr-2">
-              {GeoTypeUI[repo.geo_type as string].icon}
-            </span>
-            <span className="text-xl mt-1">{repo.name}</span>
-          </div>
-          <pre className="p-2 mt-1 mr-1">{repo.fs_path}</pre>
+    <Card className="p-4">
+      <CardTitle className="flex justify-between mb-4">
+        <div className="flex">
+          <span className="mt-1  mr-2">
+            {GeoTypeUI[repo.geo_type as string].icon}
+          </span>
+          <span className="text-2xl ml-1">{repo.name}</span>
+        </div>
+        <div>
+          <pre className="p-2 mr-4 text-muted-foreground">{repo.fs_path}</pre>
         </div>
       </CardTitle>
 
-      <VisEPSG repo={repo} />
+      {/* <CardTitle>
+        <div className="flex items-center w-8/12 gap-20">
+          <span className="flex items-center gap-2">
+            {GeoTypeUI[repo.geo_type as string].icon}
+            <span className="text-xl mt-1">{repo.name}</span>
+          </span>
+          <pre className="p-2 mt-1 mr-1">{repo.fs_path}</pre>
+        </div>
+      </CardTitle> */}
 
-      <CardContent className="flex flex-row justify-between">
-        <div className="border border-1 rounded-lg w-3/12 m-2">
+      <CardContent className="flex flex-row gap-4">
+        {/* ************* */}
+
+        <div className="flex flex-col justify-between w-2/12">
           <VisWellCounts repo={repo} />
         </div>
-        <div className="border border-1 rounded-lg w-3/12 m-2">
-          <VisFSCounts repo={repo} />
-          <VisConn repo={repo} />
-        </div>
-        <div className="border border-1 rounded-lg w-6/12 m-2 inline-block">
+
+        {/* ************* */}
+
+        <div className="border border-1 rounded-lg w-6/12 ">
           <VisMap repo={repo} />
+        </div>
+
+        {/* ************* */}
+
+        <div className="flex flex-col justify-between w-4/12 m-2">
+          {/* <VisFSCounts repo={repo} /> */}
+
+          {/* ************* */}
+          <Badge variant="outline" className="flex flex-col gap-1 p-2">
+            <div className="flex justify-between items-center w-11/12">
+              <span className="flex items-center gap-2">
+                <FolderTree />
+                total repo size
+              </span>
+              <span className="text-xl">{humanFileSize(repo.bytes!)}</span>
+            </div>
+          </Badge>
+
+          <Badge variant="outline" className="flex flex-col gap-1 p-2">
+            <div className="flex justify-between items-center w-11/12">
+              <span className="flex items-center gap-2">
+                <Globe />
+                storage epsg
+              </span>
+              <span className="text-xl">{repo.storage_epsg}</span>
+            </div>
+            <span className="text-muted-foreground italic text-xs">
+              ({repo.storage_name})
+            </span>
+          </Badge>
+
+          {/* ************* */}
+
+          <Badge variant="outline" className="flex flex-col gap-1 p-2">
+            <div className="flex justify-between items-center w-11/12">
+              <span className="flex items-center gap-2">
+                <MapIcon />
+                display epsg
+              </span>
+              <span className="text-xl">{repo.display_epsg}</span>
+            </div>
+            <span className="text-muted-foreground italic text-xs">
+              ({repo.display_name})
+            </span>
+          </Badge>
+
+          {/* ************* */}
+
+          <Badge variant="outline" className="flex flex-col gap-1 p-2">
+            <div className="flex justify-between items-center w-11/12">
+              <span className="flex items-center gap-2">
+                <CalendarSearch />
+                last touched
+              </span>
+              <span className="text-lg">{touched_dates.formattedDateTime}</span>
+            </div>
+            <span className="text-muted-foreground italic text-xs">
+              ({touched_dates.daysAgoDescription})
+            </span>
+          </Badge>
+
+          {/* ************* */}
+
+          <Badge variant="outline" className="flex flex-col gap-1 p-2">
+            <div className="flex justify-between items-center w-11/12">
+              <span className="flex items-center gap-2">
+                <CalendarDays />
+                last modified
+              </span>
+              <span className="text-lg">{mod_dates.formattedDateTime}</span>
+            </div>
+            <span className="text-muted-foreground italic text-xs">
+              ({mod_dates.daysAgoDescription})
+            </span>
+          </Badge>
+
+          {/* ************* */}
+
+          <VisConn repo={repo} />
         </div>
       </CardContent>
     </Card>

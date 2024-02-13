@@ -4,7 +4,7 @@ export function humanFileSize(num: number, suffix: string = "B"): string {
 
   for (const unit of units) {
     if (Math.abs(num) < 1024) {
-      return `${num.toFixed(1)}${unit}${suffix}`;
+      return `${num.toFixed(1)} ${unit}${suffix}`;
     }
     num /= 1024;
   }

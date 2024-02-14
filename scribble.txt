@@ -1,3 +1,48 @@
+2024-02-14 | how table-vis-switch worked (portals)
+
+
+...in app/components/sidebar.tsx
+
+        <div id="table-or-viz"></div>
+
+...in app/(protected)/repos/repos.tsx:
+
+import TableVisSwitch from "@/components/table-vis-switch";
+import RepoVis from "./repo-vis";
+import { createPortal } from "react-dom";
+
+^^^
+
+  const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
+  const [showTable, setShowTable] = React.useState<boolean>(true);
+
+  // because "document" may not exist in nextjs client for some reason...
+  React.useEffect(() => {
+    const tve: HTMLElement = document.getElementById("table-or-viz")!;
+    if (tve) {
+      setTableVizElement(tve);
+    }
+  });
+
+^^^
+  return (
+    <div>
+      {/* {tableVizElement &&
+        createPortal(
+          <TableVisSwitch onToggle={handleToggle} />,
+          tableVizElement
+        )} */}
+
+^^^
+      {showTable ? (
+        <RepoTable repos={repos} setValue={form.setValue} />
+      ) : (
+        <RepoVis repos={repos} />
+      )} */}
+
+
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 function getValueByKey(jsonArray: string, searchKey: string): number | null {
   const parsedArray: JsonObject[] = JSON.parse(jsonArray);

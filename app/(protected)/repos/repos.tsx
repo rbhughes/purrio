@@ -11,7 +11,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Form,
@@ -45,10 +44,6 @@ import { RepoTable } from "./repo-table";
 
 import { ArrowDownRightSquare } from "lucide-react";
 
-import TableVisSwitch from "@/components/table-vis-switch";
-import RepoVis from "./repo-vis";
-import { createPortal } from "react-dom";
-
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -64,22 +59,7 @@ export default function Repos({
   // 2024-01-18 | just skip state and reset to defaults after submit
   //const [data, setData] = React.useState<FormInputs>();
 
-  //const tableOrViz = document.getElementById("table-or-viz");
-  const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
-  const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
-
-  // because "document" may not exist in nextjs client for some reason...
-  React.useEffect(() => {
-    const tve: HTMLElement = document.getElementById("table-or-viz")!;
-    if (tve) {
-      setTableVizElement(tve);
-    }
-  });
-
-  const handleToggle = (checked: boolean) => {
-    setShowTable(checked);
-  };
 
   let defaults = {
     geo_type: GEOTYPES[0],
@@ -117,12 +97,6 @@ export default function Repos({
 
   return (
     <div>
-      {/* {tableVizElement &&
-        createPortal(
-          <TableVisSwitch onToggle={handleToggle} />,
-          tableVizElement
-        )} */}
-
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
           <Button className="" variant="outline">
@@ -134,7 +108,6 @@ export default function Repos({
         <CollapsibleContent>
           <Card>
             <CardHeader>
-              {/* <CardTitle>Repo Recon</CardTitle> */}
               <CardDescription>{cardDesc}</CardDescription>
             </CardHeader>
             <CardContent>
@@ -259,11 +232,7 @@ export default function Repos({
 
       <div className="my-6" />
 
-      {showTable ? (
-        <RepoTable repos={repos} setValue={form.setValue} />
-      ) : (
-        <RepoVis repos={repos} />
-      )}
+      <RepoTable repos={repos} setValue={form.setValue} />
     </div>
   );
 }

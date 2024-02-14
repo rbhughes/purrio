@@ -12,7 +12,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Form,
@@ -46,7 +45,6 @@ import { Switch } from "@/components/ui/switch";
 import { AssetJobTable } from "./asset-job-table";
 import { createPortal } from "react-dom";
 import TableVisSwitch from "@/components/table-vis-switch";
-import AssetJobVis from "./asset-job-vis";
 import MissingReposWarning from "./missing-repos-warning";
 
 import { ArrowDownRightSquare } from "lucide-react";
@@ -164,11 +162,7 @@ export default function AssetJobs({
           tableVizElement
         )}
 
-      <Collapsible
-        open={showForm}
-        onOpenChange={setShowForm}
-        //className="w-[350px] space-y-2"
-      >
+      <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
           <Button className="" variant="outline">
             <ArrowDownRightSquare className="mx-2" />
@@ -179,13 +173,6 @@ export default function AssetJobs({
         <CollapsibleContent>
           <Card>
             <CardHeader>
-              {/* <CardTitle>
-                Asset Jobs
-                <span className="flex items-center space-x-2 float-right">
-                  <Label htmlFor="advToggle">Advanced </Label>
-                  <Switch id="advToggle" onClick={handleToggleAdvancedForm} />
-                </span>
-              </CardTitle> */}
               <CardDescription>
                 {cardDesc}
 
@@ -472,19 +459,12 @@ export default function AssetJobs({
 
       <div className="my-6" />
 
-      {/* {JSON.stringify(assetJobs)}
-      {JSON.stringify(repos)} */}
-
-      {showTable ? (
-        <AssetJobTable
-          assetJobs={assetJobs!}
-          setValue={form.setValue}
-          setShowForm={setShowForm}
-          setShowAdvancedForm={setShowAdvancedForm}
-        />
-      ) : (
-        <AssetJobVis assetJobs={assetJobs!} />
-      )}
+      <AssetJobTable
+        assetJobs={assetJobs!}
+        setValue={form.setValue}
+        setShowForm={setShowForm}
+        setShowAdvancedForm={setShowAdvancedForm}
+      />
 
       {withMissingRepos!.length > 0 && (
         <>

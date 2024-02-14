@@ -48,7 +48,7 @@ const SidebarContent = ({ user }: { user: User }) => {
         <Button asChild className="purr-navbar-button">
           <Link href={"/settings"}>settings</Link>
         </Button>
-        <div id="table-or-viz"></div>
+        {/* <div id="table-or-viz"></div> */}
       </div>
 
       <div className="flex flex-col gap-2">

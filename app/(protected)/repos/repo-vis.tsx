@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+//import { useRouter } from "next/navigation";
+//import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+//import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 import {
@@ -164,30 +164,124 @@ function VisMap({ repo }: { repo: Repo }) {
 
 ////////////////////////////////
 
-export function VisCard({ repo }: { repo: Repo }) {
+// export function VisCard({ repo }: { repo: Repo }) {
+//   const mod_dates = parseDateTime(repo.repo_mod!);
+//   const touched_dates = parseDateTime(repo.row_touched!);
+
+//   return (
+//     <Card className="p-4">
+//       <CardTitle className="flex justify-between mb-4">
+//         <div className="flex">
+//           <span className="mt-1  mr-2">
+//             {GeoTypeUI[repo.geo_type as string].icon}
+//           </span>
+//           <span className="text-2xl ml-1">{repo.name}</span>
+//         </div>
+//         <div>
+//           <pre className="p-2 mr-4 text-muted-foreground">{repo.fs_path}</pre>
+//         </div>
+//       </CardTitle>
+
+//       <CardContent className="flex flex-row gap-4">
+//         <div className="flex flex-col justify-between w-2/12">
+//           <VisWellCounts repo={repo} />
+//         </div>
+
+//         <div className="border border-1 rounded-lg w-6/12 ">
+//           <VisMap repo={repo} />
+//         </div>
+
+//         <div className="flex flex-col justify-between w-4/12 m-2">
+//           {/* ************* */}
+//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
+//             <div className="flex justify-between items-center w-11/12">
+//               <span className="flex items-center gap-2">
+//                 <FolderTree />
+//                 total repo size
+//               </span>
+//               <span className="text-xl">{humanFileSize(repo.bytes!)}</span>
+//             </div>
+//           </Badge>
+
+//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
+//             <div className="flex justify-between items-center w-11/12">
+//               <span className="flex items-center gap-2">
+//                 <Globe />
+//                 storage epsg
+//               </span>
+//               <span className="text-xl">{repo.storage_epsg}</span>
+//             </div>
+//             <span className="text-muted-foreground italic text-xs">
+//               ({repo.storage_name})
+//             </span>
+//           </Badge>
+
+//           {/* ************* */}
+
+//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
+//             <div className="flex justify-between items-center w-11/12">
+//               <span className="flex items-center gap-2">
+//                 <MapIcon />
+//                 display epsg
+//               </span>
+//               <span className="text-xl">{repo.display_epsg}</span>
+//             </div>
+//             <span className="text-muted-foreground italic text-xs">
+//               ({repo.display_name})
+//             </span>
+//           </Badge>
+
+//           {/* ************* */}
+
+//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
+//             <div className="flex justify-between items-center w-11/12">
+//               <span className="flex items-center gap-2">
+//                 <CalendarSearch />
+//                 last scanned
+//               </span>
+//               <span className="text-lg">{touched_dates.formattedDateTime}</span>
+//             </div>
+//             <span className="text-muted-foreground italic text-xs">
+//               ({touched_dates.daysAgoDescription})
+//             </span>
+//           </Badge>
+
+//           {/* ************* */}
+
+//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
+//             <div className="flex justify-between items-center w-11/12">
+//               <span className="flex items-center gap-2">
+//                 <CalendarDays />
+//                 last modified
+//               </span>
+//               <span className="text-lg">{mod_dates.formattedDateTime}</span>
+//             </div>
+//             <span className="text-muted-foreground italic text-xs">
+//               ({mod_dates.daysAgoDescription})
+//             </span>
+//           </Badge>
+
+//           {/* ************* */}
+
+//           <VisConn repo={repo} />
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// }
+
+export default function RepoVis({ repo }: { repo: Repo }) {
   const mod_dates = parseDateTime(repo.repo_mod!);
   const touched_dates = parseDateTime(repo.row_touched!);
 
   return (
-    <Card className="p-4">
-      <CardTitle className="flex justify-between mb-4">
-        <div className="flex">
-          <span className="mt-1  mr-2">
-            {GeoTypeUI[repo.geo_type as string].icon}
-          </span>
-          <span className="text-2xl ml-1">{repo.name}</span>
-        </div>
-        <div>
-          <pre className="p-2 mr-4 text-muted-foreground">{repo.fs_path}</pre>
-        </div>
-      </CardTitle>
-
-      <CardContent className="flex flex-row gap-4">
+    <div className="bg-muted/50 px-8 pb-8">
+      <div className="flex flex-row bg-white border rounded-b-lg ">
         <div className="flex flex-col justify-between w-2/12">
           <VisWellCounts repo={repo} />
         </div>
 
-        <div className="border border-1 rounded-lg w-6/12 ">
+        <div className="border border-1 m-2 w-6/12 ">
           <VisMap repo={repo} />
         </div>
 
@@ -265,41 +359,41 @@ export function VisCard({ repo }: { repo: Repo }) {
 
           <VisConn repo={repo} />
         </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-export default function RepoVis({ repos }: { repos: Repo[] }) {
-  const supabase = createClient();
-  const router = useRouter();
-
-  React.useEffect(() => {
-    const channel = supabase
-      .channel("realtime repo")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "repo",
-        },
-        () => {
-          router.refresh();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase, router]);
-
-  return (
-    <div className="flex flex-col gap-4">
-      {repos.map((repo) => {
-        return <VisCard key={repo.id} repo={repo} />;
-      })}
+      </div>
     </div>
   );
 }
+
+// export default function RepoVis({ repos }: { repos: Repo[] }) {
+//   const supabase = createClient();
+//   const router = useRouter();
+
+//   React.useEffect(() => {
+//     const channel = supabase
+//       .channel("realtime repo")
+//       .on(
+//         "postgres_changes",
+//         {
+//           event: "*",
+//           schema: "public",
+//           table: "repo",
+//         },
+//         () => {
+//           router.refresh();
+//         }
+//       )
+//       .subscribe();
+
+//     return () => {
+//       supabase.removeChannel(channel);
+//     };
+//   }, [supabase, router]);
+
+//   return (
+//     <div className="flex flex-col gap-4">
+//       {repos.map((repo) => {
+//         return <VisCard key={repo.id} repo={repo} />;
+//       })}
+//     </div>
+//   );
+// }

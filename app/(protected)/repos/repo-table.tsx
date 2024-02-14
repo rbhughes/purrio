@@ -8,7 +8,7 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 import { Database } from "@/lib/sb_types";
-import RepoVis, { VisCard } from "./repo-vis";
+import RepoVis from "./repo-vis";
 
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -17,9 +17,9 @@ const renderSubComponent = ({ row }: { row: any }) => {
     // <pre style={{ fontSize: "10px" }}>
     //   <code>{JSON.stringify(row.original, null, 2)}</code>
     // </pre>
-    <div className="flex justify-center  bg-slate-100">
-      <VisCard repo={row.original as Repo} />
-    </div>
+    // <div className="flex justify-center  bg-slate-100">
+    <RepoVis repo={row.original as Repo} />
+    // </div>
   );
 };
 

@@ -9,12 +9,15 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
+  ExpandedState,
+  //getExpandedRowModel, ///
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  Row,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -31,6 +34,8 @@ import { DataTableToolbar } from "./data-table-toolbar";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  renderSubComponent: (props: { row: Row<TData> }) => React.ReactElement;
+  getRowCanExpand: (row: Row<TData>) => boolean;
   setValue: any;
 }
 
@@ -71,11 +76,13 @@ let colsVisible: VisibilityState = {
   wells_with_zone: false,
 };
 
-const setFormFromTable = async (setValue: any, row: any) => {};
+//const setFormFromTable = async (setValue: any, row: any) => {};
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  renderSubComponent,
+  getRowCanExpand,
   setValue,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
@@ -84,6 +91,7 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
   const table = useReactTable({
     data,
@@ -93,12 +101,15 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      expanded,
     },
+    onExpandedChange: setExpanded,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    getRowCanExpand: getRowCanExpand,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -133,19 +144,32 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    onDoubleClick={() => {
+                      row.toggleExpanded();
+                    }}
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {row.getIsExpanded() && (
+                    <TableRow key={`${row.id + "_viz"}`}>
+                      <td colSpan={row.getVisibleCells().length}>
+                        {renderSubComponent({ row })}
+                      </td>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>

@@ -2,7 +2,6 @@
 
 import React from "react";
 
-//import { createBrowserClient } from "@supabase/ssr";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
 import { User } from "@supabase/supabase-js";

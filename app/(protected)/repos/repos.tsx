@@ -117,11 +117,11 @@ export default function Repos({
 
   return (
     <div>
-      {tableVizElement &&
+      {/* {tableVizElement &&
         createPortal(
           <TableVisSwitch onToggle={handleToggle} />,
           tableVizElement
-        )}
+        )} */}
 
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>

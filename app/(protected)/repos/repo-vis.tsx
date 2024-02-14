@@ -4,25 +4,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 
 import {
   Map as MapIcon,
@@ -39,69 +22,24 @@ import {
   parseDateTime,
 } from "@/lib/purr_utils";
 
-import { Map, Marker, GeoJson, ZoomControl } from "pigeon-maps";
+import { Map, GeoJson, ZoomControl } from "pigeon-maps";
 import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
-//import { parse } from "path";
 import { useMeasure } from "@uidotdev/usehooks";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 ////////////////////////////////////////////////////////////
 
-// function VisEPSG({ repo }: { repo: Repo }) {
-//   return (
-//     <>
-//       <Badge variant="outline" className="flex flex-col w-fit gap-1 p-2 w-2/12">
-//         <div className="flex justify-center items-center gap-2">
-//           <Globe />
-//           storage
-//           <span className="text-xl">{repo.storage_epsg}</span>
-//         </div>
-//         <span className="text-muted-foreground italic text-xs">
-//           ({repo.storage_name})
-//         </span>
-//       </Badge>
-
-//       <Badge variant="outline" className="flex flex-col w-fit gap-1 p-2 w-2/12">
-//         <div className="flex justify-center items-center gap-2">
-//           <MapIcon />
-//           storage
-//           <span className="text-xl">{repo.display_epsg}</span>
-//         </div>
-//         <span className="text-muted-foreground italic text-xs">
-//           ({repo.display_name})
-//         </span>
-//       </Badge>
-//     </>
-//   );
-//   // return (
-//   //   <div className="flex flex-row justify-between mx-4 mb-2">
-//   //     <Badge variant="outline" className="rounded-lg justify-between gap-2">
-//   //       storage
-//   //       <Globe />
-//   //       <span className="text-lg">{repo.storage_epsg}</span>
-//   //       <span className="text-muted-foreground italic text-xs">
-//   //         ({repo.storage_name})
-//   //       </span>
-//   //     </Badge>
-//   //     <Badge variant="outline" className="rounded-lg justify-between gap-2">
-//   //       display
-//   //       <MapIcon />
-//   //       <span className="text-lg">{repo.display_epsg}</span>
-//   //       <span className="text-muted-foreground italic text-xs">
-//   //         <pre>({repo.display_name})</pre>
-//   //       </span>
-//   //     </Badge>
-//   //   </div>
-//   // );
-// }
-
 function VisConn({ repo }: { repo: Repo }) {
   return (
-    <pre className="text-muted-foreground text-xs">
-      {JSON.stringify(repo.conn, null, 2)}
-    </pre>
+    <div className="border border-1 p-2 rounded-lg overflow-auto">
+      <pre className="text-muted-foreground text-xs">
+        {JSON.stringify(repo.conn, null, 2)}
+
+        {repo.conn_aux && JSON.stringify(repo.conn_aux, null, 2)}
+      </pre>
+    </div>
   );
 }
 
@@ -123,59 +61,10 @@ function VisWellCounts({ repo }: { repo: Repo }) {
             </TableRow>
           );
         })}
-        {/* <TableRow>
-          <TableCell colSpan={2} className="py-5"></TableCell>
-        </TableRow>
-
-        <TableRow>
-          <TableCell className="text-right italic">files</TableCell>
-          <TableCell className="text-left font-black">{repo.files}</TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="text-right">directories</TableCell>
-          <TableCell className="text-left font-black">
-            {repo.directories}
-          </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell className="text-right">size</TableCell>
-          <TableCell className="text-left font-black">
-            {humanFileSize(repo.bytes!)}
-          </TableCell>
-        </TableRow> */}
       </TableBody>
     </Table>
   );
 }
-
-// function VisDates({ repo }: { repo: Repo }) {
-//   const mod_dates = parseDateTime(repo.repo_mod!);
-//   const touched_dates = parseDateTime(repo.row_touched!);
-//   return (
-//     <Table>
-//       <TableBody>
-//         <TableRow>
-//           <TableCell className="text-right">last modified</TableCell>
-//           <TableCell className="text-left">
-//             <span className="italic">{mod_dates.formattedDateTime}</span>
-//             <Separator />
-//             <span className="font-black">({mod_dates.daysAgoDescription})</span>
-//           </TableCell>
-//         </TableRow>
-//         <TableRow>
-//           <TableCell className="text-right">last touched</TableCell>
-//           <TableCell className="text-left">
-//             <span className="italic">{touched_dates.formattedDateTime}</span>
-//             <Separator />
-//             <span className="font-black">
-//               ({touched_dates.daysAgoDescription})
-//             </span>
-//           </TableCell>
-//         </TableRow>
-//       </TableBody>
-//     </Table>
-//   );
-// }
 
 function VisFSCounts({ repo }: { repo: Repo }) {
   return (
@@ -256,7 +145,7 @@ function VisMap({ repo }: { repo: Repo }) {
             data={repoConvexHull}
             styleCallback={(feature: any, hover: boolean) => {
               if (feature.geometry.type === "LineString") {
-                return { strokeWidth: "2", stroke: "red", fill: "#d4e777" };
+                return { strokeWidth: "2", stroke: "black", fill: "#70809099" };
               }
               return {
                 fill: "#d4e6ec99",
@@ -275,7 +164,7 @@ function VisMap({ repo }: { repo: Repo }) {
 
 ////////////////////////////////
 
-function VisCard({ repo }: { repo: Repo }) {
+export function VisCard({ repo }: { repo: Repo }) {
   const mod_dates = parseDateTime(repo.repo_mod!);
   const touched_dates = parseDateTime(repo.row_touched!);
 
@@ -293,34 +182,16 @@ function VisCard({ repo }: { repo: Repo }) {
         </div>
       </CardTitle>
 
-      {/* <CardTitle>
-        <div className="flex items-center w-8/12 gap-20">
-          <span className="flex items-center gap-2">
-            {GeoTypeUI[repo.geo_type as string].icon}
-            <span className="text-xl mt-1">{repo.name}</span>
-          </span>
-          <pre className="p-2 mt-1 mr-1">{repo.fs_path}</pre>
-        </div>
-      </CardTitle> */}
-
       <CardContent className="flex flex-row gap-4">
-        {/* ************* */}
-
         <div className="flex flex-col justify-between w-2/12">
           <VisWellCounts repo={repo} />
         </div>
-
-        {/* ************* */}
 
         <div className="border border-1 rounded-lg w-6/12 ">
           <VisMap repo={repo} />
         </div>
 
-        {/* ************* */}
-
         <div className="flex flex-col justify-between w-4/12 m-2">
-          {/* <VisFSCounts repo={repo} /> */}
-
           {/* ************* */}
           <Badge variant="outline" className="flex flex-col gap-1 p-2">
             <div className="flex justify-between items-center w-11/12">
@@ -366,7 +237,7 @@ function VisCard({ repo }: { repo: Repo }) {
             <div className="flex justify-between items-center w-11/12">
               <span className="flex items-center gap-2">
                 <CalendarSearch />
-                last touched
+                last scanned
               </span>
               <span className="text-lg">{touched_dates.formattedDateTime}</span>
             </div>

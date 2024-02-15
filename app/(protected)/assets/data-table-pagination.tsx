@@ -21,19 +21,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
-import { Database } from "@/lib/sb_types";
-type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+//import { Database } from "@/lib/sb_types";
+//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
-const formatRowSelection = (selectedRows: any) => {
-  let x = selectedRows.map((r: any) => {
-    console.log(r.original.id);
-  });
-};
+// const formatRowSelection = (selectedRows: any) => {
+//   let x = selectedRows.map((r: any) => {
+//     console.log(r.original.id);
+//   });
+// };
 
 export function DataTablePagination<TData>({
   table,

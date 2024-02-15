@@ -43,11 +43,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { AssetJobTable } from "./asset-job-table";
-import { createPortal } from "react-dom";
-import TableVisSwitch from "@/components/table-vis-switch";
+import { GeoTypeUI } from "@/lib/purr_ui";
+//import { createPortal } from "react-dom";
+//import TableVisSwitch from "@/components/table-vis-switch";
 import MissingReposWarning from "./missing-repos-warning";
 
-import { ArrowDownRightSquare } from "lucide-react";
+import { ArrowDownRightSquare, Globe } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -67,7 +68,7 @@ export default function AssetJobs({
   withMissingRepos?: AssetJob[];
 }) {
   const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
-  const [showTable, setShowTable] = React.useState<boolean>(true);
+  //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
 
@@ -79,9 +80,9 @@ export default function AssetJobs({
     }
   });
 
-  const handleToggle = (checked: boolean) => {
-    setShowTable(checked);
-  };
+  // const handleToggle = (checked: boolean) => {
+  //   setShowTable(checked);
+  // };
 
   const handleToggleAdvancedForm = () => {
     setShowAdvancedForm(!showAdvancedForm);
@@ -156,11 +157,11 @@ export default function AssetJobs({
 
   return (
     <div>
-      {tableVizElement &&
+      {/* {tableVizElement &&
         createPortal(
           <TableVisSwitch onToggle={handleToggle} />,
           tableVizElement
-        )}
+        )} */}
 
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
@@ -256,7 +257,10 @@ export default function AssetJobs({
                                 ].map((gt: string) => {
                                   return (
                                     <SelectItem key={gt} value={gt}>
-                                      {gt}
+                                      <div className="flex items-center gap-1">
+                                        {GeoTypeUI[gt].icon}
+                                        {GeoTypeUI[gt].label}
+                                      </div>
                                     </SelectItem>
                                   );
                                 })}

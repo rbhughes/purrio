@@ -20,39 +20,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { handleFileExport } from "@/lib/purr_utils";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
-import { Database } from "@/lib/sb_types";
-type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
-
-// TODO: move to purr_utils
-const handleExcelExport = (repos: Repo[]) => {
-  let fileName = "repos";
-  const ws = XLSX.utils.json_to_sheet(repos);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-  XLSX.writeFile(wb, fileName + ".xlsx");
-};
-
-// TODO: move to purr_utils
-const handleCSVExport = (repos: Repo[]) => {
-  let fileName = "repos";
-  const ws = XLSX.utils.json_to_sheet(repos);
-  const csv = XLSX.utils.sheet_to_csv(ws);
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
 
 export function DataTablePagination<TData>({
   table,
@@ -82,7 +55,11 @@ export function DataTablePagination<TData>({
               let selectedRepos = selectedRows.map((r: any) => r.original);
 
               if (selectedRepos.length > 0) {
-                handleExcelExport(selectedRepos);
+                handleFileExport({
+                  filename: "repos",
+                  format: "excel",
+                  data: selectedRepos,
+                });
               } else {
                 toast.error("No rows selected");
               }
@@ -98,7 +75,11 @@ export function DataTablePagination<TData>({
               let selectedRepos = selectedRows.map((r: any) => r.original);
 
               if (selectedRepos.length > 0) {
-                handleCSVExport(selectedRepos);
+                handleFileExport({
+                  filename: "repos",
+                  format: "csv",
+                  data: selectedRepos,
+                });
               } else {
                 toast.error("No rows selected");
               }

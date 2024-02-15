@@ -106,13 +106,13 @@ export function DataTableRowActions<TData>({
 
         {/* ---------- */}
 
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           onClick={async () => {
             await handleRepoDetail(row.original as Repo);
           }}
         >
           Detail View...
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -37,6 +37,7 @@ import {
 import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
 import { GEOTYPES } from "@/lib/purr_utils";
+import { GeoTypeUI } from "@/lib/purr_ui";
 import { RepoReconFormSchema } from "./repo-recon-form-schema";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
@@ -136,10 +137,13 @@ export default function Repos({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {GEOTYPES.map((geotype: string) => {
+                                {GEOTYPES.map((gt: string) => {
                                   return (
-                                    <SelectItem key={geotype} value={geotype}>
-                                      {geotype}
+                                    <SelectItem key={gt} value={gt}>
+                                      <div className="flex items-center gap-1">
+                                        {GeoTypeUI[gt].icon}
+                                        {GeoTypeUI[gt].label}
+                                      </div>
                                     </SelectItem>
                                   );
                                 })}

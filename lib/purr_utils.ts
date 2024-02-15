@@ -1,3 +1,8 @@
+import { Database } from "@/lib/sb_types";
+type Repo = Database["public"]["Tables"]["repo"]["Row"];
+import { Workbook } from "exceljs";
+import { saveAs } from "file-saver";
+
 export function humanFileSize(num: number, suffix: string = "B"): string {
   num = Math.floor(num);
   const units = ["", "K", "M", "G", "T", "P", "E", "Z"];
@@ -129,3 +134,32 @@ export function polygonZoom(
 
   return zoom(maxLat, minLon, minLat, maxLon, width, height, margin);
 }
+
+interface FileExportProps {
+  filename: string;
+  format: "excel" | "csv";
+  data: Repo[];
+}
+
+// TODO: only handles Repos for now. Updata as needed
+export const handleFileExport = async (args: FileExportProps) => {
+  const { filename, format, data } = args;
+
+  const wb = new Workbook();
+  const ws = wb.addWorksheet("Sheet 1");
+
+  const header = Object.keys(data[0]);
+  ws.addRow(header);
+
+  data.forEach((o) => {
+    const data = Object.values(o);
+    ws.addRow(data);
+  });
+  if (format === "excel") {
+    const buf = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([buf]), `${filename}.xlsx`);
+  } else if (format === "csv") {
+    const buf = await wb.csv.writeBuffer();
+    saveAs(new Blob([buf]), `${filename}.csv`);
+  }
+};

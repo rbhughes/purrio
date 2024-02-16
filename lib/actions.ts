@@ -13,6 +13,8 @@ import { cookies } from "next/headers";
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 //type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
+import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
+
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
@@ -188,3 +190,23 @@ export const pickWorker = async (): Promise<string> => {
     return supRes.data!.hostname;
   }
 };
+
+export const fetchAssetStuff = async (
+  geo_type: (typeof GEOTYPES)[number],
+  asset: (typeof ASSETS)[number]
+) => {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+  const { data: dna, error: error } = await supabase.functions.invoke(
+    geo_type,
+    {
+      body: { asset: asset, filter: "" },
+    }
+  );
+  return dna;
+};
+
+///
+// const { data: dna, error: error } = await supabase.functions.invoke("petra", {
+//   body: { asset: "well", filter: "" },
+// });

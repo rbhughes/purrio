@@ -117,10 +117,10 @@ export default function Repos({
                   onSubmit={form.handleSubmit(processForm)}
                   className=" space-y-6 "
                 >
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-row gap-2 bg-red-100">
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="geo_type"
@@ -157,7 +157,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-3/6">
+                    <div className="w-5/12">
                       <FormField
                         control={form.control}
                         name="recon_root"
@@ -178,7 +178,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="worker"
@@ -215,12 +215,12 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6 mt-8 ml-10">
+                    <div className="w-1/12 mt-8 ml-10">
                       <Button type="submit" className="purr-button">
                         repo recon
                       </Button>
                     </div>
-                    <div className="w-1/6"></div>
+                    {/* <div className="w-1/12"></div> */}
                   </div>
 
                   {watchedGeoType === "geographix" && (

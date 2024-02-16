@@ -35,7 +35,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { createAssetJob, updateAssetJob } from "@/lib/actions";
+import { createAssetJob, updateAssetJob, fetchAssetStuff } from "@/lib/actions";
 import { toast } from "sonner";
 import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
 import { AssetJobFormSchema } from "./asset-job-form-schema";
@@ -67,18 +67,20 @@ export default function AssetJobs({
   assetJobs?: AssetJob[];
   withMissingRepos?: AssetJob[];
 }) {
-  const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
+  //const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
+  const [recentAssetModChecked, setRecentAssetModChecked] =
+    React.useState(false);
 
   // because "document" may not exist in nextjs client for some reason...
-  React.useEffect(() => {
-    const tve: HTMLElement = document.getElementById("table-or-viz")!;
-    if (tve) {
-      setTableVizElement(tve);
-    }
-  });
+  // React.useEffect(() => {
+  //   const tve: HTMLElement = document.getElementById("table-or-viz")!;
+  //   if (tve) {
+  //     setTableVizElement(tve);
+  //   }
+  // });
 
   // const handleToggle = (checked: boolean) => {
   //   setShowTable(checked);
@@ -95,6 +97,7 @@ export default function AssetJobs({
     tag: "",
     chunk: 100,
     cron: "",
+    recency: 14,
     filter: "",
     repo_fs_path: null,
     geo_type: [...new Set(repos!.map((repo) => repo.geo_type as string))][0],
@@ -108,6 +111,8 @@ export default function AssetJobs({
     resolver: zodResolver(AssetJobFormSchema),
     defaultValues: defaults,
   });
+
+  //const handleRecentAssetMod
 
   let watchedGeoType = useWatch({
     control: form.control,
@@ -137,6 +142,10 @@ export default function AssetJobs({
     formData.geo_type = repo.geo_type!;
     formData.repo_name = repo.name;
 
+    console.log("************");
+    console.log(formData);
+    console.log("************");
+
     const { data, error } =
       formData.id === 2e63
         ? await createAssetJob(formData)
@@ -149,6 +158,7 @@ export default function AssetJobs({
     }
 
     form.reset();
+    setRecentAssetModChecked(false);
   };
 
   const cardDesc = `
@@ -195,7 +205,6 @@ export default function AssetJobs({
                   className=" space-y-6 "
                 >
                   {/* -------------------- */}
-
                   <FormField
                     control={form.control}
                     name="id"
@@ -231,7 +240,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="geo_type" //this should match repo.geo_type, no?
@@ -274,7 +283,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-2/6">
+                    <div className="w-3/12">
                       <FormField
                         control={form.control}
                         name="repo_id"
@@ -313,7 +322,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-1/12">
                       <FormField
                         control={form.control}
                         name="asset"
@@ -349,6 +358,24 @@ export default function AssetJobs({
                     </div>
 
                     {/* ---------- */}
+                    <div className="w-1/6">
+                      <FormField
+                        control={form.control}
+                        name="tag"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>tag</FormLabel>
+                            <FormControl>
+                              <Input placeholder="tag" {...field} />
+                            </FormControl>
+                            <FormDescription></FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* ---------- */}
 
                     <div className="w-1/12 mt-8 ml-10">
                       <Button type="submit" className="purr-button">
@@ -364,25 +391,7 @@ export default function AssetJobs({
                         <div className="w-1/12"></div>
 
                         {/* ---------- */}
-                        <div className="w-1/6">
-                          <FormField
-                            control={form.control}
-                            name="tag"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>tag</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="tag" {...field} />
-                                </FormControl>
-                                <FormDescription></FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        {/* ---------- */}
-                        <div className="w-1/6">
+                        <div className="w-1/12">
                           <FormField
                             control={form.control}
                             name="chunk"
@@ -401,7 +410,7 @@ export default function AssetJobs({
 
                         {/* ---------- */}
 
-                        <div className="flex basis-1/6">
+                        {/* <div className="flex basis-1/6">
                           <FormField
                             control={form.control}
                             name="cron"
@@ -422,9 +431,72 @@ export default function AssetJobs({
                               </FormItem>
                             )}
                           />
-                        </div>
+                        </div> */}
 
                         {/* ---------- */}
+
+                        <div className="w-1/12 bg-blue-100">
+                          {JSON.stringify(recentAssetModChecked)}
+                        </div>
+
+                        <div className="flex w-3/12 bg-yellow-500  px-4">
+                          <FormField
+                            control={form.control}
+                            name="recency"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>recent asset mod?</FormLabel>
+                                {/* <Label htmlFor="recentAssetMod"> blah</Label> */}
+
+                                <FormControl>
+                                  <div className="flex flex-row items-center gap-4 bg-red-100">
+                                    <Switch
+                                      //id="latest"
+                                      checked={recentAssetModChecked}
+                                      onCheckedChange={setRecentAssetModChecked}
+                                      onClick={async (e) => {
+                                        // let x = await fetchAssetStuff(
+                                        //   watchedGeoType,
+                                        //   watchedAsset
+                                        // );
+                                        //console.log(x);
+
+                                        const daysAgo =
+                                          form.getValues().recency || 0;
+
+                                        if (daysAgo === 0) {
+                                          console.log(
+                                            "zero days ago. blank filter"
+                                          );
+
+                                          form.setValue("filter", ``);
+                                        } else {
+                                          console.log("set a date clause");
+                                          form.setValue(
+                                            "filter",
+                                            `daysAgo=${daysAgo}`
+                                          );
+                                        }
+
+                                        console.log("daysAgo=", daysAgo);
+                                      }}
+                                      //checked={showAdvancedForm}
+                                    />
+                                    <Input
+                                      className="w-[100px]"
+                                      placeholder="days ago"
+                                      {...field}
+                                    />
+                                  </div>
+                                </FormControl>
+                                <FormDescription>
+                                  recent asset mod desc
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
 
                         <div className="w-2/6">
                           <FormField

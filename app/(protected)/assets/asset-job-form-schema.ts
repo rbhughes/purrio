@@ -8,6 +8,9 @@ export const AssetJobFormSchema = z.object({
   asset: z.string({
     required_error: "select an asset",
   }),
+  recency: z.coerce.number({
+    required_error: "days ago or zero for no limit",
+  }),
   /////////
   // chunk: z.coerce
   //   .number({

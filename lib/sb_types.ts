@@ -13,7 +13,7 @@ export type Database = {
         Row: {
           active: boolean
           asset: string
-          chunk: number | null
+          chunk: number
           cron: string | null
           filter: string | null
           geo_type: Database["public"]["Enums"]["geo_type"]
@@ -29,7 +29,7 @@ export type Database = {
         Insert: {
           active?: boolean
           asset: string
-          chunk?: number | null
+          chunk?: number
           cron?: string | null
           filter?: string | null
           geo_type: Database["public"]["Enums"]["geo_type"]
@@ -45,7 +45,7 @@ export type Database = {
         Update: {
           active?: boolean
           asset?: string
-          chunk?: number | null
+          chunk?: number
           cron?: string | null
           filter?: string | null
           geo_type?: Database["public"]["Enums"]["geo_type"]

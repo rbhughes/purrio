@@ -51,12 +51,12 @@ let colsVisible: VisibilityState = {
   active: false,
   //asset: false,
   //tag: false
-  chunk: false,
+  //chunk: false,
   cron: false,
   //filter: false,
   id: false,
   last_invoked: false,
-  //repo_fs_path: true,
+  repo_fs_path: false,
   //repo_geo_type: true,
   repo_id: false,
   //repo_name: false,
@@ -66,6 +66,7 @@ let colsVisible: VisibilityState = {
 ///
 
 // setting geo_type resets the repo selection, so wait a bit
+// TODO:combine these defaults with asst-jobs.tsx form?
 const setFormFromTable = async (setValue: any, row: any) => {
   let assetJob = row.original as AssetJob;
   setValue("geo_type", assetJob.geo_type);
@@ -78,6 +79,7 @@ const setFormFromTable = async (setValue: any, row: any) => {
     setValue("chunk", assetJob.chunk || 100);
     setValue("cron", assetJob.cron || "");
     setValue("filter", assetJob.filter || "");
+    setValue("recency", assetJob.recency ?? 14);
     setValue("repo_fs_path", assetJob.repo_fs_path || null);
     setValue("repo_name", assetJob.repo_name || null);
   }, 500);

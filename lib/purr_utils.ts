@@ -18,6 +18,7 @@ export function humanFileSize(num: number, suffix: string = "B"): string {
 
 export const ASSETS = [
   "well",
+  "completion",
   "core",
   "dst",
   "formation",

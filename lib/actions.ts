@@ -135,6 +135,7 @@ export async function updateAssetJob(
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
+    console.log("UPDATE ASSET JOB CALLED", formData);
     const supabase = createClient(cookieStore);
 
     const ajId = zodRes.data.id;

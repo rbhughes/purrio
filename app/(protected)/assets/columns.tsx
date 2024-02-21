@@ -7,9 +7,34 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { GeoTypeUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
+import { Button } from "@/components/ui/button";
+
+import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 //import { Progress } from "@/components/ui/progress";
+
+import { enqueueAssetJobTask, deleteAssetJob } from "@/lib/actions";
+
+//TODO: better toasty error handling
+const handleAssetJobDelete = async (assetJob: AssetJob) => {
+  const { data, error } = await deleteAssetJob(assetJob.id);
+  if (error) {
+    toast.error(data);
+  } else {
+    toast.info(data);
+  }
+};
+
+//TODO: better toasty error handling
+const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
+  const { data, error } = await enqueueAssetJobTask(assetJob);
+  if (error) {
+    toast.error(data);
+  } else {
+    toast.info(data);
+  }
+};
 
 export const columns: ColumnDef<AssetJob>[] = [
   {
@@ -33,25 +58,6 @@ export const columns: ColumnDef<AssetJob>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-
-  // {
-  //   id: "expander",
-  //   header: () => null,
-  //   cell: ({ row }) => {
-  //     return row.getCanExpand() ? (
-  //       <button
-  //         {...{
-  //           onClick: row.getToggleExpandedHandler(),
-  //           style: { cursor: "pointer" },
-  //         }}
-  //       >
-  //         {row.getIsExpanded() ? "👇" : "👉"}
-  //       </button>
-  //     ) : (
-  //       "🔵"
-  //     );
-  //   },
-  // },
 
   {
     accessorKey: "geo_type",
@@ -135,6 +141,23 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
+    accessorKey: "recency",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="recency" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[80px]">{row.getValue("recency")}</div>
+    ),
+  },
+  {
+    accessorKey: "chunk",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="chunk" />
+    ),
+    cell: ({ row }) => <div>{JSON.stringify(row.getValue("chunk"))}</div>,
+  },
+
+  {
     accessorKey: "filter",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="filter" />
@@ -162,6 +185,31 @@ export const columns: ColumnDef<AssetJob>[] = [
 
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => (
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          className="w-[80px] bg-green-500 active:scale-95"
+          onClick={async () => {
+            const assetJob = row.original as AssetJob;
+            await handleAssetJobEnqueue(assetJob);
+          }}
+        >
+          enqueue
+        </Button>
+        <Button
+          size="sm"
+          className="w-[80px] bg-red-500 active:scale-95"
+          onClick={async () => {
+            const assetJob = row.original as AssetJob;
+            await handleAssetJobDelete(assetJob);
+          }}
+        >
+          delete
+        </Button>
+      </div>
+    ),
+
+    //cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ];

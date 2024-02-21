@@ -80,11 +80,11 @@
 }
 
 .purr-button {
-  @apply bg-slate-500 font-mono font-extrabold;
+  @apply bg-slate-500 font-mono font-extrabold active:scale-95;
 }
 
 .purr-navbar-button {
-  @apply w-28 bg-slate-500 font-mono font-extrabold;
+  @apply w-28 bg-slate-500 font-mono font-extrabold active:scale-95;
 }
 
 .purr-activity-button {

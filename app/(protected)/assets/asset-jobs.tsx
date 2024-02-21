@@ -71,8 +71,6 @@ export default function AssetJobs({
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
-  const [recentAssetModChecked, setRecentAssetModChecked] =
-    React.useState(false);
 
   // because "document" may not exist in nextjs client for some reason...
   // React.useEffect(() => {
@@ -97,10 +95,10 @@ export default function AssetJobs({
     tag: "",
     chunk: 100,
     cron: "",
-    recency: 14,
     filter: "",
     repo_fs_path: null,
     geo_type: [...new Set(repos!.map((repo) => repo.geo_type as string))][0],
+    recency: 14,
     repo_name: null,
     repo_id: "",
     //last_invoked: null,
@@ -110,6 +108,7 @@ export default function AssetJobs({
   const form = useForm<FormInputs>({
     resolver: zodResolver(AssetJobFormSchema),
     defaultValues: defaults,
+    mode: "onChange",
   });
 
   //const handleRecentAssetMod
@@ -158,7 +157,6 @@ export default function AssetJobs({
     }
 
     form.reset();
-    setRecentAssetModChecked(false);
   };
 
   const cardDesc = `
@@ -322,7 +320,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/12">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="asset"
@@ -348,9 +346,7 @@ export default function AssetJobs({
                                 })}
                               </SelectContent>
                             </Select>
-                            <FormDescription>
-                              Asset type to collect
-                            </FormDescription>
+                            <FormDescription>"data type"</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -364,7 +360,7 @@ export default function AssetJobs({
                         name="tag"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>tag</FormLabel>
+                            <FormLabel>Tag</FormLabel>
                             <FormControl>
                               <Input placeholder="tag" {...field} />
                             </FormControl>
@@ -397,7 +393,7 @@ export default function AssetJobs({
                             name="chunk"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>chunk</FormLabel>
+                                <FormLabel>Chunk</FormLabel>
                                 <FormControl>
                                   <Input placeholder="chunk" {...field} />
                                 </FormControl>
@@ -435,62 +431,24 @@ export default function AssetJobs({
 
                         {/* ---------- */}
 
-                        <div className="w-1/12 bg-blue-100">
-                          {JSON.stringify(recentAssetModChecked)}
-                        </div>
+                        {/* <div className="w-1/12 bg-blue-100">nothing</div> */}
 
-                        <div className="flex w-3/12 bg-yellow-500  px-4">
+                        <div className="w-3/12">
                           <FormField
                             control={form.control}
                             name="recency"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>recent asset mod?</FormLabel>
-                                {/* <Label htmlFor="recentAssetMod"> blah</Label> */}
-
+                                <FormLabel>Recency</FormLabel>
                                 <FormControl>
-                                  <div className="flex flex-row items-center gap-4 bg-red-100">
-                                    <Switch
-                                      //id="latest"
-                                      checked={recentAssetModChecked}
-                                      onCheckedChange={setRecentAssetModChecked}
-                                      onClick={async (e) => {
-                                        // let x = await fetchAssetStuff(
-                                        //   watchedGeoType,
-                                        //   watchedAsset
-                                        // );
-                                        //console.log(x);
-
-                                        const daysAgo =
-                                          form.getValues().recency || 0;
-
-                                        if (daysAgo === 0) {
-                                          console.log(
-                                            "zero days ago. blank filter"
-                                          );
-
-                                          form.setValue("filter", ``);
-                                        } else {
-                                          console.log("set a date clause");
-                                          form.setValue(
-                                            "filter",
-                                            `daysAgo=${daysAgo}`
-                                          );
-                                        }
-
-                                        console.log("daysAgo=", daysAgo);
-                                      }}
-                                      //checked={showAdvancedForm}
-                                    />
-                                    <Input
-                                      className="w-[100px]"
-                                      placeholder="days ago"
-                                      {...field}
-                                    />
-                                  </div>
+                                  <Input
+                                    className="w-6/12"
+                                    placeholder="days ago"
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormDescription>
-                                  recent asset mod desc
+                                  collect data modified n days ago
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>

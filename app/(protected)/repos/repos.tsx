@@ -72,6 +72,7 @@ export default function Repos({
   const form = useForm<FormInputs>({
     resolver: zodResolver(RepoReconFormSchema),
     defaultValues: defaults,
+    mode: "onChange",
   });
 
   let watchedGeoType = useWatch({
@@ -117,7 +118,7 @@ export default function Repos({
                   onSubmit={form.handleSubmit(processForm)}
                   className=" space-y-6 "
                 >
-                  <div className="flex flex-row gap-2 bg-red-100">
+                  <div className="flex flex-row gap-2">
                     {/* ---------- */}
 
                     <div className="w-2/12">

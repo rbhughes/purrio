@@ -14,6 +14,7 @@ export type Database = {
           active: boolean
           asset: string
           chunk: number
+          created_at: string
           cron: string | null
           filter: string | null
           geo_type: Database["public"]["Enums"]["geo_type"]
@@ -25,11 +26,13 @@ export type Database = {
           repo_name: string | null
           row_created: string | null
           tag: string | null
+          updated_at: string | null
         }
         Insert: {
           active?: boolean
           asset: string
           chunk?: number
+          created_at?: string
           cron?: string | null
           filter?: string | null
           geo_type: Database["public"]["Enums"]["geo_type"]
@@ -41,11 +44,13 @@ export type Database = {
           repo_name?: string | null
           row_created?: string | null
           tag?: string | null
+          updated_at?: string | null
         }
         Update: {
           active?: boolean
           asset?: string
           chunk?: number
+          created_at?: string
           cron?: string | null
           filter?: string | null
           geo_type?: Database["public"]["Enums"]["geo_type"]
@@ -57,6 +62,7 @@ export type Database = {
           repo_name?: string | null
           row_created?: string | null
           tag?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

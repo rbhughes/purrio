@@ -47,6 +47,7 @@ import { GeoTypeUI } from "@/lib/purr_ui";
 //import { createPortal } from "react-dom";
 //import TableVisSwitch from "@/components/table-vis-switch";
 import MissingReposWarning from "./missing-repos-warning";
+//import { useVisibilityChange } from "@uidotdev/usehooks";
 
 import { ArrowDownRightSquare, Globe } from "lucide-react";
 
@@ -71,18 +72,7 @@ export default function AssetJobs({
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
-
-  // because "document" may not exist in nextjs client for some reason...
-  // React.useEffect(() => {
-  //   const tve: HTMLElement = document.getElementById("table-or-viz")!;
-  //   if (tve) {
-  //     setTableVizElement(tve);
-  //   }
-  // });
-
-  // const handleToggle = (checked: boolean) => {
-  //   setShowTable(checked);
-  // };
+  //const documentVisible = useVisibilityChange();
 
   const handleToggleAdvancedForm = () => {
     setShowAdvancedForm(!showAdvancedForm);
@@ -111,7 +101,20 @@ export default function AssetJobs({
     mode: "onChange",
   });
 
-  //const handleRecentAssetMod
+  // Supabase realtime will get disconnected if it's not the active tab within
+  // about 5 minutes. If you return later, it should sync back up, but there
+  // may be a non-linear delay, during which time the table and form can get
+  // out of sync. Just reset and close the form to avoid confusion for now.
+  // https://github.com/orgs/supabase/discussions/10293
+  // https://github.com/orgs/supabase/discussions/5641
+  // React.useEffect(() => {
+  //   if (documentVisible === false) {
+  //     form.reset();
+  //     setShowForm(false);
+  //     setShowAdvancedForm(false);
+  //     console.log("you might want to refresh the page");
+  //   }
+  // }, [documentVisible]);
 
   let watchedGeoType = useWatch({
     control: form.control,

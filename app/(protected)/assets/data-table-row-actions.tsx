@@ -16,6 +16,8 @@ import { Database } from "@/lib/sb_types";
 import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
+//TODO: DataTableRowActions no longer gets called (moved to columns.tsx)
+
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }

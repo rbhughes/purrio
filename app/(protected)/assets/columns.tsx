@@ -12,27 +12,52 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-//import { Progress } from "@/components/ui/progress";
+import { ASSETS } from "@/lib/purr_utils";
+import { GenericAlertDialog } from "@/components/generic-alert-dialog";
 
-import { enqueueAssetJobTask, deleteAssetJob } from "@/lib/actions";
+import {
+  enqueueAssetJobTask,
+  deleteAssetJob,
+  ServerActionCRUD,
+} from "@/lib/actions";
 
 //TODO: better toasty error handling
+// TODO: add alert dialog
 const handleAssetJobDelete = async (assetJob: AssetJob) => {
-  const { data, error } = await deleteAssetJob(assetJob.id);
-  if (error) {
-    toast.error(data);
-  } else {
-    toast.info(data);
-  }
+  console.log(`should be deleting AssetJob ${assetJob.asset}`);
+
+  // const { data, error } = await deleteAssetJob(assetJob.id);
+  // if (error) {
+  //   toast.error(data);
+  // } else {
+  //   toast.info(data);
+  // }
 };
 
-//TODO: better toasty error handling
 const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
-  const { data, error } = await enqueueAssetJobTask(assetJob);
-  if (error) {
-    toast.error(data);
+  const bunch: Promise<ServerActionCRUD>[] = [];
+  if (assetJob.asset === "ALL_ASSET_TYPES") {
+    ASSETS.forEach((asset) => {
+      let clone = { ...assetJob };
+      clone.asset = asset;
+      bunch.push(enqueueAssetJobTask(clone));
+    });
+
+    Promise.all(bunch)
+      .then((data: any) => {
+        let msg = data.map((m: any) => m.data);
+        toast.info(<pre>{msg.join("\n")}</pre>);
+      })
+      .catch((error) => {
+        toast.error(JSON.stringify(error));
+      });
   } else {
-    toast.info(data);
+    const { data, error } = await enqueueAssetJobTask(assetJob);
+    if (error) {
+      toast.error(data);
+    } else {
+      toast.info(data);
+    }
   }
 };
 

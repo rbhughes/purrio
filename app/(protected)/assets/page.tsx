@@ -6,9 +6,8 @@ import AssetJobs from "./asset-jobs";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-//import { toast } from "sonner";
 
-//export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -62,9 +61,8 @@ export default async function Page() {
           assetJobs={filteredAssetJobs.extants}
           withMissingRepos={filteredAssetJobs.missing}
         />
-
-        <Toaster richColors />
-
+        {/* <Toaster richColors /> */}
+        <Toaster expand richColors className="flex w-6/12" />
         {process.env.NODE_ENV === "development" && (
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">
             TODO

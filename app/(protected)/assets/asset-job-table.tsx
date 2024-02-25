@@ -29,26 +29,26 @@ export function AssetJobTable({
   // https://github.com/openartmarket/supabase-live-table
   React.useEffect(() => {
     const initChannel = () => {
-      const channel = liveTable<AssetJob>(supabase, {
+      const chan = liveTable<AssetJob>(supabase, {
         table: "asset_job",
         filterColumn: "active",
         filterValue: true,
-        callback: (err, things) => {
+        callback: (err) => {
           if (err) {
             console.error(err);
-            channel.unsubscribe().then(() => initChannel());
+            chan.unsubscribe().then(() => initChannel());
             location.reload();
             return;
           }
           router.refresh();
         },
       });
-      return channel;
+      return chan;
     };
-    const chan = initChannel();
+    const channel = initChannel();
 
     return () => {
-      supabase.removeChannel(chan);
+      supabase.removeChannel(channel);
     };
   }, [supabase, router]);
 

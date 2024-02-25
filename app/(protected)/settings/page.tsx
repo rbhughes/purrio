@@ -1,3 +1,8 @@
+import { GenericAlertDialog } from "@/components/generic-alert-dialog";
 export default async function Search() {
-  return <>I am a not-implemented settings page</>;
+  return (
+    <>
+      <GenericAlertDialog />
+    </>
+  );
 }

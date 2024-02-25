@@ -18,7 +18,7 @@ import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 
-interface ServerActionCRUD {
+export interface ServerActionCRUD {
   data?: string | null;
   error?: string | null;
 }
@@ -74,7 +74,7 @@ export async function enqueueAssetJobTask(
       return { data: null, error: JSON.stringify(supRes, null, 2) };
     } else {
       return {
-        data: `enqueued AssetJob task: ${zodRes.data.repo_fs_path}`,
+        data: `enqueued: ${zodRes.data.asset} | ${zodRes.data.repo_name}`,
         error: null,
       };
     }

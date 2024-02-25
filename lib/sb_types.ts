@@ -163,9 +163,11 @@ export type Database = {
       }
       repo: {
         Row: {
+          active: boolean
           bytes: number | null
           conn: Json | null
           conn_aux: Json | null
+          created_at: string
           directories: number | null
           display_epsg: number | null
           display_name: string | null
@@ -181,6 +183,7 @@ export type Database = {
           row_touched: string | null
           storage_epsg: number | null
           storage_name: string | null
+          updated_at: string | null
           well_count: number | null
           wells_with_completion: number | null
           wells_with_core: number | null
@@ -195,9 +198,11 @@ export type Database = {
           wells_with_zone: number | null
         }
         Insert: {
+          active?: boolean
           bytes?: number | null
           conn?: Json | null
           conn_aux?: Json | null
+          created_at?: string
           directories?: number | null
           display_epsg?: number | null
           display_name?: string | null
@@ -213,6 +218,7 @@ export type Database = {
           row_touched?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
+          updated_at?: string | null
           well_count?: number | null
           wells_with_completion?: number | null
           wells_with_core?: number | null
@@ -227,9 +233,11 @@ export type Database = {
           wells_with_zone?: number | null
         }
         Update: {
+          active?: boolean
           bytes?: number | null
           conn?: Json | null
           conn_aux?: Json | null
+          created_at?: string
           directories?: number | null
           display_epsg?: number | null
           display_name?: string | null
@@ -245,6 +253,7 @@ export type Database = {
           row_touched?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
+          updated_at?: string | null
           well_count?: number | null
           wells_with_completion?: number | null
           wells_with_core?: number | null

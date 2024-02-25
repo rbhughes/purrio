@@ -58,6 +58,8 @@ type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 type FormInputs = z.infer<typeof AssetJobFormSchema>;
 
 ///////////////////////////////////////////////////////////
+let assetsPlus = ["ALL_ASSET_TYPES", ...ASSETS];
+///////////////////////////////////////////////////////////
 
 export default function AssetJobs({
   repos,
@@ -139,6 +141,7 @@ export default function AssetJobs({
 
   // we add repo fs_path and name here (joins not supported in subscription)
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
+    console.log("????");
     const repo = repos!.filter((r) => r.id === formData.repo_id)[0];
     formData.repo_fs_path = repo.fs_path;
     formData.geo_type = repo.geo_type!;
@@ -340,7 +343,7 @@ export default function AssetJobs({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {ASSETS.map((asset: string) => {
+                                {assetsPlus.map((asset: string) => {
                                   return (
                                     <SelectItem key={asset} value={asset}>
                                       {asset}

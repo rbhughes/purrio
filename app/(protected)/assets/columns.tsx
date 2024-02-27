@@ -1,19 +1,21 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
+//import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
+//import { DataTableRowActions } from "./data-table-row-actions";
 import { GeoTypeUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
 import { Button } from "@/components/ui/button";
+
+//import GeneralAlertDialog from "@/components/general-alert-dialog";
+//import { useDialog } from "@/lib/useDialog";
 
 import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 import { ASSETS } from "@/lib/purr_utils";
-import { GenericAlertDialog } from "@/components/generic-alert-dialog";
 
 import {
   enqueueAssetJobTask,

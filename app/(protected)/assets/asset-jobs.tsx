@@ -49,6 +49,8 @@ import { GeoTypeUI } from "@/lib/purr_ui";
 import MissingReposWarning from "./missing-repos-warning";
 //import { useVisibilityChange } from "@uidotdev/usehooks";
 
+import { useAssetStore } from "@/store/use-asset-store";
+
 import { ArrowDownRightSquare, Globe } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
@@ -57,9 +59,7 @@ type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 type FormInputs = z.infer<typeof AssetJobFormSchema>;
 
-///////////////////////////////////////////////////////////
-let assetsPlus = ["ALL_ASSET_TYPES", ...ASSETS];
-///////////////////////////////////////////////////////////
+let assetsPlus = ["ALL_ASSETS", ...ASSETS];
 
 export default function AssetJobs({
   repos,
@@ -70,6 +70,8 @@ export default function AssetJobs({
   assetJobs?: AssetJob[];
   withMissingRepos?: AssetJob[];
 }) {
+  const geographixAssets = useAssetStore((state) => state.geographixAssets);
+
   //const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
@@ -94,7 +96,7 @@ export default function AssetJobs({
     repo_name: null,
     repo_id: "",
     //last_invoked: null,
-    //row_created: null,
+    //created_at: null,
   };
 
   const form = useForm<FormInputs>({
@@ -141,7 +143,6 @@ export default function AssetJobs({
 
   // we add repo fs_path and name here (joins not supported in subscription)
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
-    console.log("????");
     const repo = repos!.filter((r) => r.id === formData.repo_id)[0];
     formData.repo_fs_path = repo.fs_path;
     formData.geo_type = repo.geo_type!;
@@ -171,6 +172,10 @@ export default function AssetJobs({
 
   return (
     <div>
+      <div>
+        {geographixAssets.well && <pre>{geographixAssets.well.select}</pre>}
+      </div>
+
       {/* {tableVizElement &&
         createPortal(
           <TableVisSwitch onToggle={handleToggle} />,
@@ -264,8 +269,8 @@ export default function AssetJobs({
                                 {[
                                   ...new Set(
                                     repos!.map(
-                                      (repo) => repo.geo_type as string
-                                    )
+                                      (repo) => repo.geo_type as string,
+                                    ),
                                   ),
                                 ].map((gt: string) => {
                                   return (
@@ -308,7 +313,7 @@ export default function AssetJobs({
                                 {repos!
                                   .filter(
                                     (repo: Repo) =>
-                                      repo.geo_type === watchedGeoType
+                                      repo.geo_type === watchedGeoType,
                                   )
                                   .map((repo: Repo) => (
                                     <SelectItem key={repo.id} value={repo.id}>

@@ -17,7 +17,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  Row,
+  // Row,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -34,9 +34,11 @@ import { DataTableToolbar } from "./data-table-toolbar";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  renderSubComponent: (props: { row: Row<TData> }) => React.ReactElement;
-  getRowCanExpand: (row: Row<TData>) => boolean;
-  setValue: any;
+  //renderSubComponent: (props: { row: Row<TData> }) => React.ReactElement;
+  renderSubComponent: any;
+  //getRowCanExpand: (row: Row<TData>) => boolean;
+  getRowCanExpand: any;
+  //setValue: any;
 }
 
 // sets which rows are selected by default
@@ -57,9 +59,9 @@ let colsVisible: VisibilityState = {
   id: false,
   //name: false,
   //repo_mod: false,
-  row_changed: false,
-  row_created: false,
-  row_touched: false,
+  //created_at: false,
+  touched_at: false,
+  updated_at: false,
   storage_epsg: false,
   storage_name: false,
   //well_count: false,
@@ -83,12 +85,12 @@ export function DataTable<TData, TValue>({
   data,
   renderSubComponent,
   getRowCanExpand,
-  setValue,
+  //setValue,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
@@ -133,7 +135,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -156,7 +158,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

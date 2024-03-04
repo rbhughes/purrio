@@ -19,7 +19,7 @@ export default async function Page() {
   const { data: repos } = await supabase
     .from("repo")
     .select()
-    .order("row_changed", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   return (
     user && (

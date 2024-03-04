@@ -6,6 +6,7 @@ import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 import { humanFileSize } from "@/lib/purr_utils";
 import { GeoTypeUI } from "@/lib/purr_ui";
+import { simplifyDateString } from "@/lib/purr_utils";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -183,29 +184,35 @@ export const columns: ColumnDef<Repo>[] = [
     ),
     cell: ({ row }) => (
       // <div className="w-[80px]">{row.getValue("repo_mod")}</div>
-      <div>{row.getValue("repo_mod")}</div>
+      <div>{simplifyDateString(row.getValue("repo_mod"))}</div>
     ),
   },
   {
-    accessorKey: "row_changed",
+    accessorKey: "created_at",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="row_changed" />
+      <DataTableColumnHeader column={column} title="created_at" />
     ),
-    cell: ({ row }) => <div>{row.getValue("row_changed")}</div>,
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("created_at"))}</div>
+    ),
   },
   {
-    accessorKey: "row_created",
+    accessorKey: "updated_at",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="row_created" />
+      <DataTableColumnHeader column={column} title="updated_at" />
     ),
-    cell: ({ row }) => <div>{row.getValue("row_created")}</div>,
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("updated_at"))}</div>
+    ),
   },
   {
-    accessorKey: "row_touched",
+    accessorKey: "touched_at",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="row_touched" />
+      <DataTableColumnHeader column={column} title="touched_at" />
     ),
-    cell: ({ row }) => <div>{row.getValue("row_touched")}</div>,
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("touched_at"))}</div>
+    ),
   },
 
   {

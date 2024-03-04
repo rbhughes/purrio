@@ -23,7 +23,7 @@ import {
 } from "@/lib/purr_utils";
 
 import { Map, GeoJson, ZoomControl } from "pigeon-maps";
-import { GeoTypeUI } from "@/lib/purr_ui";
+//import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
 import { useMeasure } from "@uidotdev/usehooks";
@@ -45,7 +45,7 @@ function VisConn({ repo }: { repo: Repo }) {
 
 function VisWellCounts({ repo }: { repo: Repo }) {
   const filteredKeys = Object.keys(repo).filter(
-    (key) => key.startsWith("wells_with_") || key.startsWith("well_count")
+    (key) => key.startsWith("wells_with_") || key.startsWith("well_count"),
   );
   return (
     <Table>
@@ -164,115 +164,9 @@ function VisMap({ repo }: { repo: Repo }) {
 
 ////////////////////////////////
 
-// export function VisCard({ repo }: { repo: Repo }) {
-//   const mod_dates = parseDateTime(repo.repo_mod!);
-//   const touched_dates = parseDateTime(repo.row_touched!);
-
-//   return (
-//     <Card className="p-4">
-//       <CardTitle className="flex justify-between mb-4">
-//         <div className="flex">
-//           <span className="mt-1  mr-2">
-//             {GeoTypeUI[repo.geo_type as string].icon}
-//           </span>
-//           <span className="text-2xl ml-1">{repo.name}</span>
-//         </div>
-//         <div>
-//           <pre className="p-2 mr-4 text-muted-foreground">{repo.fs_path}</pre>
-//         </div>
-//       </CardTitle>
-
-//       <CardContent className="flex flex-row gap-4">
-//         <div className="flex flex-col justify-between w-2/12">
-//           <VisWellCounts repo={repo} />
-//         </div>
-
-//         <div className="border border-1 rounded-lg w-6/12 ">
-//           <VisMap repo={repo} />
-//         </div>
-
-//         <div className="flex flex-col justify-between w-4/12 m-2">
-//           {/* ************* */}
-//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
-//             <div className="flex justify-between items-center w-11/12">
-//               <span className="flex items-center gap-2">
-//                 <FolderTree />
-//                 total repo size
-//               </span>
-//               <span className="text-xl">{humanFileSize(repo.bytes!)}</span>
-//             </div>
-//           </Badge>
-
-//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
-//             <div className="flex justify-between items-center w-11/12">
-//               <span className="flex items-center gap-2">
-//                 <Globe />
-//                 storage epsg
-//               </span>
-//               <span className="text-xl">{repo.storage_epsg}</span>
-//             </div>
-//             <span className="text-muted-foreground italic text-xs">
-//               ({repo.storage_name})
-//             </span>
-//           </Badge>
-
-//           {/* ************* */}
-
-//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
-//             <div className="flex justify-between items-center w-11/12">
-//               <span className="flex items-center gap-2">
-//                 <MapIcon />
-//                 display epsg
-//               </span>
-//               <span className="text-xl">{repo.display_epsg}</span>
-//             </div>
-//             <span className="text-muted-foreground italic text-xs">
-//               ({repo.display_name})
-//             </span>
-//           </Badge>
-
-//           {/* ************* */}
-
-//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
-//             <div className="flex justify-between items-center w-11/12">
-//               <span className="flex items-center gap-2">
-//                 <CalendarSearch />
-//                 last scanned
-//               </span>
-//               <span className="text-lg">{touched_dates.formattedDateTime}</span>
-//             </div>
-//             <span className="text-muted-foreground italic text-xs">
-//               ({touched_dates.daysAgoDescription})
-//             </span>
-//           </Badge>
-
-//           {/* ************* */}
-
-//           <Badge variant="outline" className="flex flex-col gap-1 p-2">
-//             <div className="flex justify-between items-center w-11/12">
-//               <span className="flex items-center gap-2">
-//                 <CalendarDays />
-//                 last modified
-//               </span>
-//               <span className="text-lg">{mod_dates.formattedDateTime}</span>
-//             </div>
-//             <span className="text-muted-foreground italic text-xs">
-//               ({mod_dates.daysAgoDescription})
-//             </span>
-//           </Badge>
-
-//           {/* ************* */}
-
-//           <VisConn repo={repo} />
-//         </div>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
 export default function RepoVis({ repo }: { repo: Repo }) {
   const mod_dates = parseDateTime(repo.repo_mod!);
-  const touched_dates = parseDateTime(repo.row_touched!);
+  const touched_dates = parseDateTime(repo.touched_at!);
 
   return (
     <div className="bg-muted/50 px-8 pb-8">

@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-import { Button } from "@/components/ui/button";
 import { useDialog } from "@/lib/useDialog";
 
 // choose Cancel or Continue
@@ -22,15 +21,10 @@ export default function GeneralAlertDialog({
   title: string;
   message: string;
 }) {
-  //const [alertProceed, setAlertProceed] = React.useState(false);
-  //const [alertVisible, setAlertVisible] = React.useState(false);
-  //
-  const { alertProceed, setAlertProceed, alertVisible, setAlertVisible } =
-    useDialog();
+  const { setAlertProceed, alertVisible, setAlertVisible } = useDialog();
 
   return (
     <>
-      {/* <button onClick={() => setAlertVisible(true)}>clickme</button> */}
       <AlertDialog
         onOpenChange={setAlertVisible}
         open={alertVisible}
@@ -51,8 +45,6 @@ export default function GeneralAlertDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {alertProceed && <h1>OKAY TO PROCEED</h1>}
     </>
   );
 }

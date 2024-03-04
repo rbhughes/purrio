@@ -60,7 +60,9 @@ let colsVisible: VisibilityState = {
   //repo_geo_type: true,
   repo_id: false,
   //repo_name: false,
-  row_created: false,
+  created_at: false,
+  touched_at: false,
+  updated_at: false,
 };
 
 ///
@@ -96,7 +98,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -137,7 +139,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -163,7 +165,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

@@ -3,6 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./asset-jobs";
 
+import AssetStoreInit from "@/store/asset-store-init";
+
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
@@ -22,19 +24,18 @@ export default async function Page() {
   //   body: { asset: "well", filter: "" },
   // });
   // console.log("---------------------------------------");
-  // console.log(dna);
+  // //console.log(dna);
   // console.log("---------------------------------------");
-  ///
 
   const { data: assetJobs } = await supabase
     .from("asset_job")
     .select()
-    .order("row_created", { ascending: false });
+    .order("created_at", { ascending: false });
 
   const { data: repos } = await supabase
     .from("repo")
     .select()
-    .order("row_changed", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   // Some AssetJobs may exist when their associated Repo is missing. Hide them.
   const extantReposOnly = (repos: Repo[], assetJobs: AssetJob[]) => {
@@ -63,6 +64,8 @@ export default async function Page() {
         />
         {/* <Toaster richColors /> */}
         <Toaster expand richColors className="flex w-6/12" />
+        <AssetStoreInit />
+
         {process.env.NODE_ENV === "development" && (
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">
             TODO

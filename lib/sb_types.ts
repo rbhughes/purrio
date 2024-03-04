@@ -24,9 +24,9 @@ export type Database = {
           repo_fs_path: string | null
           repo_id: string
           repo_name: string | null
-          row_created: string | null
           tag: string | null
-          updated_at: string | null
+          touched_at: string
+          updated_at: string
         }
         Insert: {
           active?: boolean
@@ -42,9 +42,9 @@ export type Database = {
           repo_fs_path?: string | null
           repo_id: string
           repo_name?: string | null
-          row_created?: string | null
           tag?: string | null
-          updated_at?: string | null
+          touched_at?: string
+          updated_at?: string
         }
         Update: {
           active?: boolean
@@ -60,9 +60,9 @@ export type Database = {
           repo_fs_path?: string | null
           repo_id?: string
           repo_name?: string | null
-          row_created?: string | null
           tag?: string | null
-          updated_at?: string | null
+          touched_at?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -93,6 +93,7 @@ export type Database = {
       message: {
         Row: {
           activity: string | null
+          created_at: string
           directive: string | null
           function: string | null
           id: number
@@ -100,13 +101,13 @@ export type Database = {
           message: string | null
           params: string | null
           repo_id: string | null
-          row_created: string | null
           service: string | null
           source: string | null
           user_id: string
         }
         Insert: {
           activity?: string | null
+          created_at?: string
           directive?: string | null
           function?: string | null
           id?: number
@@ -114,13 +115,13 @@ export type Database = {
           message?: string | null
           params?: string | null
           repo_id?: string | null
-          row_created?: string | null
           service?: string | null
           source?: string | null
           user_id: string
         }
         Update: {
           activity?: string | null
+          created_at?: string
           directive?: string | null
           function?: string | null
           id?: number
@@ -128,7 +129,6 @@ export type Database = {
           message?: string | null
           params?: string | null
           repo_id?: string | null
-          row_created?: string | null
           service?: string | null
           source?: string | null
           user_id?: string
@@ -178,12 +178,10 @@ export type Database = {
           name: string | null
           outline: Json | null
           repo_mod: string | null
-          row_changed: string | null
-          row_created: string | null
-          row_touched: string | null
           storage_epsg: number | null
           storage_name: string | null
-          updated_at: string | null
+          touched_at: string
+          updated_at: string
           well_count: number | null
           wells_with_completion: number | null
           wells_with_core: number | null
@@ -213,12 +211,10 @@ export type Database = {
           name?: string | null
           outline?: Json | null
           repo_mod?: string | null
-          row_changed?: string | null
-          row_created?: string | null
-          row_touched?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
-          updated_at?: string | null
+          touched_at?: string
+          updated_at?: string
           well_count?: number | null
           wells_with_completion?: number | null
           wells_with_core?: number | null
@@ -248,12 +244,10 @@ export type Database = {
           name?: string | null
           outline?: Json | null
           repo_mod?: string | null
-          row_changed?: string | null
-          row_created?: string | null
-          row_touched?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
-          updated_at?: string | null
+          touched_at?: string
+          updated_at?: string
           well_count?: number | null
           wells_with_completion?: number | null
           wells_with_core?: number | null
@@ -293,59 +287,27 @@ export type Database = {
         }
         Relationships: []
       }
-      todos: {
-        Row: {
-          id: number
-          inserted_at: string
-          is_complete: boolean | null
-          task: string | null
-          user_id: string
-        }
-        Insert: {
-          id?: number
-          inserted_at?: string
-          is_complete?: boolean | null
-          task?: string | null
-          user_id: string
-        }
-        Update: {
-          id?: number
-          inserted_at?: string
-          is_complete?: boolean | null
-          task?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "todos_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       worker: {
         Row: {
+          created_at: string
           hostname: string
-          row_changed: string | null
-          row_created: string | null
-          row_touched: string | null
           test: string | null
+          touched_at: string
+          updated_at: string
         }
         Insert: {
+          created_at?: string
           hostname: string
-          row_changed?: string | null
-          row_created?: string | null
-          row_touched?: string | null
           test?: string | null
+          touched_at?: string
+          updated_at?: string
         }
         Update: {
+          created_at?: string
           hostname?: string
-          row_changed?: string | null
-          row_created?: string | null
-          row_touched?: string | null
           test?: string | null
+          touched_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

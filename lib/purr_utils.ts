@@ -33,6 +33,18 @@ export const ASSETS = [
 
 export const GEOTYPES = ["geographix", "petra", "kingdom", "las"];
 
+export function simplifyDateString(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 export function parseDateTime(input: string): {
   formattedDateTime: string;
   daysAgoDescription: string;
@@ -87,7 +99,7 @@ export function polygonZoom(
   polygon: number[][],
   width: number,
   height: number,
-  margin: number = 0
+  margin: number = 0,
 ): number {
   function latRad(lat: number): number {
     return (Math.PI * lat) / 180;
@@ -100,7 +112,7 @@ export function polygonZoom(
     lon2: number,
     width: number,
     height: number,
-    margin: number = 0
+    margin: number = 0,
   ): number {
     //const TILE_SIZE: number = 256;
     const TILE_SIZE: number = 1;

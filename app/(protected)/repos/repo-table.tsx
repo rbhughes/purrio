@@ -32,7 +32,7 @@ export function RepoTable({
         table: "repo",
         filterColumn: "active",
         filterValue: true,
-        callback: (err, things) => {
+        callback: (err) => {
           if (err) {
             console.error(err);
             chan.unsubscribe().then(() => initChannel());
@@ -79,7 +79,7 @@ export function RepoTable({
         columns={columns}
         renderSubComponent={renderSubComponent}
         getRowCanExpand={() => true}
-        setValue={setValue}
+        //setValue={setValue}
       />
     </Card>
   );

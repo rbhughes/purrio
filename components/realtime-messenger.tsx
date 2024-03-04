@@ -11,9 +11,9 @@ import {
   Dialog,
   DialogTrigger,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
+  //DialogHeader,
+  //DialogTitle,
+  //DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -27,13 +27,16 @@ interface MessengerArgs {
 }
 
 function refactorArray(arr: MessengerArgs[]) {
-  return arr.reduce((result: Record<string, MessengerArgs["new"]>, item) => {
-    const { repo_id } = item.new;
-    if (repo_id) {
-      result[repo_id] = item.new;
-    }
-    return result;
-  }, {} as Record<string, MessengerArgs["new"]>);
+  return arr.reduce(
+    (result: Record<string, MessengerArgs["new"]>, item) => {
+      const { repo_id } = item.new;
+      if (repo_id) {
+        result[repo_id] = item.new;
+      }
+      return result;
+    },
+    {} as Record<string, MessengerArgs["new"]>,
+  );
 }
 
 export default function RealtimeMessenger({
@@ -75,10 +78,10 @@ export default function RealtimeMessenger({
 
           setTimeout(() => {
             setMessages((prev) =>
-              prev.filter((item) => item.row_created !== msg.row_created)
+              prev.filter((item) => item.created_at !== msg.created_at),
             );
           }, DELAY);
-        }
+        },
       )
       .subscribe();
 
@@ -127,8 +130,8 @@ export default function RealtimeMessenger({
             {messages
               .filter((m) => m.directive === "recon")
               .map((m) => (
-                <li key={m.row_created}>
-                  {m.row_created}--{m.message}===={directive}
+                <li key={m.created_at}>
+                  {m.created_at}--{m.message}===={directive}
                 </li>
               ))}
           </ul>
@@ -137,8 +140,8 @@ export default function RealtimeMessenger({
             {messages
               .filter((m) => m.directive === "upsert")
               .map((m) => (
-                <li key={m.row_created}>
-                  {m.row_created}--{m.message}===={directive}
+                <li key={m.created_at}>
+                  {m.created_at}--{m.message}===={directive}
                 </li>
               ))}
           </ul>
@@ -155,38 +158,4 @@ export default function RealtimeMessenger({
       {/* <AssetBatchDialog repo_id={"a repo id"} /> */}
     </Dialog>
   );
-
-  // return (
-  //   <Button
-  //     className="fixed bottom-14 left-2 bg-red-600 w-40"
-  //     onClick={() => console.log("hello")}
-  //   >
-  //     {/* {message} */}
-  //   </Button>
-  // );
-
-  // return (
-  //   <div className="bg-slate-100 h-40 overflow-auto break-all font-mono outline m-5">
-  //     <h1>recon</h1>
-  //     <ul>
-  //       {messages
-  //         .filter((m) => m.directive === "recon")
-  //         .map((m) => (
-  //           <li key={m.row_created}>
-  //             {m.row_created}--{m.message}===={directive}
-  //           </li>
-  //         ))}
-  //     </ul>
-  //     <h1>upsert</h1>
-  //     <ul>
-  //       {messages
-  //         .filter((m) => m.directive === "upsert")
-  //         .map((m) => (
-  //           <li key={m.row_created}>
-  //             {m.row_created}--{m.message}===={directive}
-  //           </li>
-  //         ))}
-  //     </ul>
-  //   </div>
-  // );
 }

@@ -1,67 +1,16 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-//import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 //import { DataTableRowActions } from "./data-table-row-actions";
 import { GeoTypeUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
-import { Button } from "@/components/ui/button";
+import { simplifyDateString } from "@/lib/purr_utils";
 
-//import GeneralAlertDialog from "@/components/general-alert-dialog";
-//import { useDialog } from "@/lib/useDialog";
-
-import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-import { ASSETS } from "@/lib/purr_utils";
-
-import {
-  enqueueAssetJobTask,
-  deleteAssetJob,
-  ServerActionCRUD,
-} from "@/lib/actions";
-
-//TODO: better toasty error handling
-// TODO: add alert dialog
-const handleAssetJobDelete = async (assetJob: AssetJob) => {
-  console.log(`should be deleting AssetJob ${assetJob.asset}`);
-
-  // const { data, error } = await deleteAssetJob(assetJob.id);
-  // if (error) {
-  //   toast.error(data);
-  // } else {
-  //   toast.info(data);
-  // }
-};
-
-const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
-  const bunch: Promise<ServerActionCRUD>[] = [];
-  if (assetJob.asset === "ALL_ASSET_TYPES") {
-    ASSETS.forEach((asset) => {
-      let clone = { ...assetJob };
-      clone.asset = asset;
-      bunch.push(enqueueAssetJobTask(clone));
-    });
-
-    Promise.all(bunch)
-      .then((data: any) => {
-        let msg = data.map((m: any) => m.data);
-        toast.info(<pre>{msg.join("\n")}</pre>);
-      })
-      .catch((error) => {
-        toast.error(JSON.stringify(error));
-      });
-  } else {
-    const { data, error } = await enqueueAssetJobTask(assetJob);
-    if (error) {
-      toast.error(data);
-    } else {
-      toast.info(data);
-    }
-  }
-};
+import { AssetJobRowActions } from "./asset-job-row-actions";
 
 export const columns: ColumnDef<AssetJob>[] = [
   {
@@ -193,14 +142,33 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
-    accessorKey: "row_created",
+    accessorKey: "created_at",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="row_created" />
+      <DataTableColumnHeader column={column} title="created_at" />
     ),
-    cell: ({ row }) => <div>{row.getValue("row_created")}</div>,
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("created_at"))}</div>
+    ),
+  },
+  {
+    accessorKey: "updated_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="updated_at" />
+    ),
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("updated_at"))}</div>
+    ),
+  },
+  {
+    accessorKey: "touched_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="touched_at" />
+    ),
+    cell: ({ row }) => (
+      <div>{simplifyDateString(row.getValue("touched_at"))}</div>
+    ),
   },
 
-  ///
   {
     accessorKey: "active",
     header: ({ column }) => (
@@ -208,35 +176,12 @@ export const columns: ColumnDef<AssetJob>[] = [
     ),
     cell: ({ row }) => <div>{JSON.stringify(row.getValue("active"))}</div>,
   },
-  ///
 
+  // this button-based handler replaces the default DataTableRowActions
   {
     id: "actions",
     cell: ({ row }) => (
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          className="w-[80px] bg-green-500 active:scale-95"
-          onClick={async () => {
-            const assetJob = row.original as AssetJob;
-            await handleAssetJobEnqueue(assetJob);
-          }}
-        >
-          enqueue
-        </Button>
-        <Button
-          size="sm"
-          className="w-[80px] bg-red-500 active:scale-95"
-          onClick={async () => {
-            const assetJob = row.original as AssetJob;
-            await handleAssetJobDelete(assetJob);
-          }}
-        >
-          delete
-        </Button>
-      </div>
+      <AssetJobRowActions assetJob={row.original as AssetJob} />
     ),
-
-    //cell: ({ row }) => <DataTableRowActions row={row} />,
   },
 ];

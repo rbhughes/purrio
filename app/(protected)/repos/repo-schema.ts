@@ -33,9 +33,9 @@ export const RepoSchema = z.object({
   display_epsg: z.number(),
   storage_name: z.string(),
   display_name: z.string(),
-  row_changed: z.string().datetime({ offset: true }),
-  row_created: z.string().datetime({ offset: true }),
-  row_touched: z.string().datetime({ offset: true }),
+  created_at: z.string().datetime({ offset: true }),
+  touched_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
 });
 
 export type Repo = z.infer<typeof RepoSchema>;

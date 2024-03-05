@@ -15,10 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
+import { ASSETS, SUITES } from "@/lib/purr_utils";
 import { toast } from "sonner";
 
-import { GeoTypeUI } from "@/lib/purr_ui";
+import { SuiteUI } from "@/lib/purr_ui";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
@@ -51,7 +51,7 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
 
   let defaults = {
     asset: ASSETS[0],
-    geo_types: [],
+    suites: [],
     tag: "",
     term: "",
   };
@@ -77,7 +77,7 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
   };
 
   const cardDesc = `
-  Limit search by Asset type, GeoType, tag and text terms.`;
+  Limit search by Asset type, Suite, tag and text terms.`;
 
   return (
     <Card>
@@ -128,10 +128,10 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
               <div className="w-2/6 flex-1">
                 <FormField
                   control={form.control}
-                  name="geo_types"
+                  name="suites"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>geotypes</FormLabel>
+                      <FormLabel>suites</FormLabel>
                       <ToggleGroup
                         type="multiple"
                         variant="outline"
@@ -140,10 +140,9 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                           form.setValue(field.name, value)
                         }
                       >
-                        {GEOTYPES.map((gt: string) => (
+                        {SUITES.map((gt: string) => (
                           <ToggleGroupItem key={gt} value={gt} aria-label={gt}>
-                            {GeoTypeUI[gt].icon}
-                            {/* {GeoTypeUI.find((x) => x.value === gt)!.icon()} */}
+                            {SuiteUI[gt].icon}
                           </ToggleGroupItem>
                         ))}
                       </ToggleGroup>

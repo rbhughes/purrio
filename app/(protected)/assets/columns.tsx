@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "./data-table-column-header";
 //import { DataTableRowActions } from "./data-table-row-actions";
-import { GeoTypeUI } from "@/lib/purr_ui";
+import { SuiteUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
 import { simplifyDateString } from "@/lib/purr_utils";
 
@@ -36,16 +36,16 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
-    accessorKey: "geo_type",
+    accessorKey: "suite",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="geo_type" />
+      <DataTableColumnHeader column={column} title="suite" />
     ),
     cell: ({ row }) => {
-      const gt: string = row.getValue("geo_type");
+      const gt: string = row.getValue("suite");
       return (
         <div className="flex items-center gap-1 w-[120px]">
-          {GeoTypeUI[gt].icon}
-          {GeoTypeUI[gt].label}
+          {SuiteUI[gt].icon}
+          {SuiteUI[gt].label}
         </div>
       );
     },

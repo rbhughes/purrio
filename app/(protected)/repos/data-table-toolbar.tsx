@@ -29,10 +29,10 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
 
-        {table.getColumn("geo_type") && (
+        {table.getColumn("suite") && (
           <DataTableFacetedFilter
-            column={table.getColumn("geo_type")}
-            title="geo_type"
+            column={table.getColumn("suite")}
+            title="suite"
             options={facetOptions}
           />
         )}

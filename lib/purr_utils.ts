@@ -16,9 +16,10 @@ export function humanFileSize(num: number, suffix: string = "B"): string {
   return `${num.toFixed(1)}Y${suffix}`;
 }
 
+// geographix has completion; petra does not
 export const ASSETS = [
   "well",
-  "completion",
+  //"completion",
   "core",
   "dst",
   "formation",
@@ -31,7 +32,7 @@ export const ASSETS = [
   "zone",
 ];
 
-export const GEOTYPES = ["geographix", "petra", "kingdom", "las"];
+export const SUITES = ["geographix", "petra", "kingdom", "las"];
 
 export function simplifyDateString(dateString: string): string {
   const date = new Date(dateString);

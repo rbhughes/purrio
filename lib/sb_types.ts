@@ -17,13 +17,13 @@ export type Database = {
           created_at: string
           cron: string | null
           filter: string | null
-          geo_type: Database["public"]["Enums"]["geo_type"]
           id: number
           last_invoked: string | null
           recency: number
           repo_fs_path: string | null
           repo_id: string
           repo_name: string | null
+          suite: Database["public"]["Enums"]["suite"] | null
           tag: string | null
           touched_at: string
           updated_at: string
@@ -35,13 +35,13 @@ export type Database = {
           created_at?: string
           cron?: string | null
           filter?: string | null
-          geo_type: Database["public"]["Enums"]["geo_type"]
           id?: number
           last_invoked?: string | null
           recency?: number
           repo_fs_path?: string | null
           repo_id: string
           repo_name?: string | null
+          suite?: Database["public"]["Enums"]["suite"] | null
           tag?: string | null
           touched_at?: string
           updated_at?: string
@@ -53,13 +53,13 @@ export type Database = {
           created_at?: string
           cron?: string | null
           filter?: string | null
-          geo_type?: Database["public"]["Enums"]["geo_type"]
           id?: number
           last_invoked?: string | null
           recency?: number
           repo_fs_path?: string | null
           repo_id?: string
           repo_name?: string | null
+          suite?: Database["public"]["Enums"]["suite"] | null
           tag?: string | null
           touched_at?: string
           updated_at?: string
@@ -173,13 +173,13 @@ export type Database = {
           display_name: string | null
           files: number | null
           fs_path: string | null
-          geo_type: Database["public"]["Enums"]["geo_type"] | null
           id: string
           name: string | null
           outline: Json | null
           repo_mod: string | null
           storage_epsg: number | null
           storage_name: string | null
+          suite: Database["public"]["Enums"]["suite"] | null
           touched_at: string
           updated_at: string
           well_count: number | null
@@ -206,13 +206,13 @@ export type Database = {
           display_name?: string | null
           files?: number | null
           fs_path?: string | null
-          geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id: string
           name?: string | null
           outline?: Json | null
           repo_mod?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
+          suite?: Database["public"]["Enums"]["suite"] | null
           touched_at?: string
           updated_at?: string
           well_count?: number | null
@@ -239,13 +239,13 @@ export type Database = {
           display_name?: string | null
           files?: number | null
           fs_path?: string | null
-          geo_type?: Database["public"]["Enums"]["geo_type"] | null
           id?: string
           name?: string | null
           outline?: Json | null
           repo_mod?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
+          suite?: Database["public"]["Enums"]["suite"] | null
           touched_at?: string
           updated_at?: string
           well_count?: number | null
@@ -316,13 +316,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_geo_type_values: {
+      get_suite_enums: {
         Args: Record<PropertyKey, never>
-        Returns: Database["public"]["Enums"]["geo_type"][]
+        Returns: Database["public"]["Enums"]["suite"][]
       }
     }
     Enums: {
-      geo_type: "geographix" | "petra" | "kingdom" | "las"
+      suite: "geographix" | "petra" | "kingdom" | "las"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -37,19 +37,19 @@ import {
 
 import { createAssetJob, updateAssetJob, fetchAssetStuff } from "@/lib/actions";
 import { toast } from "sonner";
-import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
+import { ASSETS, SUITES } from "@/lib/purr_utils";
 import { AssetJobFormSchema } from "./asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { AssetJobTable } from "./asset-job-table";
-import { GeoTypeUI } from "@/lib/purr_ui";
+import { SuiteUI } from "@/lib/purr_ui";
 //import { createPortal } from "react-dom";
 //import TableVisSwitch from "@/components/table-vis-switch";
 import MissingReposWarning from "./missing-repos-warning";
 //import { useVisibilityChange } from "@uidotdev/usehooks";
 
-import { useAssetStore } from "@/store/use-asset-store";
+import AssetDNA from "./asset-dna";
 
 import { ArrowDownRightSquare, Globe } from "lucide-react";
 
@@ -70,8 +70,6 @@ export default function AssetJobs({
   assetJobs?: AssetJob[];
   withMissingRepos?: AssetJob[];
 }) {
-  const geographixAssets = useAssetStore((state) => state.geographixAssets);
-
   //const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
@@ -91,7 +89,7 @@ export default function AssetJobs({
     cron: "",
     filter: "",
     repo_fs_path: null,
-    geo_type: [...new Set(repos!.map((repo) => repo.geo_type as string))][0],
+    suite: [...new Set(repos!.map((repo) => repo.suite as string))][0],
     recency: 14,
     repo_name: null,
     repo_id: "",
@@ -120,12 +118,10 @@ export default function AssetJobs({
   //   }
   // }, [documentVisible]);
 
-  let watchedGeoType = useWatch({
+  let watchedSuite = useWatch({
     control: form.control,
-    name: "geo_type",
-    defaultValue: [
-      ...new Set(repos!.map((repo) => repo.geo_type as string)),
-    ][0],
+    name: "suite",
+    defaultValue: [...new Set(repos!.map((repo) => repo.suite as string))][0],
   });
 
   let watchedAsset = useWatch({
@@ -134,18 +130,18 @@ export default function AssetJobs({
     defaultValue: ASSETS[0],
   });
 
-  const refGeoType = React.useRef(GEOTYPES[0]);
+  const refSuite = React.useRef(SUITES[0]);
 
   React.useEffect(() => {
     form.setValue("repo_id", "");
-    refGeoType.current = watchedGeoType;
-  }, [watchedGeoType]);
+    refSuite.current = watchedSuite;
+  }, [watchedSuite]);
 
   // we add repo fs_path and name here (joins not supported in subscription)
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
     const repo = repos!.filter((r) => r.id === formData.repo_id)[0];
     formData.repo_fs_path = repo.fs_path;
-    formData.geo_type = repo.geo_type!;
+    formData.suite = repo.suite!;
     formData.repo_name = repo.name;
 
     console.log("************");
@@ -172,10 +168,6 @@ export default function AssetJobs({
 
   return (
     <div>
-      <div>
-        {geographixAssets.well && <pre>{geographixAssets.well.select}</pre>}
-      </div>
-
       {/* {tableVizElement &&
         createPortal(
           <TableVisSwitch onToggle={handleToggle} />,
@@ -252,7 +244,7 @@ export default function AssetJobs({
                     <div className="w-2/12">
                       <FormField
                         control={form.control}
-                        name="geo_type" //this should match repo.geo_type, no?
+                        name="suite" //this should match repo.suite, no?
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Repo Type</FormLabel>
@@ -262,22 +254,20 @@ export default function AssetJobs({
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a geo_type" />
+                                  <SelectValue placeholder="Select a suite" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
                                 {[
                                   ...new Set(
-                                    repos!.map(
-                                      (repo) => repo.geo_type as string,
-                                    ),
+                                    repos!.map((repo) => repo.suite as string),
                                   ),
                                 ].map((gt: string) => {
                                   return (
                                     <SelectItem key={gt} value={gt}>
                                       <div className="flex items-center gap-1">
-                                        {GeoTypeUI[gt].icon}
-                                        {GeoTypeUI[gt].label}
+                                        {SuiteUI[gt].icon}
+                                        {SuiteUI[gt].label}
                                       </div>
                                     </SelectItem>
                                   );
@@ -312,8 +302,7 @@ export default function AssetJobs({
                               <SelectContent>
                                 {repos!
                                   .filter(
-                                    (repo: Repo) =>
-                                      repo.geo_type === watchedGeoType,
+                                    (repo: Repo) => repo.suite === watchedSuite,
                                   )
                                   .map((repo: Repo) => (
                                     <SelectItem key={repo.id} value={repo.id}>
@@ -444,7 +433,7 @@ export default function AssetJobs({
 
                         {/* <div className="w-1/12 bg-blue-100">nothing</div> */}
 
-                        <div className="w-3/12">
+                        <div className="w-4/12">
                           <FormField
                             control={form.control}
                             name="recency"
@@ -453,7 +442,7 @@ export default function AssetJobs({
                                 <FormLabel>Recency</FormLabel>
                                 <FormControl>
                                   <Input
-                                    className="w-6/12"
+                                    className="w-3/12"
                                     placeholder="days ago"
                                     {...field}
                                   />
@@ -491,7 +480,9 @@ export default function AssetJobs({
 
                       <div className="flex flex-row gap-2">
                         <div className="w-1/12"></div>
-                        <div className="w-11/12">{watchedAsset}</div>
+                        <div className="w-11/12">
+                          <AssetDNA suite={watchedSuite} asset={watchedAsset} />
+                        </div>
                       </div>
                     </>
                   )}

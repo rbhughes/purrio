@@ -23,7 +23,6 @@ import {
 } from "@/lib/purr_utils";
 
 import { Map, GeoJson, ZoomControl } from "pigeon-maps";
-//import { GeoTypeUI } from "@/lib/purr_ui";
 
 import { Database } from "@/lib/sb_types";
 import { useMeasure } from "@uidotdev/usehooks";

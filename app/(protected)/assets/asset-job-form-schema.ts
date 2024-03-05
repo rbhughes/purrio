@@ -22,7 +22,7 @@ export const AssetJobFormSchema = z.object({
   cron: z.any().nullable(),
   filter: z.any().nullable(),
   repo_fs_path: z.string().nullable(),
-  geo_type: z.string(),
+  suite: z.string(),
   recency: z.coerce
     .number({
       required_error: "days ago or zero for no limit",

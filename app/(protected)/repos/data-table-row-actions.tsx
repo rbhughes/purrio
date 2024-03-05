@@ -29,7 +29,7 @@ const handleRepoRefresh = async (repo: Repo) => {
 
   let formData = {
     recon_root: repo.fs_path!, // repo.fs_path ~ equivalent to a refresh
-    geo_type: repo.geo_type!,
+    suite: repo.suite!,
     worker: worker,
     ggx_host: "",
     kingdom_server: "",
@@ -37,9 +37,9 @@ const handleRepoRefresh = async (repo: Repo) => {
     kingdom_password: "",
   };
 
-  if (repo.geo_type === "geographix") {
+  if (repo.suite === "geographix") {
     formData.ggx_host = (repo.conn_aux as any).ggx_host || "localhost";
-  } else if (repo.geo_type === "kingdom") {
+  } else if (repo.suite === "kingdom") {
     formData.kingdom_server = (repo.conn_aux as any).kingdom_server || "";
     formData.kingdom_username = (repo.conn_aux as any).kingdom_username || "";
     formData.kingdom_password = (repo.conn_aux as any).kingdom_password || "";

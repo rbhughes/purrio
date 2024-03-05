@@ -55,7 +55,7 @@ let colsVisible: VisibilityState = {
   display_name: false,
   files: false,
   //fs_path: false,
-  //geo_type: false,
+  //suite: false,
   id: false,
   //name: false,
   //repo_mod: false,

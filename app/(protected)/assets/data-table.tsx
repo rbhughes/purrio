@@ -57,7 +57,7 @@ let colsVisible: VisibilityState = {
   id: false,
   last_invoked: false,
   repo_fs_path: false,
-  //repo_geo_type: true,
+  //repo_suite: true,
   repo_id: false,
   //repo_name: false,
   created_at: false,
@@ -67,11 +67,11 @@ let colsVisible: VisibilityState = {
 
 ///
 
-// setting geo_type resets the repo selection, so wait a bit
+// setting suite resets the repo selection, so wait a bit
 // TODO:combine these defaults with asst-jobs.tsx form?
 const setFormFromTable = async (setValue: any, row: any) => {
   let assetJob = row.original as AssetJob;
-  setValue("geo_type", assetJob.geo_type);
+  setValue("suite", assetJob.suite);
   setTimeout(() => {
     setValue("id", assetJob.id || null);
     setValue("repo_id", assetJob.repo_id || "");

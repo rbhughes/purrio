@@ -1,6 +1,6 @@
 import { Cylinder } from "lucide-react";
 
-interface GTUI {
+interface SUI {
   [key: string]: {
     label: string;
     value: string;
@@ -8,7 +8,7 @@ interface GTUI {
   };
 }
 
-export const GeoTypeUI: GTUI = {
+export const SuiteUI: SUI = {
   geographix: {
     label: "GeoGraphix",
     value: "geographix",
@@ -68,7 +68,7 @@ export const GeoTypeUI: GTUI = {
 };
 
 // easier than using the weird format used by DataTable everywhere
-const formatForDataTableFacetFilter = (obj: GTUI) => {
+const formatForDataTableFacetFilter = (obj: SUI) => {
   const result: { label: string; value: string; icon: () => JSX.Element }[] =
     [];
 
@@ -86,4 +86,4 @@ const formatForDataTableFacetFilter = (obj: GTUI) => {
   return result;
 };
 
-export const facetOptions = formatForDataTableFacetFilter(GeoTypeUI);
+export const facetOptions = formatForDataTableFacetFilter(SuiteUI);

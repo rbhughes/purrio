@@ -6,5 +6,5 @@ export const SearchFormSchema = z.object({
     required_error: "select an asset",
   }),
   tag: z.string().optional(),
-  geo_types: z.string().array(),
+  suites: z.string().array(),
 });

@@ -22,7 +22,7 @@ export const RepoSchema = z.object({
   id: z.string(),
   conn: connSchema,
   conn_aux: z.object({ ggx_host: z.string() }).nullable(),
-  geo_type: z.string(),
+  suite: z.string(),
   name: z.string(),
   fs_path: z.string(),
   repo_mod: z.string(),

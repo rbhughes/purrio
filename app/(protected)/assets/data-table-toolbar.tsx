@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
-import { GeoTypeUI, facetOptions } from "@/lib/purr_ui";
+import { facetOptions } from "@/lib/purr_ui";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -31,10 +31,10 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
 
-        {table.getColumn("geo_type") && (
+        {table.getColumn("suite") && (
           <DataTableFacetedFilter
-            column={table.getColumn("geo_type")}
-            title="geo_type"
+            column={table.getColumn("suite")}
+            title="suite"
             options={facetOptions}
           />
         )}

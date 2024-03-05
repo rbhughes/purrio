@@ -36,8 +36,8 @@ import {
 
 import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
-import { GEOTYPES } from "@/lib/purr_utils";
-import { GeoTypeUI } from "@/lib/purr_ui";
+import { SUITES } from "@/lib/purr_utils";
+import { SuiteUI } from "@/lib/purr_ui";
 import { RepoReconFormSchema } from "./repo-recon-form-schema";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
@@ -63,7 +63,7 @@ export default function Repos({
   const [showForm, setShowForm] = React.useState<boolean>(false);
 
   let defaults = {
-    geo_type: GEOTYPES[0],
+    suite: SUITES[0],
     recon_root: "",
     worker: workers[0],
     ggx_host: "",
@@ -75,10 +75,10 @@ export default function Repos({
     mode: "onChange",
   });
 
-  let watchedGeoType = useWatch({
+  let watchedSuite = useWatch({
     control: form.control,
-    name: "geo_type",
-    defaultValue: GEOTYPES[0],
+    name: "suite",
+    defaultValue: SUITES[0],
   });
 
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
@@ -124,7 +124,7 @@ export default function Repos({
                     <div className="w-2/12">
                       <FormField
                         control={form.control}
-                        name="geo_type"
+                        name="suite"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Repo Type</FormLabel>
@@ -134,16 +134,16 @@ export default function Repos({
                             >
                               <FormControl>
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select a geo_type" />
+                                  <SelectValue placeholder="Select a suite" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {GEOTYPES.map((gt: string) => {
+                                {SUITES.map((gt: string) => {
                                   return (
                                     <SelectItem key={gt} value={gt}>
                                       <div className="flex items-center gap-1">
-                                        {GeoTypeUI[gt].icon}
-                                        {GeoTypeUI[gt].label}
+                                        {SuiteUI[gt].icon}
+                                        {SuiteUI[gt].label}
                                       </div>
                                     </SelectItem>
                                   );
@@ -224,10 +224,10 @@ export default function Repos({
                     {/* <div className="w-1/12"></div> */}
                   </div>
 
-                  {watchedGeoType === "geographix" && (
+                  {watchedSuite === "geographix" && (
                     <AuxGeographix form={form} />
                   )}
-                  {watchedGeoType === "kingdom" && <AuxKingdom form={form} />}
+                  {watchedSuite === "kingdom" && <AuxKingdom form={form} />}
                 </form>
               </Form>
             </CardContent>

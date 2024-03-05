@@ -8,8 +8,8 @@ export const RepoReconFormSchema = z.object({
       required_error: "enter a recon root",
     })
     .min(4, { message: "must be over 4 chars" }),
-  geo_type: z.string({
-    required_error: "select a geo_type",
+  suite: z.string({
+    required_error: "select a suite",
   }),
   worker: z.string({
     required_error: "select a hostname",

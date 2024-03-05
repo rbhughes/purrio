@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { createClient } from "@/utils/supabase/client";
 import { devtools, persist } from "zustand/middleware";
+import { ASSETS } from "@/lib/purr_utils";
 
 export const ASSET_CACHE_EXPIRY_MS = 1000 * 60 * 60 * 24; // 24 hours TODO: set longer
 export const ASSET_CACHE_NAME = "PURR_ASSET_CACHE";
@@ -11,7 +12,7 @@ const supabase = createClient();
 const fetchAssetData = async (ggType: string) => {
   const assets: AssetDNA = {};
   await Promise.all(
-    ["well", "vector_log", "raster_log"].map(async (asset) => {
+    ASSETS.map(async (asset) => {
       console.log(ggType + " <> " + asset);
       const { data, error } = await supabase.functions.invoke(ggType, {
         body: { asset: asset, filter: "" },

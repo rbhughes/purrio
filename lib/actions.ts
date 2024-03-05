@@ -13,7 +13,7 @@ import { cookies } from "next/headers";
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 //type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-import { ASSETS, GEOTYPES } from "@/lib/purr_utils";
+import { ASSETS, SUITES } from "@/lib/purr_utils";
 
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
@@ -26,7 +26,7 @@ export interface ServerActionCRUD {
 ///////////////////////////////////////////////////////////////////////////////
 
 export async function enqueueRepoReconTask(
-  formData: RepoReconFormInputs
+  formData: RepoReconFormInputs,
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = RepoReconFormSchema.safeParse(formData);
@@ -54,7 +54,7 @@ export async function enqueueRepoReconTask(
 }
 
 export async function enqueueAssetJobTask(
-  formData: AssetJobFormInputs
+  formData: AssetJobFormInputs,
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -104,7 +104,7 @@ export async function deleteAssetJob(id: number): Promise<ServerActionCRUD> {
 }
 
 export async function createAssetJob(
-  formData: AssetJobFormInputs
+  formData: AssetJobFormInputs,
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -128,7 +128,7 @@ export async function createAssetJob(
 }
 
 export async function updateAssetJob(
-  formData: AssetJobFormInputs
+  formData: AssetJobFormInputs,
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -193,17 +193,14 @@ export const pickWorker = async (): Promise<string> => {
 };
 
 export const fetchAssetStuff = async (
-  geo_type: (typeof GEOTYPES)[number],
-  asset: (typeof ASSETS)[number]
+  suite: (typeof SUITES)[number],
+  asset: (typeof ASSETS)[number],
 ) => {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
-  const { data: dna, error: error } = await supabase.functions.invoke(
-    geo_type,
-    {
-      body: { asset: asset, filter: "" },
-    }
-  );
+  const { data: dna, error: error } = await supabase.functions.invoke(suite, {
+    body: { asset: asset, filter: "" },
+  });
   return dna;
 };
 

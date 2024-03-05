@@ -23,7 +23,7 @@ export type Database = {
           repo_fs_path: string | null
           repo_id: string
           repo_name: string | null
-          suite: Database["public"]["Enums"]["suite"] | null
+          suite: Database["public"]["Enums"]["suite"]
           tag: string | null
           touched_at: string
           updated_at: string
@@ -41,7 +41,7 @@ export type Database = {
           repo_fs_path?: string | null
           repo_id: string
           repo_name?: string | null
-          suite?: Database["public"]["Enums"]["suite"] | null
+          suite: Database["public"]["Enums"]["suite"]
           tag?: string | null
           touched_at?: string
           updated_at?: string
@@ -59,7 +59,7 @@ export type Database = {
           repo_fs_path?: string | null
           repo_id?: string
           repo_name?: string | null
-          suite?: Database["public"]["Enums"]["suite"] | null
+          suite?: Database["public"]["Enums"]["suite"]
           tag?: string | null
           touched_at?: string
           updated_at?: string
@@ -179,7 +179,7 @@ export type Database = {
           repo_mod: string | null
           storage_epsg: number | null
           storage_name: string | null
-          suite: Database["public"]["Enums"]["suite"] | null
+          suite: Database["public"]["Enums"]["suite"]
           touched_at: string
           updated_at: string
           well_count: number | null
@@ -212,7 +212,7 @@ export type Database = {
           repo_mod?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
-          suite?: Database["public"]["Enums"]["suite"] | null
+          suite: Database["public"]["Enums"]["suite"]
           touched_at?: string
           updated_at?: string
           well_count?: number | null
@@ -245,7 +245,7 @@ export type Database = {
           repo_mod?: string | null
           storage_epsg?: number | null
           storage_name?: string | null
-          suite?: Database["public"]["Enums"]["suite"] | null
+          suite?: Database["public"]["Enums"]["suite"]
           touched_at?: string
           updated_at?: string
           well_count?: number | null

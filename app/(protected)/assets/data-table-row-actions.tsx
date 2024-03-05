@@ -32,15 +32,15 @@ const handleAssetJobDelete = async (assetJob: AssetJob) => {
   }
 };
 
-//TODO: better toasty error handling
-const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
-  const { data, error } = await enqueueAssetJobTask(assetJob);
-  if (error) {
-    toast.error(data);
-  } else {
-    toast.info(data);
-  }
-};
+// //TODO: better toasty error handling
+// const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
+//   const { data, error } = await enqueueAssetJobTask(assetJob);
+//   if (error) {
+//     toast.error(data);
+//   } else {
+//     toast.info(data);
+//   }
+// };
 
 export function DataTableRowActions<TData>({
   row,
@@ -64,7 +64,7 @@ export function DataTableRowActions<TData>({
         <DropdownMenuItem
           onClick={async () => {
             const assetJob = row.original as AssetJob;
-            await handleAssetJobEnqueue(assetJob);
+            // await handleAssetJobEnqueue(assetJob);
           }}
         >
           Enqueue...

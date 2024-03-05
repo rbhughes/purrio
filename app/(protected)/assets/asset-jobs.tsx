@@ -247,7 +247,7 @@ export default function AssetJobs({
                         name="suite" //this should match repo.suite, no?
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Repo Type</FormLabel>
+                            <FormLabel>Suite</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}

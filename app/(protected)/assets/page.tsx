@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./asset-jobs";
+import AssetDBStats from "./asset-db-stats";
 
 import AssetStoreInit from "@/store/asset-store-init";
 
@@ -37,6 +38,11 @@ export default async function Page() {
     .select()
     .order("updated_at", { ascending: false });
 
+  const { data: stats } = await supabase
+    .from("asset_stat")
+    .select()
+    .order("asset");
+
   // Some AssetJobs may exist when their associated Repo is missing. Hide them.
   const extantReposOnly = (repos: Repo[], assetJobs: AssetJob[]) => {
     const missing: AssetJob[] = [];
@@ -62,10 +68,9 @@ export default async function Page() {
           assetJobs={filteredAssetJobs.extants}
           withMissingRepos={filteredAssetJobs.missing}
         />
-        {/* <Toaster richColors /> */}
+        <AssetDBStats stats={stats!} />
         <Toaster expand richColors className="flex w-6/12" />
         <AssetStoreInit />
-
         {process.env.NODE_ENV === "development" && (
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">
             TODO

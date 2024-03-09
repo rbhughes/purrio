@@ -1,11 +1,12 @@
 "use client";
 
 import { useAssetStore } from "@/store/use-asset-store";
-import { Resizable } from "re-resizable";
 import React from "react";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -50,46 +51,24 @@ export default function AssetDNA(props: DNAProps) {
           side="left"
         >
           <SheetHeader>
-            <SheetTitle className="text-center">
+            <SheetTitle className="flex justify-between">
               {suite}: {asset}
+              <Button size="sm" variant="destructive" onClick={handleToggle}>
+                <X />
+              </Button>
             </SheetTitle>
             <SheetDescription className="text-center">
               some stuff
             </SheetDescription>
-
-            {suite === "geographix" && (
+            {suite === "geographix" && geographixAssets[asset] && (
               <pre>{geographixAssets[asset].select}</pre>
             )}
-
-            {suite === "petra" && <pre>{petraAssets[asset].select}</pre>}
+            {suite === "petra" && petraAssets[asset] && (
+              <pre>{petraAssets[asset].select}</pre>
+            )}
           </SheetHeader>
         </SheetContent>
       </Sheet>
     </>
   );
 }
-
-/*
-export default function AssetDNA(props: DNAProps) {
-  const geographixAssets = useAssetStore((state) => state.geographixAssets);
-  const petraAssets = useAssetStore((state) => state.petraAssets);
-  let { suite, asset } = props;
-
-  console.log(geographixAssets);
-  return (
-    <Resizable
-      className="bg-slate-100 overflow-hidden"
-      defaultSize={{
-        width: 320,
-        height: 200,
-      }}
-    >
-      {suite}
-      {asset}
-      <div>
-        {geographixAssets[asset] && <pre>{geographixAssets[asset].select}</pre>}
-      </div>
-    </Resizable>
-  );
-}
-*/

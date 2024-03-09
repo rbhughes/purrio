@@ -19,7 +19,7 @@ export function humanFileSize(num: number, suffix: string = "B"): string {
 // geographix has completion; petra does not
 export const ASSETS = [
   "well",
-  //"completion",
+  "completion",
   "core",
   "dst",
   "formation",

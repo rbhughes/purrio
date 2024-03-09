@@ -1,28 +1,25 @@
 "use client";
 
-import GeneralAlertDialog from "@/components/general-alert-dialog";
-import { useDialog } from "@/lib/useDialog";
+import { Button } from "@/components/ui/button";
 
-import React from "react";
+import { enqueueAssetStats } from "@/lib/actions";
 
-export default function ThingAlert() {
-  //const [alertVisible, setAlertVisible] = React.useState(false);
-  //const [alertProceed, setAlertProceed] = React.useState(false);
-  //
-  const { setAlertVisible, alertProceed } = useDialog();
+//import React from "react";
+
+export default function Thing() {
+  const processClick: any = async () => {
+    const { data, error } = await enqueueAssetStats();
+
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(data);
+    }
+  };
 
   return (
     <>
-      <button onClick={() => setAlertVisible(true)}>clickme</button>
-      <GeneralAlertDialog title="test title" message="test message" />
-      {/* <GeneralAlertDialog */}
-      {/*   title="hay a title" */}
-      {/*   message="hay a mesage" */}
-      {/*   visible={alertVisible} */}
-      {/*   setVisible={setAlertVisible} */}
-      {/*   setProceed={setAlertProceed} */}
-      {/* /> */}
-      {alertProceed && <h1>OKAY TO PROCEED</h1>}
+      <Button onClick={processClick}>enqueue</Button>
     </>
   );
 }

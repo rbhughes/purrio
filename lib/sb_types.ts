@@ -66,6 +66,45 @@ export type Database = {
         }
         Relationships: []
       }
+      asset_stat: {
+        Row: {
+          asset: string
+          avg_elapsed_days: number | null
+          max_elapsed_days: number | null
+          min_elapsed_days: number | null
+          pct_updated_last_12_month: number | null
+          pct_updated_last_3_month: number | null
+          pct_updated_last_6_month: number | null
+          pct_updated_last_9_month: number | null
+          stddev_elapsed_days: number | null
+          total_records: number
+        }
+        Insert: {
+          asset: string
+          avg_elapsed_days?: number | null
+          max_elapsed_days?: number | null
+          min_elapsed_days?: number | null
+          pct_updated_last_12_month?: number | null
+          pct_updated_last_3_month?: number | null
+          pct_updated_last_6_month?: number | null
+          pct_updated_last_9_month?: number | null
+          stddev_elapsed_days?: number | null
+          total_records: number
+        }
+        Update: {
+          asset?: string
+          avg_elapsed_days?: number | null
+          max_elapsed_days?: number | null
+          min_elapsed_days?: number | null
+          pct_updated_last_12_month?: number | null
+          pct_updated_last_3_month?: number | null
+          pct_updated_last_6_month?: number | null
+          pct_updated_last_9_month?: number | null
+          stddev_elapsed_days?: number | null
+          total_records?: number
+        }
+        Relationships: []
+      }
       batch_ledger: {
         Row: {
           batch_id: string

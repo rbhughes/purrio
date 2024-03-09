@@ -26,7 +26,7 @@ export interface ServerActionCRUD {
 ///////////////////////////////////////////////////////////////////////////////
 
 export async function enqueueRepoReconTask(
-  formData: RepoReconFormInputs,
+  formData: RepoReconFormInputs
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = RepoReconFormSchema.safeParse(formData);
@@ -54,7 +54,7 @@ export async function enqueueRepoReconTask(
 }
 
 export async function enqueueAssetJobTask(
-  formData: AssetJobFormInputs,
+  formData: AssetJobFormInputs
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -81,6 +81,31 @@ export async function enqueueAssetJobTask(
   }
 }
 
+export async function enqueueAssetStats(): Promise<any> {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const supRes = await supabase.from("task").insert({
+    worker: await pickWorker(),
+    directive: "stats",
+    status: "PENDING",
+    //body: { functionName: "assetInventory" },
+    body: {},
+  });
+  console.log("----supRes-------------------");
+  console.log(supRes);
+  console.log("-----------------------");
+
+  if (supRes.status !== 201) {
+    return { data: null, error: JSON.stringify(supRes, null, 2) };
+  } else {
+    return {
+      data: supRes,
+      error: null,
+    };
+  }
+}
+
 export async function deleteRepo(id: string): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -104,7 +129,7 @@ export async function deleteAssetJob(id: number): Promise<ServerActionCRUD> {
 }
 
 export async function createAssetJob(
-  formData: AssetJobFormInputs,
+  formData: AssetJobFormInputs
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -128,7 +153,7 @@ export async function createAssetJob(
 }
 
 export async function updateAssetJob(
-  formData: AssetJobFormInputs,
+  formData: AssetJobFormInputs
 ): Promise<ServerActionCRUD> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
@@ -194,7 +219,7 @@ export const pickWorker = async (): Promise<string> => {
 
 export const fetchAssetStuff = async (
   suite: (typeof SUITES)[number],
-  asset: (typeof ASSETS)[number],
+  asset: (typeof ASSETS)[number]
 ) => {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);

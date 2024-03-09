@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { User } from "@supabase/supabase-js";
 
 //import TableVisSwitch from "./table-vis-switch";
+// import { useStickyBox } from "react-sticky-box";
 
 export const Sidebar = ({
   user,

@@ -1,18 +1,21 @@
 "use client";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Card, CardDescription } from "@/components/ui/card";
+import { simplifyDateString } from "@/lib/purr_utils";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { enqueueAssetStats } from "@/lib/actions";
 
 import { Database } from "@/lib/sb_types";
 type Stat = Database["public"]["Tables"]["asset_stat"]["Row"];
@@ -20,6 +23,16 @@ type Stat = Database["public"]["Tables"]["asset_stat"]["Row"];
 export default function AssetDBStats({ stats }: { stats: Stat[] }) {
   const supabase = createClient();
   const router = useRouter();
+
+  const getLatestUpdate = (stats: Stat[]) => {
+    let mostRecent = "";
+    for (const asset of stats) {
+      if (asset.updated_at > mostRecent) {
+        mostRecent = asset.updated_at;
+      }
+    }
+    return simplifyDateString(mostRecent);
+  };
 
   React.useEffect(() => {
     const channel = supabase
@@ -35,23 +48,42 @@ export default function AssetDBStats({ stats }: { stats: Stat[] }) {
           router.refresh();
         }
       )
-      .subscribe((status) => console.log(status));
+      .subscribe();
+    //.subscribe((status) => console.log(status));
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [supabase, router]);
 
+  const handleUpdateAssetStats: any = async () => {
+    const { data, error } = await enqueueAssetStats();
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(data);
+    }
+  };
+
   return (
     <div className="flex justify-center">
       <Card className="mt-8 p-2 w-11/12">
-        {/* <CardDescription>
-          Local AssetDB: days elapsed since last update.
-        </CardDescription> */}
         <Table className="text-xs text-center">
           <TableHeader>
             <TableRow>
-              <TableCell colSpan={2}></TableCell>
+              <TableCell>
+                <Button
+                  size="sm"
+                  className="purr-button"
+                  onClick={handleUpdateAssetStats}
+                >
+                  update
+                </Button>
+              </TableCell>
+              <TableCell className="bg-slate-100">
+                <div>updated:</div>{" "}
+                <div className="italic">{getLatestUpdate(stats)}</div>
+              </TableCell>
               <TableCell colSpan={4} className="bg-slate-100 text-center">
                 <span className="font-bold">Statistics</span>: based on days
                 elapsed since present
@@ -78,7 +110,6 @@ export default function AssetDBStats({ stats }: { stats: Stat[] }) {
               <TableHead className="text-center">6 months</TableHead>
               <TableHead className="text-center">9 months</TableHead>
               <TableHead className="text-center">12 months</TableHead>
-              {/* <TableHead className="text-right">Amount</TableHead> */}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,17 +151,9 @@ export default function AssetDBStats({ stats }: { stats: Stat[] }) {
                 <TableCell className="bg-slate-100">
                   {stat.pct_updated_last_12_month}%
                 </TableCell>
-
-                {/* <TableCell className="text-right">{invoice.totalAmount}</TableCell> */}
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter> */}
         </Table>
       </Card>
     </div>

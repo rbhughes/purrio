@@ -35,7 +35,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { createAssetJob, updateAssetJob, fetchAssetStuff } from "@/lib/actions";
+import { createAssetJob, updateAssetJob } from "@/lib/actions";
 import { toast } from "sonner";
 import { ASSETS, SUITES } from "@/lib/purr_utils";
 import { AssetJobFormSchema } from "./asset-job-form-schema";
@@ -260,7 +260,7 @@ export default function AssetJobs({
                               <SelectContent>
                                 {[
                                   ...new Set(
-                                    repos!.map((repo) => repo.suite as string),
+                                    repos!.map((repo) => repo.suite as string)
                                   ),
                                 ].map((gt: string) => {
                                   return (
@@ -302,7 +302,7 @@ export default function AssetJobs({
                               <SelectContent>
                                 {repos!
                                   .filter(
-                                    (repo: Repo) => repo.suite === watchedSuite,
+                                    (repo: Repo) => repo.suite === watchedSuite
                                   )
                                   .map((repo: Repo) => (
                                     <SelectItem key={repo.id} value={repo.id}>

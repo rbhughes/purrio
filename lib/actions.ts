@@ -217,17 +217,17 @@ export const pickWorker = async (): Promise<string> => {
   }
 };
 
-export const fetchAssetStuff = async (
-  suite: (typeof SUITES)[number],
-  asset: (typeof ASSETS)[number]
-) => {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
-  const { data: dna, error: error } = await supabase.functions.invoke(suite, {
-    body: { asset: asset, filter: "" },
-  });
-  return dna;
-};
+// export const fetchAssetDNA = async (
+//   suite: (typeof SUITES)[number],
+//   asset: (typeof ASSETS)[number]
+// ) => {
+//   const cookieStore = cookies();
+//   const supabase = createClient(cookieStore);
+//   const { data: dna, error: error } = await supabase.functions.invoke(suite, {
+//     body: { asset: asset, filter: "" },
+//   });
+//   return dna;
+// };
 
 ///
 // const { data: dna, error: error } = await supabase.functions.invoke("petra", {

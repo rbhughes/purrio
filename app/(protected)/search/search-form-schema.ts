@@ -1,10 +1,8 @@
 import { z } from "zod";
 
 export const SearchFormSchema = z.object({
-  term: z.string(),
-  asset: z.string({
-    required_error: "select an asset",
-  }),
+  assets: z.string().array().min(1, { message: "Pick at least one asset" }),
+  suites: z.string().array().min(1, { message: "Pick at least one suite" }),
   tag: z.string().optional(),
-  suites: z.string().array(),
+  term: z.string(),
 });

@@ -33,6 +33,9 @@
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /*--bluey: 229 42% 50% ;*/
+    /*--bluey-foreground: 129 12% 40% ;*/
   }
  
   .dark {
@@ -94,3 +97,9 @@
 .purr-table-viz-toggle {
   @apply w-32 h-20 bg-blue-500;
 }
+
+/*
+.purr-suite-toggle {
+  @apply data-[state=on]:bg-bluey ;
+}
+*/

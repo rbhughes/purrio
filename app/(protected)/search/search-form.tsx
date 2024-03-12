@@ -7,13 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { ASSETS, SUITES } from "@/lib/purr_utils";
 import { toast } from "sonner";
@@ -23,6 +16,7 @@ import { SuiteUI } from "@/lib/purr_ui";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { Search } from "lucide-react";
+import { FancyMultiSelect } from "./fancy-multi-select";
 
 import {
   Form,
@@ -44,14 +38,17 @@ import {
 import { SearchFormSchema } from "./search-form-schema";
 type FormInputs = z.infer<typeof SearchFormSchema>;
 
+// minor customizations in @components/ui/toggle.tsx
+// data-[state=on]:bg-slate-200    data-[state=on]:border-slate-400
+
 export default function SearchForm({ placeholder }: { placeholder: string }) {
   const handleSearch = (term: string) => {
     console.log(term);
   };
 
   let defaults = {
-    asset: ASSETS[0],
-    suites: [],
+    asset: [ASSETS[0]],
+    suites: [SUITES[0]],
     tag: "",
     term: "",
   };
@@ -61,6 +58,17 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
     defaultValues: defaults,
   });
 
+  type Item = Record<"value" | "label", string>;
+  const items: Item[] = ASSETS.map((asset) => ({
+    value: asset,
+    label: asset,
+  }));
+
+  // 2024-03-11 | Not sure how to fully manage FancyMultiSelect with RHF
+  // Selection worked as expected, but RHF's reset() did not since "selected"
+  // is not exposed. So...I moved the useState hook here to the parent.
+  const [selected, setSelected] = React.useState<Item[]>([items[0]]);
+
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
     //const { data, error } = await enqueueRepoReconTask(formData);
     // if (error) {
@@ -68,11 +76,11 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
     // } else {
     //   toast.info(data);
     // }
-
-    console.log("=====================");
+    console.log("*********************");
     console.log(formData);
-    console.log("=====================");
+    console.log("*********************");
 
+    setSelected([items[0]]);
     form.reset();
   };
 
@@ -91,40 +99,33 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
             className=" space-y-6 "
           >
             <div className="flex flex-row gap-2">
-              <div className="w-1/6">
+              <div className="">
                 <FormField
                   control={form.control}
-                  name="asset"
+                  name="assets"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Asset</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an asset" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {ASSETS.map((asset: string) => {
-                            return (
-                              <SelectItem key={asset} value={asset}>
-                                {asset}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      {/* <FormDescription>Asset type to collect</FormDescription> */}
+
+                      <FancyMultiSelect
+                        items={ASSETS.map((asset) => ({
+                          value: asset,
+                          label: asset,
+                        }))}
+                        onChange={(values) => {
+                          field.onChange(values.map(({ value }) => value));
+                        }}
+                        selected={selected}
+                        setSelected={setSelected}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+            </div>
 
-              {/* ---------- */}
+            <div className="flex flex-row gap-2">
               <div className="w-2/6 flex-1">
                 <FormField
                   control={form.control}
@@ -140,12 +141,18 @@ export default function SearchForm({ placeholder }: { placeholder: string }) {
                           form.setValue(field.name, value)
                         }
                       >
-                        {SUITES.map((gt: string) => (
-                          <ToggleGroupItem key={gt} value={gt} aria-label={gt}>
-                            {SuiteUI[gt].icon}
+                        {SUITES.map((suite: string) => (
+                          <ToggleGroupItem
+                            key={suite}
+                            value={suite}
+                            aria-label={suite}
+                            className="purr-suite-toggle"
+                          >
+                            {SuiteUI[suite].icon}
                           </ToggleGroupItem>
                         ))}
                       </ToggleGroup>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

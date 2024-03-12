@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAssetStore } from "@/store/use-asset-store";
+import { enqueueAssetStats } from "@/lib/actions";
 import {
   ASSET_CACHE_NAME,
   ASSET_CACHE_EXPIRY_MS,
@@ -10,7 +11,7 @@ import {
 export default function AssetStoreInit() {
   const setExpiry = useAssetStore((state) => state.setExpiry);
   const fetchGeographixAssets = useAssetStore(
-    (state) => state.fetchGeographixAssets,
+    (state) => state.fetchGeographixAssets
   );
   const fetchPetraAssets = useAssetStore((state) => state.fetchPetraAssets);
 
@@ -19,10 +20,15 @@ export default function AssetStoreInit() {
     const cache = JSON.parse(cacheObj!);
 
     const assetFetcher = async () => {
-      console.log("fetching GeoGraphix asset definitions...");
+      console.log("fetching GeoGraphix Asset definitions...");
       await fetchGeographixAssets();
-      console.log("fetching Petra asset definitions...");
+      console.log("fetching Petra Asset definitions...");
       await fetchPetraAssets();
+    };
+
+    const assetStatsFetcher = async () => {
+      console.log("updating Asset stats...");
+      await enqueueAssetStats();
     };
 
     const expirySetter = () => {
@@ -36,6 +42,7 @@ export default function AssetStoreInit() {
     } else {
       console.log("refreshing asset cache:");
       assetFetcher();
+      assetStatsFetcher();
       expirySetter();
     }
   }, []);

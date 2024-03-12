@@ -78,6 +78,7 @@ export type Database = {
           pct_updated_last_9_month: number | null
           stddev_elapsed_days: number | null
           total_records: number
+          updated_at: string
         }
         Insert: {
           asset: string
@@ -90,6 +91,7 @@ export type Database = {
           pct_updated_last_9_month?: number | null
           stddev_elapsed_days?: number | null
           total_records: number
+          updated_at?: string
         }
         Update: {
           asset?: string
@@ -102,6 +104,7 @@ export type Database = {
           pct_updated_last_9_month?: number | null
           stddev_elapsed_days?: number | null
           total_records?: number
+          updated_at?: string
         }
         Relationships: []
       }

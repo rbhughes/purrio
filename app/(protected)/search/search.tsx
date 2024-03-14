@@ -66,6 +66,7 @@ export default function Search({
     []
   );
 
+  //TODO: revisit maybe using filterValue instead of useState
   React.useEffect(() => {
     const initChannel = () => {
       const chan = liveTable<SearchResult>(supabase, {
@@ -100,20 +101,6 @@ export default function Search({
     setFilteredResult(filtered);
   }, [taskId, searchResults]);
 
-  // React.useEffect(() => {
-  //   let fetcher = async () => {
-  //     const { data: searchResults } = await supabase
-  //       .from("search_result")
-  //       .select()
-  //       .order("task_id", { ascending: false });
-
-  //     console.log(searchResults);
-  //   };
-  //   fetcher();
-  // }, [taskId]);
-
-  ///
-
   let defaults = {
     asset: [ASSETS[0]],
     suites: [SUITES[0]],
@@ -144,15 +131,6 @@ export default function Search({
     } else {
       toast.info(JSON.stringify(data));
     }
-
-    // data: [
-    // {
-    //   id: 37273,
-    //   worker: 'scarab',
-    //   directive: 'search',
-    //   body: [Object],
-    //   status: 'PENDING'
-    // }
 
     setTaskId(data[0].id);
 

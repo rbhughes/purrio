@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import {
   enqueueAssetJobTask,
   deleteAssetJob,
-  ServerActionCRUD,
+  ActionWithSummary,
 } from "@/lib/actions";
 
 import React from "react";
@@ -38,7 +38,7 @@ const handleAssetJobDelete = async (assetJob: AssetJob) => {
 
 const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
   if (assetJob.asset === "ALL_ASSETS") {
-    const bunch: Promise<ServerActionCRUD>[] = [];
+    const bunch: Promise<ActionWithSummary>[] = [];
 
     ASSETS.forEach((asset) => {
       let clone = { ...assetJob };

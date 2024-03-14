@@ -13,16 +13,16 @@ const fetchAssetData = async (ggType: string) => {
   const assets: AssetDNA = {};
   await Promise.all(
     ASSETS.map(async (asset) => {
-      console.log(ggType + " <> " + asset);
       const { data, error } = await supabase.functions.invoke(ggType, {
         body: { asset: asset, filter: "" },
       });
       if (error) {
+        console.log("error on  ~~~ " + ggType + " ~~~ " + asset);
         console.error(error);
       } else {
         assets[asset] = { select: data.sql.select };
       }
-    }),
+    })
   );
   return assets;
 };
@@ -70,5 +70,5 @@ const assetStore = (set: any) => ({
 });
 
 export const useAssetStore = create<AssetStoreState>()(
-  devtools(persist(assetStore, { name: ASSET_CACHE_NAME })),
+  devtools(persist(assetStore, { name: ASSET_CACHE_NAME }))
 );

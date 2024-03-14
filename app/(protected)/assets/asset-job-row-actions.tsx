@@ -37,8 +37,9 @@ const handleAssetJobDelete = async (assetJob: AssetJob) => {
 };
 
 const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
-  const bunch: Promise<ServerActionCRUD>[] = [];
   if (assetJob.asset === "ALL_ASSETS") {
+    const bunch: Promise<ServerActionCRUD>[] = [];
+
     ASSETS.forEach((asset) => {
       let clone = { ...assetJob };
       clone.asset = asset;

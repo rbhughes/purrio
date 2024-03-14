@@ -305,6 +305,39 @@ export type Database = {
         }
         Relationships: []
       }
+      search_result: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          id: number
+          result: Json | null
+          search_id: number | null
+          task_id: number | null
+          touched_at: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          id?: number
+          result?: Json | null
+          search_id?: number | null
+          task_id?: number | null
+          touched_at?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          id?: number
+          result?: Json | null
+          search_id?: number | null
+          task_id?: number | null
+          touched_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       task: {
         Row: {
           body: Json | null

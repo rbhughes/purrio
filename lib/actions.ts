@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
 import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
+import { SearchFormSchema } from "@/app/(protected)/search/search-form-schema";
 
 import { createClient } from "@/utils/supabase/server";
 //import { SupabaseClient } from "@supabase/supabase-js";
@@ -13,13 +14,19 @@ import { cookies } from "next/headers";
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 //type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
-import { ASSETS, SUITES } from "@/lib/purr_utils";
+//import { ASSETS, SUITES } from "@/lib/purr_utils";
 
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
+type SearchFormInputs = z.infer<typeof SearchFormSchema>;
 
-export interface ServerActionCRUD {
+export interface ActionWithSummary {
   data?: string | null;
+  error?: string | null;
+}
+
+export interface ActionWithData {
+  data?: any;
   error?: string | null;
 }
 
@@ -27,7 +34,7 @@ export interface ServerActionCRUD {
 
 export async function enqueueRepoReconTask(
   formData: RepoReconFormInputs
-): Promise<ServerActionCRUD> {
+): Promise<ActionWithSummary> {
   const cookieStore = cookies();
   const zodRes = RepoReconFormSchema.safeParse(formData);
   if (!zodRes.success) {
@@ -55,7 +62,7 @@ export async function enqueueRepoReconTask(
 
 export async function enqueueAssetJobTask(
   formData: AssetJobFormInputs
-): Promise<ServerActionCRUD> {
+): Promise<ActionWithSummary> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {
@@ -81,6 +88,41 @@ export async function enqueueAssetJobTask(
   }
 }
 
+export async function enqueueSearchTask(
+  formData: SearchFormInputs
+): Promise<ActionWithData> {
+  const cookieStore = cookies();
+  const zodRes = SearchFormSchema.safeParse(formData);
+  if (!zodRes.success) {
+    return { data: null, error: JSON.stringify(zodRes.error) };
+  } else {
+    const supabase = createClient(cookieStore);
+
+    const supRes = await supabase
+      .from("task")
+      .insert({
+        worker: await pickWorker(),
+        directive: "search",
+        status: "PENDING",
+        body: zodRes.data,
+      })
+      .select();
+
+    console.log("oooooooooooo");
+    console.log(supRes);
+    console.log("oooooooooooo");
+
+    if (supRes.status !== 201) {
+      return { data: null, error: JSON.stringify(supRes, null, 2) };
+    } else {
+      return {
+        data: supRes.data,
+        error: null,
+      };
+    }
+  }
+}
+
 export async function enqueueAssetStats(): Promise<any> {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
@@ -92,9 +134,6 @@ export async function enqueueAssetStats(): Promise<any> {
     //body: { functionName: "assetInventory" },
     body: {},
   });
-  console.log("----supRes-------------------");
-  console.log(supRes);
-  console.log("-----------------------");
 
   if (supRes.status !== 201) {
     return { data: null, error: JSON.stringify(supRes, null, 2) };
@@ -106,7 +145,7 @@ export async function enqueueAssetStats(): Promise<any> {
   }
 }
 
-export async function deleteRepo(id: string): Promise<ServerActionCRUD> {
+export async function deleteRepo(id: string): Promise<ActionWithData> {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const supRes = await supabase.from("repo").delete().eq("id", id);
@@ -117,7 +156,7 @@ export async function deleteRepo(id: string): Promise<ServerActionCRUD> {
   }
 }
 
-export async function deleteAssetJob(id: number): Promise<ServerActionCRUD> {
+export async function deleteAssetJob(id: number): Promise<ActionWithData> {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
   const supRes = await supabase.from("asset_job").delete().eq("id", id);
@@ -130,7 +169,7 @@ export async function deleteAssetJob(id: number): Promise<ServerActionCRUD> {
 
 export async function createAssetJob(
   formData: AssetJobFormInputs
-): Promise<ServerActionCRUD> {
+): Promise<ActionWithData> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {
@@ -154,7 +193,7 @@ export async function createAssetJob(
 
 export async function updateAssetJob(
   formData: AssetJobFormInputs
-): Promise<ServerActionCRUD> {
+): Promise<ActionWithData> {
   const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {

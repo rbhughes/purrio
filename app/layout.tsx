@@ -37,7 +37,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning className={inter.className}>
-      <body className="bg-background text-foreground">
+      <body className="bg-background text-foreground bg-green-100">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -25,6 +25,28 @@ export default function Login({
       return redirect("/login?message=Could not authenticate user");
     }
 
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    console.log("=======================");
+    //let x = await supabase.auth.getUserIdentities();
+    //console.log(x.data?.identities);
+    console.log(user);
+
+    if (user) {
+      const { data, error } = await supabase.from("profile").upsert({
+        id: user.id,
+        user_email: user.email,
+      });
+      console.log(data);
+      if (error) {
+        console.error(error);
+      }
+    }
+
+    console.log("=======================");
+
     return redirect("/");
   };
 

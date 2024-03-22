@@ -78,6 +78,14 @@
   }
 }
 
+@layer utilities {
+  .text-tiny {
+    font-size: 0.66rem;
+    line-height: 0.80rem; 
+
+  }
+}
+
 .purr-navbar {
   @apply bg-slate-200;
 }
@@ -97,6 +105,7 @@
 .purr-table-viz-toggle {
   @apply w-32 h-20 bg-blue-500;
 }
+
 
 /*
 .purr-suite-toggle {

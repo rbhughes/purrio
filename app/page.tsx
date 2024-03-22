@@ -2,14 +2,13 @@ import LogInOut from "../components/log-in-out";
 import { redirect } from "next/navigation";
 
 import { sessionExists } from "@/utils/supabase/server";
-import Link from "next/link";
+//import Link from "next/link";
 
 export default async function Index() {
   const session = await sessionExists();
 
-  // change to search later
   if (session) {
-    return redirect("/repos");
+    return redirect("/search");
   }
 
   return (

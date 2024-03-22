@@ -96,3 +96,48 @@ npx supabase gen types typescript --project-id mjmxxfikiuvjfjljbhcy --schema pub
 //     return data as Batch[];
 //   }
 // }
+
+
+--select distinct(search_id), search_body from search_result order by search_id desc limit 5 ;
+
+--select search_body from search_result;
+
+--select id from profile; -- bc8a5974-b757-4b9b-80d6-e80f1da49084
+
+--select * from profile;
+
+--insert
+
+CREATE OR REPLACE FUNCTION update_profile_search_history(user_id TEXT) RETURNS VOID AS $$
+DECLARE
+    searchHistory JSONB;
+BEGIN
+    -- Select distinct search_ids and corresponding search_body from search_result table
+    SELECT jsonb_object_agg(search_id, search_body) INTO searchHistory
+    FROM (
+        SELECT search_id, jsonb_build_object(
+            'tag', sr.search_body->>'tag',
+            'term', sr.search_body->>'term',
+            'assets', (sr.search_body->'assets')::JSONB,
+            'suites', (sr.search_body->'suites')::JSONB,
+            'search_id', sr.search_id
+        ) AS search_body
+        FROM search_result sr
+        ORDER BY sr.search_id DESC
+        LIMIT 5
+    ) AS subquery;
+
+    -- Update or insert into profile table
+    UPDATE profile
+    SET search_history = searchHistory
+    WHERE id = user_id::UUID;
+    
+    IF NOT FOUND THEN
+        -- If no row was updated, insert a new row
+        INSERT INTO profile(id, search_history)
+        VALUES (user_id::UUID, searchHistory);
+    END IF;
+    
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;

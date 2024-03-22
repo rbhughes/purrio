@@ -14,7 +14,11 @@ import { toast } from "sonner";
 import { SuiteUI } from "@/lib/purr_ui";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { enqueueSearchTask } from "@/lib/actions";
+import {
+  enqueueSearchTask,
+  updateProfileWithSearchIds,
+  updateProfileSearchHistory,
+} from "@/lib/actions";
 
 import { Search as HourGlass } from "lucide-react";
 import { FancyMultiSelect } from "./fancy-multi-select";
@@ -52,29 +56,27 @@ type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 // data-[state=on]:bg-slate-200    data-[state=on]:border-slate-400
 
 export default function Search({
-  placeholder,
+  userId,
   searchResults,
 }: {
-  placeholder: string;
+  userId: string;
   searchResults: SearchResult[];
 }) {
   const supabase = createClient();
   const router = useRouter();
 
-  const [taskId, setTaskId] = React.useState<number>(0);
+  const [searchId, setSearchId] = React.useState<number>();
   const [filteredResult, setFilteredResult] = React.useState<SearchResult[]>(
     []
   );
 
-  //TODO: revisit maybe using filterValue instead of useState
+  // live channel subscription to search_result
   React.useEffect(() => {
     const initChannel = () => {
       const chan = liveTable<SearchResult>(supabase, {
         table: "search_result",
         filterColumn: "active",
         filterValue: true,
-        // filterColumn: "task_id",
-        // filterValue: Number(taskId),
         callback: (err) => {
           if (err) {
             console.error(err);
@@ -92,14 +94,18 @@ export default function Search({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, router, taskId]);
+  }, [supabase, router, searchId]);
 
+  // match current search request id (from enqueue) to new search_result rows
   React.useEffect(() => {
     let filtered = searchResults.filter(
-      (sr: SearchResult) => sr.task_id === taskId
+      (sr: SearchResult) => sr.search_id === searchId
     );
     setFilteredResult(filtered);
-  }, [taskId, searchResults]);
+
+    //updateProfileWithSearchIds(userId);
+    //updateProfileSearchHistory(userId);
+  }, [searchId, searchResults]);
 
   let defaults = {
     asset: [ASSETS[0]],
@@ -132,17 +138,20 @@ export default function Search({
       toast.info(JSON.stringify(data));
     }
 
-    setTaskId(data[0].id);
+    setSearchId(data[0].id);
 
     setSelected([items[0]]);
-    form.reset();
+
+    // make action that accepts userId and maintains array of searchId in profile
+
+    //form.reset();
   };
 
   const cardDesc = `
   Limit search by Asset type, Suite, tag and text terms.`;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 bg-yellow-100 ">
       <Card>
         <CardHeader>
           <CardDescription>{cardDesc}</CardDescription>
@@ -154,7 +163,7 @@ export default function Search({
               className=" space-y-6 "
             >
               <div className="flex flex-row gap-2">
-                <div className="w-full">
+                <div className="w-3/6">
                   <FormField
                     control={form.control}
                     name="assets"
@@ -234,7 +243,7 @@ export default function Search({
                 </div>
 
                 {/* ---------- */}
-                <div className="w-3/6">
+                <div className="w-2/6">
                   <FormField
                     control={form.control}
                     name="term"
@@ -246,7 +255,7 @@ export default function Search({
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="placeholder??"
+                            placeholder="search terms"
                             {...field}
                             className="ml-10"
                           />
@@ -274,8 +283,17 @@ export default function Search({
         {/* <div>{JSON.stringify(result)}</div> */}
         {/* <SearchResults searchResults={searchResults} taskId={taskId} /> */}
       </Card>
-      <Card>
+      <Button
+        onClick={() => {
+          form.setValue("term", "critter");
+          console.log("I got clicked");
+        }}
+      >
+        thing
+      </Button>
+      <Card className="bg-blue-100 max-w-max">
         <ShowHits searchResults={filteredResult} />
+        {/* <ShowHits searchResults={searchResults} /> */}
       </Card>
     </div>
   );

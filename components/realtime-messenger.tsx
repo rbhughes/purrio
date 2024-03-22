@@ -27,16 +27,13 @@ interface MessengerArgs {
 }
 
 function refactorArray(arr: MessengerArgs[]) {
-  return arr.reduce(
-    (result: Record<string, MessengerArgs["new"]>, item) => {
-      const { repo_id } = item.new;
-      if (repo_id) {
-        result[repo_id] = item.new;
-      }
-      return result;
-    },
-    {} as Record<string, MessengerArgs["new"]>,
-  );
+  return arr.reduce((result: Record<string, MessengerArgs["new"]>, item) => {
+    const { repo_id } = item.new;
+    if (repo_id) {
+      result[repo_id] = item.new;
+    }
+    return result;
+  }, {} as Record<string, MessengerArgs["new"]>);
 }
 
 export default function RealtimeMessenger({
@@ -78,10 +75,10 @@ export default function RealtimeMessenger({
 
           setTimeout(() => {
             setMessages((prev) =>
-              prev.filter((item) => item.created_at !== msg.created_at),
+              prev.filter((item) => item.created_at !== msg.created_at)
             );
           }, DELAY);
-        },
+        }
       )
       .subscribe();
 
@@ -135,10 +132,10 @@ export default function RealtimeMessenger({
                 </li>
               ))}
           </ul>
-          <h1>upsert</h1>
+          <h1>load_asset</h1>
           <ul>
             {messages
-              .filter((m) => m.directive === "upsert")
+              .filter((m) => m.directive === "load_asset")
               .map((m) => (
                 <li key={m.created_at}>
                   {m.created_at}--{m.message}===={directive}

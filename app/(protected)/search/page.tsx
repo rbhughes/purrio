@@ -5,11 +5,11 @@ import { Toaster } from "@/components/ui/sonner";
 //import { Database } from "@/lib/sb_types";
 //type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 
-import {
-  enqueueSearchTask,
-  updateProfileWithSearchIds,
-  updateProfileSearchHistory,
-} from "@/lib/actions";
+// import {
+//   enqueueSearchTask,
+//   //updateProfileWithSearchIds,
+//   //updateProfileSearchHistory,
+// } from "@/lib/actions";
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -29,12 +29,22 @@ export default async function Page() {
 
   // )
 
-  await updateProfileSearchHistory(user!.id);
+  //await updateProfileSearchHistory(user!.id);
+
+  // const { data: searchHistory, error } = await supabase
+  //   .from("profile")
+  //   .select("search_history")
+  //   .eq("id", user!.id)
+  //   .limit(1);
 
   return (
     user && (
       <div className="">
-        <Search userId={user.id} searchResults={searchResults!} />
+        <Search
+          userId={user.id}
+          //searchHistory={searchHistory![0].search_history}
+          searchResults={searchResults!}
+        />
         <Toaster richColors />
       </div>
     )

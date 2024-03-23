@@ -5,4 +5,5 @@ export const SearchFormSchema = z.object({
   suites: z.string().array().min(1, { message: "Pick at least one suite" }),
   tag: z.string().optional(),
   term: z.string(),
+  user_id: z.string(),
 });

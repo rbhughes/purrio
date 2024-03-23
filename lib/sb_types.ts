@@ -177,24 +177,24 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
+      profile: {
         Row: {
           id: string
-          login_date: string | null
+          search_history: Json | null
+          search_id_list: number[] | null
           user_email: string | null
-          user_id: string | null
         }
         Insert: {
           id: string
-          login_date?: string | null
+          search_history?: Json | null
+          search_id_list?: number[] | null
           user_email?: string | null
-          user_id?: string | null
         }
         Update: {
           id?: string
-          login_date?: string | null
+          search_history?: Json | null
+          search_id_list?: number[] | null
           user_email?: string | null
-          user_id?: string | null
         }
         Relationships: [
           {
@@ -415,6 +415,12 @@ export type Database = {
       get_suite_enums: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["suite"][]
+      }
+      update_profile_search_history: {
+        Args: {
+          user_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

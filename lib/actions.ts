@@ -119,33 +119,33 @@ export async function enqueueSearchTask(
   }
 }
 
-export async function updateProfileSearchHistory(userId: string) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+// export async function updateProfileSearchHistory(userId: string) {
+//   const cookieStore = cookies();
+//   const supabase = createClient(cookieStore);
 
-  const supRes = await supabase.rpc("update_profile_search_history", {
-    user_id: userId,
-  });
-  console.log("*****************************");
-  console.log(supRes);
-  console.log("*****************************");
-}
+//   const supRes = await supabase.rpc("update_profile_search_history", {
+//     user_id: userId,
+//   });
+//   console.log("**updateProfileSearchHistory***************************");
+//   console.log(supRes);
+//   console.log("*****************************");
+// }
 
-//TODO: finish this. take trigger out of useEffect
-export async function updateProfileWithSearchIds(
-  userId: string
-  //): Promise<ActionWithSummary> {
-) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+// //TODO: finish this. take trigger out of useEffect
+// export async function updateProfileWithSearchIds(
+//   userId: string
+//   //): Promise<ActionWithSummary> {
+// ) {
+//   const cookieStore = cookies();
+//   const supabase = createClient(cookieStore);
 
-  const supRes = await supabase.rpc("update_profile_search_id_list", {
-    user_id: userId,
-  });
-  console.log("*****************************");
-  console.log(supRes);
-  console.log("*****************************");
-}
+//   const supRes = await supabase.rpc("update_profile_search_id_list", {
+//     user_id: userId,
+//   });
+//   console.log("*****************************");
+//   console.log(supRes);
+//   console.log("*****************************");
+// }
 
 export async function enqueueAssetStats(): Promise<any> {
   const cookieStore = cookies();

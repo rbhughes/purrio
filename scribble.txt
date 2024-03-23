@@ -115,7 +115,7 @@ BEGIN
     -- Select distinct search_ids and corresponding search_body from search_result table
     SELECT jsonb_object_agg(search_id, search_body) INTO searchHistory
     FROM (
-        SELECT search_id, jsonb_build_object(
+        SELECT DISTINCT search_id, jsonb_build_object(
             'tag', sr.search_body->>'tag',
             'term', sr.search_body->>'term',
             'assets', (sr.search_body->'assets')::JSONB,

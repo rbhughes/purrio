@@ -58,6 +58,8 @@ import { liveTable } from "@openartmarket/supabase-live-table";
 
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 
 type Suite = Database["public"]["Enums"]["suite"];
@@ -71,8 +73,13 @@ interface SearchBody {
   search_id: number;
   suites: Suite[];
   tag: string;
-  term: string;
+  terms: string;
   user_id: string; //actually UUID
+}
+interface SearchHistory {
+  search_id: number;
+  search_body: SearchBody;
+  updated_at: string;
 }
 
 export default function Search({
@@ -90,14 +97,13 @@ export default function Search({
     []
   );
 
-  const [history, setHistory] = React.useState<SearchBody[]>([]);
+  const [history, setHistory] = React.useState<SearchHistory[]>([]);
 
   ////////////////
   React.useEffect(() => {
     const initHistory = async () => {
       const { data, error } = await supabase.from("search_history").select();
-
-      setHistory(data as SearchBody[]);
+      setHistory(data as SearchHistory[]);
     };
     initHistory();
   }, [userId, filteredResult]);
@@ -149,7 +155,7 @@ export default function Search({
     asset: [ASSETS[0]],
     suites: [SUITES[0]],
     tag: "",
-    term: "",
+    terms: "",
     user_id: userId,
   };
 
@@ -157,6 +163,23 @@ export default function Search({
     resolver: zodResolver(SearchFormSchema),
     defaultValues: defaults,
   });
+
+  const handleHistorySelect = (sbjson: string) => {
+    const sb = JSON.parse(sbjson);
+
+    // hideous?
+    setSelectedAssets(
+      sb.assets.map((asset: any) => ({
+        value: asset,
+        label: asset,
+      }))
+    );
+
+    form.setValue("suites", sb.suites);
+    form.setValue("tag", sb.tag);
+    form.setValue("terms", sb.terms);
+    form.setValue("user_id", sb.user_id);
+  };
 
   type Item = Record<"value" | "label", string>;
   const items: Item[] = ASSETS.map((asset) => ({
@@ -167,17 +190,13 @@ export default function Search({
   // 2024-03-11 | Not sure how to fully manage FancyMultiSelect with RHF
   // Selection worked as expected, but RHF's reset() did not since "selected"
   // is not exposed. So...I moved the useState hook here to the parent.
-  const [selected, setSelected] = React.useState<Item[]>([items[0]]);
+  const [selectedAssets, setSelectedAssets] = React.useState<Item[]>([
+    items[0],
+  ]);
 
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
     try {
-      // const searchData = { ...formData, ...{ user_id: userId } };
-      // console.log("_____searchData_________");
-      // console.log(searchData);
-      // console.log("______________________________");
-
       const { data, error } = await enqueueSearchTask(formData);
-      //const { data, error } = await enqueueSearchTask(searchData);
       if (error) {
         toast.error(error);
       } else {
@@ -186,10 +205,8 @@ export default function Search({
 
       setSearchId(data[0].id);
 
-      setSelected([items[0]]);
-
-      // make action that accepts userId and maintains array of searchId in profile
-
+      // 2024-03-23 | stopped resetting form after history
+      //setSelectedAssets([items[0]]);
       //form.reset();
     } catch (err) {
       console.error(err);
@@ -200,15 +217,16 @@ export default function Search({
   Limit search by Asset type, Suite, tag and text terms.`;
 
   return (
-    <div className="flex flex-col  bg-yellow-100 ">
+    <div className="flex flex-col  bg-yellow-600 ">
       <Card>
         <CardHeader>
           <CardDescription>{cardDesc}</CardDescription>
         </CardHeader>
 
         <CardContent>
-          <div className="flex ">
-            <div className="border rounded-lg mr-4 w-9/12 p-2 bg-red-100">
+          <div className="flex flex-row gap-4">
+            {/* SEARCH FORM */}
+            <div className="w-8/12 p-2 bg-red-100">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(processForm)}
@@ -292,8 +310,8 @@ export default function Search({
                                   values.map(({ value }) => value)
                                 );
                               }}
-                              selected={selected}
-                              setSelected={setSelected}
+                              selected={selectedAssets}
+                              setSelected={setSelectedAssets}
                             />
                             <FormMessage />
                           </FormItem>
@@ -303,11 +321,11 @@ export default function Search({
                   </div>
 
                   <div className="flex flex-row gap-2">
-                    {/* ASSETS */}
+                    {/* terms */}
                     <div className="">
                       <FormField
                         control={form.control}
-                        name="term"
+                        name="terms"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
@@ -330,7 +348,7 @@ export default function Search({
                       />
                     </div>
 
-                    {/* SUBMIT */}
+                    {/* submit */}
                     <div className="w-1/6 mt-8 ml-10">
                       <Button type="submit" className="purr-button">
                         search
@@ -340,28 +358,31 @@ export default function Search({
                 </form>
               </Form>
             </div>
-            <div className="w-3/12 bg-yellow-100">
-              {/* <Select
-                onValueChange={() => console.log("history select")}
-                //value={field.value}
-                //value={0}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a hostname" />
+
+            {/* SEARCH HISTORY */}
+            <div className="flex flex-col w-4/12  bg-red-100 p-2">
+              <div className="space-y-2">
+                <Label className="h-9">Search History</Label>
+                <Select onValueChange={handleHistorySelect}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Search History" />
                   </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  
-                  {workers.map((hostname: string) => {
-                    return (
-                      <SelectItem key={hostname} value={hostname}>
-                        {hostname}
+                  <SelectContent>
+                    {history.map((o) => (
+                      <SelectItem
+                        key={o.search_id}
+                        value={JSON.stringify(o.search_body)}
+                      >
+                        {`${o.updated_at} | ${o.search_body.assets.join(
+                          ", "
+                        )} | <span className="bg-yellow-400">${
+                          o.search_body.terms
+                        }</span>`}
                       </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select> */}
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -369,18 +390,7 @@ export default function Search({
         {/* <div>{JSON.stringify(result)}</div> */}
         {/* <SearchResults searchResults={searchResults} taskId={taskId} /> */}
       </Card>
-      <Button
-        onClick={() => {
-          form.setValue("term", "critter");
-          console.log("I got clicked");
-        }}
-      >
-        thing
-      </Button>
 
-      <div className="bg-purple-200">
-        <pre>{JSON.stringify(history, null, 2)}</pre>
-      </div>
       {JSON.stringify(form.control._formState.errors)}
 
       <Card className="bg-blue-100 max-w-max">

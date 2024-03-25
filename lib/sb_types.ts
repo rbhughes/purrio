@@ -316,6 +316,7 @@ export type Database = {
           doc: Json | null
           id: number
           repo_id: string | null
+          repo_name: string | null
           search_body: Json | null
           search_id: number | null
           sql: string | null
@@ -323,6 +324,7 @@ export type Database = {
           tag: string | null
           touched_at: string
           updated_at: string
+          user_id: string | null
           well_id: string | null
         }
         Insert: {
@@ -332,6 +334,7 @@ export type Database = {
           doc?: Json | null
           id?: number
           repo_id?: string | null
+          repo_name?: string | null
           search_body?: Json | null
           search_id?: number | null
           sql?: string | null
@@ -339,6 +342,7 @@ export type Database = {
           tag?: string | null
           touched_at?: string
           updated_at?: string
+          user_id?: string | null
           well_id?: string | null
         }
         Update: {
@@ -348,6 +352,7 @@ export type Database = {
           doc?: Json | null
           id?: number
           repo_id?: string | null
+          repo_name?: string | null
           search_body?: Json | null
           search_id?: number | null
           sql?: string | null
@@ -355,6 +360,7 @@ export type Database = {
           tag?: string | null
           touched_at?: string
           updated_at?: string
+          user_id?: string | null
           well_id?: string | null
         }
         Relationships: []
@@ -409,18 +415,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      search_history: {
+        Row: {
+          search_body: Json | null
+          search_id: number | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_suite_enums: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["suite"][]
-      }
-      update_profile_search_history: {
-        Args: {
-          user_id: string
-        }
-        Returns: undefined
       }
     }
     Enums: {

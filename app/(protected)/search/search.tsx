@@ -216,6 +216,20 @@ export default function Search({
   const cardDesc = `
   Limit search by Asset type, Suite, tag and text terms.`;
 
+  // flex justify-between not working here (?)
+  const formatHistoryOption = (sh: SearchHistory) => {
+    return (
+      <div>
+        {sh.updated_at}
+        {sh.search_id}
+        {" | "}
+        <span className="bg-yellow-300">{sh.search_body.terms}</span>
+        {" | "}
+        <i>{sh.search_body.assets.join(", ")}</i>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col  bg-yellow-600 ">
       <Card>
@@ -226,7 +240,7 @@ export default function Search({
         <CardContent>
           <div className="flex flex-row gap-4">
             {/* SEARCH FORM */}
-            <div className="w-8/12 p-2 bg-red-100">
+            <div className="w-8/12 p-2">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(processForm)}
@@ -360,12 +374,12 @@ export default function Search({
             </div>
 
             {/* SEARCH HISTORY */}
-            <div className="flex flex-col w-4/12  bg-red-100 p-2">
+            <div className="flex flex-col w-4/12 p-2">
               <div className="space-y-2">
                 <Label className="h-9">Search History</Label>
                 <Select onValueChange={handleHistorySelect}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Search History" />
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="previous searches..." />
                   </SelectTrigger>
                   <SelectContent>
                     {history.map((o) => (
@@ -373,11 +387,7 @@ export default function Search({
                         key={o.search_id}
                         value={JSON.stringify(o.search_body)}
                       >
-                        {`${o.updated_at} | ${o.search_body.assets.join(
-                          ", "
-                        )} | <span className="bg-yellow-400">${
-                          o.search_body.terms
-                        }</span>`}
+                        {formatHistoryOption(o)}
                       </SelectItem>
                     ))}
                   </SelectContent>

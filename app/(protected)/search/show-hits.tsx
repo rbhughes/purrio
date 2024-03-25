@@ -72,6 +72,21 @@ type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 //   // return a;
 // };
 
+// function groupByAssetType(arr: SearchResult[]): {
+//   [key: string]: SearchResult[];
+// } {
+//   const result: { [key: string]: SearchResult[] } = {};
+
+//   arr.forEach((item) => {
+//     const key = item.asset!;
+//     if (!result[key]) {
+//       result[key] = [];
+//     }
+//     result[key].push(item);
+//   });
+//   return result;
+// }
+
 export function ShowHits({ searchResults }: { searchResults: SearchResult[] }) {
   // parse doc from incoming search result (in spite of supabase Json type)
   const formatSearchResult = (res: any) => {
@@ -85,8 +100,41 @@ export function ShowHits({ searchResults }: { searchResults: SearchResult[] }) {
     return <h1>no search results</h1>;
   }
 
+  // const groupedByAsset = groupByAssetType(searchResults);
+  // console.log("---------------------------------");
+  // console.log(groupedByAsset);
+  // console.log("---------------------------------");
+
+  // return (
+  //   <>
+  //     {Object.entries(groupedByAsset).map(([key, val]) => (
+  //       <>{key}</>
+  //     ))}
+  //   </>
+  // );
+
   return (
-    // <div className=" max-w-none font-mono whitespace-pre-wrap text-xs bg-slate-100">
+    <div className="flex flex-wrap">
+      {searchResults.map((sr) => {
+        //const doc = formatSearchResult(sr);
+        return (
+          <div
+            key={sr.id}
+            className="m-4 max-w-96 text-tiny overflow-auto bg-slate-100  font-mono"
+          >
+            {sr.asset}
+            {sr.suite}
+            {sr.repo_name}
+            {sr.tag}
+            {sr.well_id}
+            <pre>{JSON.stringify(sr.doc, null, 2)}</pre>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  return (
     <div className="flex flex-wrap">
       {searchResults.map((sr) => {
         const doc = formatSearchResult(sr);
@@ -95,27 +143,7 @@ export function ShowHits({ searchResults }: { searchResults: SearchResult[] }) {
             key={sr.id}
             className="m-4 max-w-96 text-tiny overflow-auto bg-slate-100  font-mono"
           >
-            <pre>
-              {/* <StyleHit json={sr} /> */}
-              {/* {styleHit(sr)} */}
-
-              {JSON.stringify(sr, null, 2)}
-
-              {/* {JSON.stringify(sr, replacer, 2)} */}
-              {/* {stringify(sr, { replacer: replacer })} */}
-              {/* {JSON.stringify(
-                sr,
-                (key, value) => {
-                  if (typeof value === "string" && value.length > 60) {
-                    console.log(value);
-                    return wrapLongStrings(value);
-                  }
-                  return value;
-                },
-
-                2
-              )} */}
-            </pre>
+            <pre>{JSON.stringify(sr, null, 2)}</pre>
           </div>
         );
       })}

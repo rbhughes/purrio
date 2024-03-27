@@ -9,7 +9,6 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  ExpandedState,
   //getExpandedRowModel, ///
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -18,7 +17,6 @@ import {
   getSortedRowModel,
   useReactTable,
   FilterFn,
-  // Row,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -37,54 +35,66 @@ import {
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 
+import { ASSETS } from "@/lib/purr_utils";
+
+import { Database } from "@/lib/sb_types";
+//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
+type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  //renderSubComponent: (props: { row: Row<TData> }) => React.ReactElement;
-  renderSubComponent: any;
-  //getRowCanExpand: (row: Row<TData>) => boolean;
-  getRowCanExpand: any;
   //setValue: any;
+  //setShowForm: any;
+  //setShowAdvancedForm: any;
 }
 
-// sets which rows are selected by default
 //let rowsSelected: RowSelectionState = { "1": true };
 let rowsSelected: RowSelectionState = {};
 
 // set visible columns (commmented out means "always on")
 let colsVisible: VisibilityState = {
-  //bytes: false,
-  conn: false,
-  conn_aux: false,
-  directories: false,
-  display_epsg: false,
-  display_name: false,
-  files: false,
-  //fs_path: false,
-  //suite: false,
-  id: false,
-  //name: false,
-  //repo_mod: false,
+  //active: false,
+  //asset: false,
+  //tag: false
+  //chunk: false,
+  //cron: false,
+  //filter: false,
+  //id: false,
+  //last_invoked: false,
+  //repo_fs_path: false,
+  //repo_suite: true,
+  //repo_id: false,
+  //repo_name: false,
   //created_at: false,
-  touched_at: false,
-  updated_at: false,
-  storage_epsg: false,
-  storage_name: false,
-  //well_count: false,
-  wells_with_completion: false,
-  wells_with_core: false,
-  wells_with_dst: false,
-  wells_with_formation: false,
-  wells_with_ip: false,
-  wells_with_perforation: false,
-  wells_with_production: false,
-  wells_with_raster_log: false,
-  wells_with_survey: false,
-  wells_with_vector_log: false,
-  wells_with_zone: false,
+  //touched_at: false,
+  //updated_at: false,
 };
 
-//const setFormFromTable = async (setValue: any, row: any) => {};
+///
+
+// setting suite resets the repo selection, so wait a bit
+// TODO:combine these defaults with asst-jobs.tsx form?
+// const setFormFromTable = async (setValue: any, row: any) => {
+//   let assetJob = row.original as AssetJob;
+//   setValue("suite", assetJob.suite);
+//   setTimeout(() => {
+//     setValue("id", assetJob.id || null);
+//     setValue("repo_id", assetJob.repo_id || "");
+//     setValue("active", assetJob.active || true);
+//     setValue("asset", assetJob.asset || ASSETS[0]);
+//     setValue("tag", assetJob.tag || "");
+//     setValue("chunk", assetJob.chunk || 100);
+//     setValue("cron", assetJob.cron || "");
+//     setValue("filter", assetJob.filter || "");
+//     setValue("recency", assetJob.recency ?? 14);
+//     setValue("repo_fs_path", assetJob.repo_fs_path || null);
+//     setValue("repo_name", assetJob.repo_name || null);
+//   }, 500);
+// };
+///
+
+////////////////////////////////////
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -99,12 +109,14 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
+////////////////////////////////////
+
 export function DataTable<TData, TValue>({
   columns,
   data,
-  renderSubComponent,
-  getRowCanExpand,
 }: //setValue,
+//setShowForm,
+//setShowAdvancedForm,
 DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
@@ -113,7 +125,6 @@ DataTableProps<TData, TValue>) {
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
   const table = useReactTable({
     data,
@@ -124,15 +135,12 @@ DataTableProps<TData, TValue>) {
       columnVisibility,
       rowSelection,
       columnFilters,
-      expanded,
     },
-    onExpandedChange: setExpanded,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    getRowCanExpand: getRowCanExpand,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -172,11 +180,15 @@ DataTableProps<TData, TValue>) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
+              ///
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
                     onDoubleClick={() => {
-                      row.toggleExpanded();
+                      console.log("double clicked for some reason");
+                      //setShowForm(true);
+                      //setShowAdvancedForm(true);
+                      //setFormFromTable(setValue, row);
                     }}
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -190,17 +202,17 @@ DataTableProps<TData, TValue>) {
                       </TableCell>
                     ))}
                   </TableRow>
-
-                  {row.getIsExpanded() && (
-                    <TableRow key={`${row.id + "_viz"}`}>
+                  {/* {row.getIsExpanded() && (
+                    <TableRow key={`${row.id}_aj`}>
                       <td colSpan={row.getVisibleCells().length}>
                         {renderSubComponent({ row })}
                       </td>
                     </TableRow>
-                  )}
+                  )} */}
                 </React.Fragment>
               ))
             ) : (
+              ///
               <TableRow>
                 <TableCell
                   colSpan={columns.length}

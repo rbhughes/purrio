@@ -2,14 +2,6 @@ import { cookies } from "next/headers";
 import Search from "./search";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
-//import { Database } from "@/lib/sb_types";
-//type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
-
-// import {
-//   enqueueSearchTask,
-//   //updateProfileWithSearchIds,
-//   //updateProfileSearchHistory,
-// } from "@/lib/actions";
 
 export default async function Page() {
   const cookieStore = cookies();
@@ -23,19 +15,6 @@ export default async function Page() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  // const {data, error} = supabase.from('search_result')
-  // .select('search_id, search_body', {distinct: true})
-
-  // )
-
-  //await updateProfileSearchHistory(user!.id);
-
-  // const { data: searchHistory, error } = await supabase
-  //   .from("profile")
-  //   .select("search_history")
-  //   .eq("id", user!.id)
-  //   .limit(1);
 
   return (
     user && (

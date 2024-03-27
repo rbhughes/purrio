@@ -1,0 +1,39 @@
+"use client";
+
+import React from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import { Card } from "@/components/ui/card";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+
+import { Database } from "@/lib/sb_types";
+type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
+
+const renderSubComponent = ({ row }: { row: any }) => {
+  return <>render subcomponent</>;
+  //return <RepoVis repo={row.original as Repo} />;
+};
+
+export function SearchResultTable({
+  searchResults,
+}: //setValue,
+{
+  searchResults: SearchResult[];
+  //setValue: any;
+}) {
+  const supabase = createClient();
+  const router = useRouter();
+
+  return (
+    <Card>
+      <DataTable
+        data={searchResults}
+        columns={columns}
+        //renderSubComponent={renderSubComponent}
+        //getRowCanExpand={() => true}
+        //setValue={setValue}
+      />
+    </Card>
+  );
+}

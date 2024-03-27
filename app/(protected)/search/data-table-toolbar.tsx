@@ -4,7 +4,6 @@ import React from "react";
 import { Table } from "@tanstack/react-table";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "./data-table-view-options";
 import { DataTableFacetedFilter } from "./data-table-faceted-filter";
 import { facetOptions } from "@/lib/purr_ui";
@@ -71,9 +70,11 @@ export function DataTableToolbar<TData>({
 
         {/* <Input
           placeholder="Filter..."
-          value={(table.getColumn("fs_path")?.getFilterValue() as string) ?? ""}
+          value={
+            (table.getColumn("repo_name")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("fs_path")?.setFilterValue(event.target.value)
+            table.getColumn("repo_name")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         /> */}
@@ -85,7 +86,6 @@ export function DataTableToolbar<TData>({
             options={facetOptions}
           />
         )}
-
         {isFiltered && (
           <Button
             variant="ghost"

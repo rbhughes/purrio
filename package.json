@@ -27,6 +27,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@tanstack/match-sorter-utils": "^8.11.8",
     "@tanstack/react-table": "^8.11.2",
     "@uidotdev/usehooks": "^2.4.1",
     "autoprefixer": "latest",

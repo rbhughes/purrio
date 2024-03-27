@@ -32,6 +32,12 @@ import { Search as HourGlass } from "lucide-react";
 import { FancyMultiSelect } from "./fancy-multi-select";
 import { ShowHits } from "./show-hits";
 
+////
+
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+////
+
 import {
   Form,
   FormControl,
@@ -59,7 +65,6 @@ import { liveTable } from "@openartmarket/supabase-live-table";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 
 type Suite = Database["public"]["Enums"]["suite"];
@@ -403,9 +408,17 @@ export default function Search({
 
       {JSON.stringify(form.control._formState.errors)}
 
-      <Card className="bg-blue-100 max-w-max">
-        <ShowHits searchResults={filteredResult} />
+      <Card>
+        {/* <ShowHits searchResults={filteredResult} /> */}
+
         {/* <ShowHits searchResults={searchResults} /> */}
+        <DataTable
+          data={searchResults}
+          columns={columns}
+          //setValue={setValue}
+          //setShowForm={setShowForm}
+          //setShowAdvancedForm={setShowAdvancedForm}
+        />
       </Card>
     </div>
   );

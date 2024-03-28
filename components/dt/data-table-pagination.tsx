@@ -20,22 +20,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { handleFileExport } from "@/lib/purr_utils";
 import { toast } from "sonner";
-//import { Database } from "@/lib/sb_types";
-//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  defaultFileName: string;
 }
-
-// const formatRowSelection = (selectedRows: any) => {
-//   let x = selectedRows.map((r: any) => {
-//     console.log(r.original.id);
-//   });
-// };
 
 export function DataTablePagination<TData>({
   table,
+  defaultFileName,
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex items-center justify-between px-2">
@@ -59,11 +54,14 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               let selectedRows: Row<TData>[] =
                 table.getFilteredSelectedRowModel().rows;
-              let selectedAssetJobs = selectedRows.map((r: any) => r.original);
+              let exportableRows = selectedRows.map((r: any) => r.original);
 
-              if (selectedAssetJobs.length > 0) {
-                //handleExcelExport(selectedRepos);
-                console.log(selectedAssetJobs);
+              if (exportableRows.length > 0) {
+                handleFileExport({
+                  filename: defaultFileName,
+                  format: "excel",
+                  data: exportableRows,
+                });
               } else {
                 toast.error("No rows selected");
               }
@@ -76,11 +74,14 @@ export function DataTablePagination<TData>({
             onClick={(e) => {
               let selectedRows: Row<TData>[] =
                 table.getFilteredSelectedRowModel().rows;
-              let selectedAssetJobs = selectedRows.map((r: any) => r.original);
+              let exportableRows = selectedRows.map((r: any) => r.original);
 
-              if (selectedAssetJobs.length > 0) {
-                //handleCSVExport(selectedRepos);
-                console.log(selectedAssetJobs);
+              if (exportableRows.length > 0) {
+                handleFileExport({
+                  filename: defaultFileName,
+                  format: "csv",
+                  data: exportableRows,
+                });
               } else {
                 toast.error("No rows selected");
               }

@@ -70,7 +70,7 @@ export function AssetJobRowActions({ assetJob }: { assetJob: AssetJob }) {
   const message = "Are you sure you want to delete this Asset Job?";
 
   return (
-    <>
+    <div className="flex justify-end w-fit">
       <AlertDialog
         onOpenChange={setAlertVisible}
         open={alertVisible}
@@ -98,7 +98,7 @@ export function AssetJobRowActions({ assetJob }: { assetJob: AssetJob }) {
       <div className="flex gap-2">
         <Button
           size="sm"
-          className="w-[75px] bg-green-500 active:scale-95"
+          className="purr-datatable-button bg-green-500 hover:bg-green-700"
           onClick={async () => {
             await handleAssetJobEnqueue(assetJob);
           }}
@@ -107,7 +107,7 @@ export function AssetJobRowActions({ assetJob }: { assetJob: AssetJob }) {
         </Button>
         <Button
           size="sm"
-          className="w-[75px] bg-red-500 active:scale-95"
+          className="purr-datatable-button bg-red-500 hover:bg-red-700"
           onClick={async () => {
             setAlertVisible(true); //just triggers the AlertDialog
           }}
@@ -115,6 +115,6 @@ export function AssetJobRowActions({ assetJob }: { assetJob: AssetJob }) {
           delete
         </Button>
       </div>
-    </>
+    </div>
   );
 }

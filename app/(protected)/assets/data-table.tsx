@@ -16,7 +16,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  Row,
+  FilterFn,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -26,9 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from "@tanstack/match-sorter-utils";
 
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTablePagination } from "@/components/dt/data-table-pagination";
+import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
 import { ASSETS } from "@/lib/purr_utils";
 
@@ -67,8 +72,7 @@ let colsVisible: VisibilityState = {
 
 ///
 
-// setting suite resets the repo selection, so wait a bit
-// TODO:combine these defaults with asst-jobs.tsx form?
+// setting suite resets the repo selection, so wait a bit and then apply
 const setFormFromTable = async (setValue: any, row: any) => {
   let assetJob = row.original as AssetJob;
   setValue("suite", assetJob.suite);
@@ -88,6 +92,19 @@ const setFormFromTable = async (setValue: any, row: any) => {
 };
 ///
 
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
+
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -98,8 +115,10 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
+
+  const [globalFilter, setGlobalFilter] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
@@ -107,6 +126,7 @@ export function DataTable<TData, TValue>({
     columns,
     state: {
       sorting,
+      globalFilter,
       columnVisibility,
       rowSelection,
       columnFilters,
@@ -122,11 +142,17 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
   });
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar
+        table={table}
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+      />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -139,7 +165,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -165,7 +191,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}
@@ -193,7 +219,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} defaultFileName="assets" />
     </div>
   );
 }

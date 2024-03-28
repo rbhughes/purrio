@@ -32,8 +32,8 @@ import {
   compareItems,
 } from "@tanstack/match-sorter-utils";
 
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTablePagination } from "@/components/dt/data-table-pagination";
+import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
 import { ASSETS } from "@/lib/purr_utils";
 
@@ -225,7 +225,7 @@ DataTableProps<TData, TValue>) {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} defaultFileName="search_results" />
     </div>
   );
 }

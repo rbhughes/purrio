@@ -18,7 +18,6 @@ import {
   getSortedRowModel,
   useReactTable,
   FilterFn,
-  // Row,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -34,8 +33,8 @@ import {
   compareItems,
 } from "@tanstack/match-sorter-utils";
 
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableToolbar } from "./data-table-toolbar";
+import { DataTablePagination } from "@/components/dt/data-table-pagination";
+import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -213,7 +212,7 @@ DataTableProps<TData, TValue>) {
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} defaultFileName="repos" />
     </div>
   );
 }

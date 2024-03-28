@@ -4,11 +4,10 @@ import React from "react";
 import { Table } from "@tanstack/react-table";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
-import { DataTableViewOptions } from "./data-table-view-options";
-import { DataTableFacetedFilter } from "./data-table-faceted-filter";
+import { DataTableViewOptions } from "@/components/dt/data-table-view-options";
+import { DataTableFacetedFilter } from "@/components/dt/data-table-faceted-filter";
 import { facetOptions } from "@/lib/purr_ui";
 
-///
 function DebouncedInput({
   value: initialValue,
   onChange,
@@ -41,7 +40,6 @@ function DebouncedInput({
     />
   );
 }
-///
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -59,25 +57,12 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between p-2">
       <div className="flex flex-1 items-center space-x-2">
-        {/* // */}
         <DebouncedInput
           value={globalFilter ?? ""}
           onChange={(value) => setGlobalFilter(String(value))}
           className="flex rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="Filter..."
         />
-        {/* // */}
-
-        {/* <Input
-          placeholder="Filter..."
-          value={
-            (table.getColumn("repo_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("repo_name")?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        /> */}
 
         {table.getColumn("suite") && (
           <DataTableFacetedFilter

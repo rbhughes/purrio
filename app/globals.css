@@ -82,7 +82,6 @@
   .text-tiny {
     font-size: 0.66rem;
     line-height: 0.80rem; 
-
   }
 }
 
@@ -106,6 +105,10 @@
   @apply w-32 h-20 bg-blue-500;
 }
 
+
+.purr-datatable-button {
+  @apply w-[70px] h-6 active:scale-95 
+}
 
 /*
 .purr-suite-toggle {

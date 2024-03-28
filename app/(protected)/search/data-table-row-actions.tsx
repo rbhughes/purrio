@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { AssetJobSchema } from "./asset-job-schema";
-import { enqueueAssetJobTask, deleteAssetJob } from "@/lib/actions";
+//import { AssetJobSchema } from "./asset-job-schema";
+//import { enqueueAssetJobTask, deleteAssetJob } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 import { toast } from "sonner";
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
@@ -23,14 +23,14 @@ interface DataTableRowActionsProps<TData> {
 }
 
 //TODO: better toasty error handling
-const handleAssetJobDelete = async (assetJob: AssetJob) => {
-  const { data, error } = await deleteAssetJob(assetJob.id);
-  if (error) {
-    toast.error(data);
-  } else {
-    toast.info(data);
-  }
-};
+// const handleAssetJobDelete = async (assetJob: AssetJob) => {
+//   const { data, error } = await deleteAssetJob(assetJob.id);
+//   if (error) {
+//     toast.error(data);
+//   } else {
+//     toast.info(data);
+//   }
+// };
 
 // //TODO: better toasty error handling
 // const handleAssetJobEnqueue = async (assetJob: AssetJob) => {
@@ -74,8 +74,9 @@ export function DataTableRowActions<TData>({
 
         <DropdownMenuItem
           onClick={async () => {
-            const assetJob = row.original as AssetJob;
-            await handleAssetJobDelete(assetJob);
+            console.log("used to be handleAssetJobDelete");
+            //const assetJob = row.original as AssetJob;
+            //await handleAssetJobDelete(assetJob);
           }}
         >
           Delete...

@@ -1,11 +1,11 @@
 //import LogInOut from "../components/log-in-out";
 //import Claude from "@/components/claude";
-import { redirect } from "next/navigation";
+//import { redirect } from "next/navigation";
 
 import { checkUser } from "@/utils/supabase/server";
 //import Link from "next/link";
 
-import { login, signout } from "../app/login/actions";
+//import { login, signout } from "../app/login/actions";
 
 export default async function Index() {
   const user = await checkUser();

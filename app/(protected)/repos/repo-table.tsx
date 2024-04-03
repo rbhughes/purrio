@@ -73,7 +73,7 @@ export function RepoTable({
   // }, [supabase, router]);
 
   return (
-    <Card>
+    <Card className="border-8 border-double">
       <DataTable
         data={repos}
         columns={columns}

@@ -8,6 +8,8 @@ import { SearchFormSchema } from "@/app/(protected)/search/search-form-schema";
 import { createClient } from "@/utils/supabase/server";
 //import { SupabaseClient } from "@supabase/supabase-js";
 
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 //import { Database } from "@/lib/sb_types";
@@ -40,7 +42,8 @@ export async function enqueueRepoReconTask(
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    const supabase = createClient(cookieStore);
+    //const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const supRes = await supabase.from("task").insert({
       worker: await pickWorker(),
@@ -68,7 +71,8 @@ export async function enqueueAssetJobTask(
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    const supabase = createClient(cookieStore);
+    //const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const supRes = await supabase.from("task").insert({
       worker: await pickWorker(),
@@ -96,7 +100,8 @@ export async function enqueueSearchTask(
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    const supabase = createClient(cookieStore);
+    //const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const supRes = await supabase
       .from("task")
@@ -149,7 +154,8 @@ export async function enqueueSearchTask(
 
 export async function enqueueAssetStats(): Promise<any> {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const supRes = await supabase.from("task").insert({
     worker: await pickWorker(),
@@ -171,7 +177,8 @@ export async function enqueueAssetStats(): Promise<any> {
 
 export async function deleteRepo(id: string): Promise<ActionWithData> {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
   const supRes = await supabase.from("repo").delete().eq("id", id);
   if (supRes.status !== 204) {
     return { data: null, error: JSON.stringify(supRes, null, 2) };
@@ -182,7 +189,8 @@ export async function deleteRepo(id: string): Promise<ActionWithData> {
 
 export async function deleteAssetJob(id: number): Promise<ActionWithData> {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
   const supRes = await supabase.from("asset_job").delete().eq("id", id);
   if (supRes.status !== 204) {
     return { data: null, error: JSON.stringify(supRes, null, 2) };
@@ -200,7 +208,8 @@ export async function createAssetJob(
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
     delete zodRes.data.id;
-    const supabase = createClient(cookieStore);
+    //const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const supRes = await supabase.from("asset_job").insert(zodRes.data);
 
@@ -224,7 +233,8 @@ export async function updateAssetJob(
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
     console.log("UPDATE ASSET JOB CALLED", formData);
-    const supabase = createClient(cookieStore);
+    //const supabase = createClient(cookieStore);
+    const supabase = createClient();
 
     const ajId = zodRes.data.id;
     delete zodRes.data.id;
@@ -249,7 +259,8 @@ export async function updateAssetJob(
 
 export const fetchWorkers = async (): Promise<string[]> => {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
   const supRes = await supabase.from("worker").select("hostname");
 
   if (supRes.status !== 200) {
@@ -264,7 +275,8 @@ export const fetchWorkers = async (): Promise<string[]> => {
 // TODO: make this random?
 export const pickWorker = async (): Promise<string> => {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const supRes = await supabase
     .from("worker")
@@ -296,3 +308,36 @@ export const pickWorker = async (): Promise<string> => {
 // const { data: dna, error: error } = await supabase.functions.invoke("petra", {
 //   body: { asset: "well", filter: "" },
 // });
+
+export async function login(formData: FormData) {
+  console.log("LOGIN CLICKED");
+  const supabase = createClient();
+
+  // type-casting here for convenience
+  // in practice, you should validate your inputs
+  const data = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  };
+
+  const { error } = await supabase.auth.signInWithPassword(data);
+
+  if (error) {
+    console.log("LOGIN ERRRRRRR");
+    console.log(error);
+    console.log("RRRRRRRRRRRRRR");
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/repos");
+}
+
+export async function signout() {
+  console.log("signout CLICKED");
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  console.log("2222222 signout CLICKED");
+  revalidatePath("/", "layout");
+  return redirect("/");
+}

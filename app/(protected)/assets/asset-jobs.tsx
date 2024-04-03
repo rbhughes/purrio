@@ -51,7 +51,7 @@ import MissingReposWarning from "./missing-repos-warning";
 
 import AssetDNA from "./asset-dna";
 
-import { ArrowDownRightSquare, Globe } from "lucide-react";
+import { ArrowDownLeftSquare, Globe } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -144,9 +144,9 @@ export default function AssetJobs({
     formData.suite = repo.suite!;
     formData.repo_name = repo.name;
 
-    console.log("************");
-    console.log(formData);
-    console.log("************");
+    // console.log("************");
+    // console.log(formData);
+    // console.log("************");
 
     const { data, error } =
       formData.id === 2e63
@@ -163,23 +163,22 @@ export default function AssetJobs({
   };
 
   const cardDesc = `
-  Define Asset Collection Jobs for a specific Repo and asset type. Add an
-  optional SQL "WHERE" clause filter to limit results.`;
+  Define Asset Collection Jobs for a specific Repo and asset type. For advanced
+  usage, add an (optional) SQL "WHERE" clause to limit results. View the SQL if
+  you would like to see specific fields/columns.`;
 
   return (
     <div>
-      {/* {tableVizElement &&
-        createPortal(
-          <TableVisSwitch onToggle={handleToggle} />,
-          tableVizElement
-        )} */}
-
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
-          <Button className="" variant="outline">
-            <ArrowDownRightSquare className="mx-2" />
-            Define Asset Collection Jobs...
-          </Button>
+          <div className="flex mb-4 justify-between">
+            <div className="place-self-center purr-h1">asset collection</div>
+            {/* <div className="self-center">double-click to edit</div> */}
+            <Button className="purr-button">
+              <ArrowDownLeftSquare className="mx-2" />
+              Define Asset Collection Jobs...
+            </Button>
+          </div>
         </CollapsibleTrigger>
 
         <CollapsibleContent>

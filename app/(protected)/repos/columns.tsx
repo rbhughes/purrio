@@ -3,10 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/dt/data-table-column-header";
-import { DataTableRowActions } from "./data-table-row-actions";
 import { humanFileSize } from "@/lib/purr_utils";
 import { SuiteUI } from "@/lib/purr_ui";
 import { simplifyDateString } from "@/lib/purr_utils";
+import { RepoRowActions } from "./repo-row-actions";
+
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
@@ -324,8 +325,9 @@ export const columns: ColumnDef<Repo>[] = [
     ),
   },
 
+  // this button-based handler replaces the default DataTableRowActions
   {
     id: "actions",
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => <RepoRowActions repo={row.original as Repo} />,
   },
 ];

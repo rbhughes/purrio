@@ -7,8 +7,8 @@ import Repos from "./repos";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const cookieStore = cookies();
+  const supabase = createClient();
 
   const workers = await fetchWorkers();
 
@@ -32,7 +32,10 @@ export default async function Page() {
           <div className="bg-red-600 mt-20 p-4 w-fit text-white">
             TODO
             <ul>
-              <li>add recon-root to repo model?</li>
+              <li>
+                broken suite filter:
+                https://github.com/shadcn-ui/ui/discussions/2976
+              </li>
             </ul>
           </div>
         )}

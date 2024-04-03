@@ -3,14 +3,12 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/dt/data-table-column-header";
-//import { DataTableRowActions } from "./data-table-row-actions";
 import { SuiteUI } from "@/lib/purr_ui";
-import { Database } from "@/lib/sb_types";
 import { simplifyDateString } from "@/lib/purr_utils";
-
-type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-
 import { AssetJobRowActions } from "./asset-job-row-actions";
+
+import { Database } from "@/lib/sb_types";
+type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 export const columns: ColumnDef<AssetJob>[] = [
   {

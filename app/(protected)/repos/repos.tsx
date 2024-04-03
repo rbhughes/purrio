@@ -43,7 +43,7 @@ import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
 import { RepoTable } from "./repo-table";
 
-import { ArrowDownRightSquare } from "lucide-react";
+import { ArrowDownLeftSquare } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -93,24 +93,30 @@ export default function Repos({
     form.reset();
   };
 
-  const cardDesc = `
-  Recursively crawl a directory path (i.e. Project Home) to locate and collect 
-  metadata inventories for the specified Repo type.`;
+  //TODO: add details how-to if repos is empty
+
+  const repoFormDesc = `
+  Recursively crawl directories to locate and collect metadata inventories 
+  for project repositories (repos). `;
 
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <CollapsibleTrigger asChild>
-          <Button className="" variant="outline">
-            <ArrowDownRightSquare className="mx-2" />
-            Discover Projects on your Network...
-          </Button>
+          <div className="flex mb-4 justify-between">
+            <div className="place-self-center purr-h1">repo recon</div>
+            {/* <div className="self-center">{titleDesc}</div> */}
+            <Button className="purr-button">
+              <ArrowDownLeftSquare className="mx-2" />
+              Discover Projects on your Network...
+            </Button>
+          </div>
         </CollapsibleTrigger>
 
         <CollapsibleContent>
           <Card>
             <CardHeader>
-              <CardDescription>{cardDesc}</CardDescription>
+              <CardDescription>{repoFormDesc}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>

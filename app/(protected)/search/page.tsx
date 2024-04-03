@@ -5,7 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 
 export default async function Page() {
   const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  //const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { data: searchResults } = await supabase
     .from("search_result")

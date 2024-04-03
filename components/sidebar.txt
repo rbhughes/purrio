@@ -1,0 +1,97 @@
+//import LogInOut from "./log-in-out";
+import Link from "next/link";
+import RealtimeMessenger from "@/components/realtime-messenger";
+import { Button } from "./ui/button";
+import { User } from "@supabase/supabase-js";
+
+export const Sidebar = ({
+  user,
+  children,
+}: {
+  user: User;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="flex flex-row bg-blue-500">
+      <SidebarContent user={user} />
+      <div className="flex-grow p-8  ">{children}</div>
+    </div>
+  );
+};
+
+const Logo = () => {
+  return (
+    <div className="my-4">
+      <span className="text-2xl font-extrabold">purr.io</span>
+    </div>
+  );
+};
+
+const SidebarContentNOPE = ({ user }: { user: User }) => {
+  return (
+    // <div className="flex items-start bg-purple-200 h-[600px] pl-4">
+    <div className="flex items-start bg-purple-200 w-[130px] h-max px-4">
+      {/* <StickyBox offsetTop={50} offsetBottom={50}> */}
+      <div>one</div>
+      <div>two</div>
+      <div>{user.email}</div>
+      <div>three</div>
+      <Logo />
+      <Button asChild className="purr-navbar-button">
+        <Link href={"/search"}>search</Link>
+      </Button>
+      <Button asChild className="purr-navbar-button">
+        <Link href={"/repos"}>repos</Link>
+      </Button>
+      <Button asChild className="purr-navbar-button">
+        <Link href={"/assets"}>assets</Link>
+      </Button>
+      <Button asChild className="purr-navbar-button">
+        <Link href={"/settings"}>settings</Link>
+      </Button>
+      {/* <Tabs defaultValue="account" className="w-[100px]" orientation="vertical">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          Make changes to your account here.
+        </TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs> */}
+      {/* </StickyBox> */}
+    </div>
+  );
+
+  // <>{JSON.stringify(user)}</>;
+};
+
+const SidebarContent = ({ user }: { user: User }) => {
+  return (
+    <div className="purr-navbar flex flex-1 flex-col items-center grow-0 gap-2 p-2 justify-between min-h-screen">
+      <div className="flex flex-col gap-2 flex-grow ">
+        <Logo />
+
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/search"}>search</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/repos"}>repos</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/assets"}>assets</Link>
+        </Button>
+        <Button asChild className="purr-navbar-button">
+          <Link href={"/settings"}>settings</Link>
+        </Button>
+        {/* <div id="table-or-viz"></div> */}
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <RealtimeMessenger user={user} directive={"recon"} />
+        {/* <LogInOut /> */}
+        loginout might be here
+      </div>
+    </div>
+  );
+};

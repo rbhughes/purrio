@@ -1,18 +1,18 @@
 import "../globals.css";
 
-import { sessionExists } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { checkUser } from "@/utils/supabase/server";
 
-export default async function RootLayout({
+export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await sessionExists();
-
-  if (!session) {
+  let user = await checkUser();
+  if (!user) {
     redirect("/");
   }
+  console.log("protected layout ---->");
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 }

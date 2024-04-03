@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -22,21 +22,13 @@ import {
 } from "@/components/ui/select";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  enqueueSearchTask,
-  //updateProfileWithSearchIds,
-  //updateProfileSearchHistory,
-} from "@/lib/actions";
+import { enqueueSearchTask } from "@/lib/actions";
 
 import { Search as HourGlass } from "lucide-react";
 import { FancyMultiSelect } from "./fancy-multi-select";
-import { ShowHits } from "./show-hits";
-
-////
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-////
 
 import {
   Form,
@@ -57,7 +49,6 @@ import {
 
 import { SearchFormSchema } from "./search-form-schema";
 type FormInputs = z.infer<typeof SearchFormSchema>;
-//import { SearchResults } from "./search-results";
 import { useRouter } from "next/navigation";
 
 import { liveTable } from "@openartmarket/supabase-live-table";
@@ -98,7 +89,7 @@ export default function Search({
   const router = useRouter();
 
   const [searchId, setSearchId] = React.useState<number>();
-  const [filteredResult, setFilteredResult] = React.useState<SearchResult[]>(
+  const [filteredResults, setFilteredResults] = React.useState<SearchResult[]>(
     []
   );
 
@@ -111,7 +102,7 @@ export default function Search({
       setHistory(data as SearchHistory[]);
     };
     initHistory();
-  }, [userId, filteredResult]);
+  }, [userId, filteredResults]);
   ////////////////
 
   //console.log("^^^^^");
@@ -149,7 +140,7 @@ export default function Search({
     let filtered = searchResults.filter(
       (sr: SearchResult) => sr.search_id === searchId
     );
-    setFilteredResult(filtered);
+    setFilteredResults(filtered);
     console.log("searchId, searchResults useEffect !!!!!!!!!!");
 
     //updateProfileWithSearchIds(userId);
@@ -236,7 +227,10 @@ export default function Search({
   };
 
   return (
-    <div className="flex flex-col  bg-yellow-600 ">
+    <div className="flex flex-col">
+      <div className="flex mb-4 justify-between">
+        <div className="place-self-center purr-h1">asset search</div>
+      </div>
       <Card>
         <CardHeader>
           <CardDescription>{cardDesc}</CardDescription>
@@ -413,7 +407,8 @@ export default function Search({
 
         {/* <ShowHits searchResults={searchResults} /> */}
         <DataTable
-          data={searchResults}
+          //data={searchResults}
+          data={filteredResults}
           columns={columns}
           //setValue={setValue}
           //setShowForm={setShowForm}

@@ -128,9 +128,9 @@ export const columns: ColumnDef<SearchResult>[] = [
       <DataTableColumnHeader column={column} title="doc" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">
-        click for doc?
-        {/* {JSON.stringify(row.getValue("doc"), null, 2)} */}
+      <div className="w-[200px] h-[200px] overflow-auto">
+        //click for doc?
+        {JSON.stringify(row.getValue("doc"), null, 2)}
       </div>
     ),
   },

@@ -90,11 +90,15 @@
 }
 
 .purr-button {
-  @apply bg-slate-500 font-mono font-extrabold active:scale-95;
+  /*@apply bg-slate-500 font-mono font-extrabold active:scale-95;*/
+  @apply bg-slate-500 font-bold active:scale-95;
 }
 
 .purr-navbar-button {
   @apply w-28 bg-slate-500 font-mono font-extrabold active:scale-95;
+}
+.purr-navbar-button-active {
+  @apply w-28 bg-primary/80 font-mono font-extrabold active:scale-95;
 }
 
 .purr-activity-button {
@@ -108,6 +112,10 @@
 
 .purr-datatable-button {
   @apply w-[70px] h-6 active:scale-95 
+}
+
+.purr-h1 {
+  @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-4xl
 }
 
 /*

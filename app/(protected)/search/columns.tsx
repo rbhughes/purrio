@@ -49,7 +49,6 @@ export const columns: ColumnDef<SearchResult>[] = [
       return (
         <div className="flex items-center gap-1 w-[120px]">
           {SuiteUI[gt].icon}
-          {SuiteUI[gt].label}
         </div>
       );
     },

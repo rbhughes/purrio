@@ -74,7 +74,8 @@ export default function AssetDBStats({ stats }: { stats: Stat[] }) {
               <TableCell>
                 <Button
                   size="sm"
-                  className="purr-button"
+                  className="purr-form-button"
+                  variant="secondary"
                   onClick={handleUpdateAssetStats}
                 >
                   update

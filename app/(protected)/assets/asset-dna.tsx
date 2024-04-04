@@ -38,11 +38,20 @@ export default function AssetDNA(props: DNAProps) {
     setIsOpen(!isOpen);
   };
 
+  // TODO: sort this out if colored Switch should be a thing
+  // [data-state="open"] {
+  //   opacity: 0.1;
+  // }
   return (
     <>
       <span className="flex items-center space-x-2 float-right">
         <Label htmlFor="sqlToggle">Show SQL </Label>
-        <Switch id="sqlToggle" onClick={handleToggle} checked={isOpen} />
+        <Switch
+          id="sqlToggle"
+          onClick={handleToggle}
+          checked={isOpen}
+          //style={{ backgroundColor: "#facc15" }}
+        />
       </span>
 
       <Sheet modal={false} open={isOpen}>

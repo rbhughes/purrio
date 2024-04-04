@@ -13,56 +13,74 @@ export const SuiteUI: SUI = {
     label: "GeoGraphix",
     value: "geographix",
     icon: (
-      <Cylinder
-        color="lime"
-        className="mx-1"
-        size={20}
-        strokeWidth={3}
-        fill="lime"
-        fillOpacity="0.2"
-      />
+      <div className="flex items-center h-fit w-fit">
+        <span className="text-2xl font-black suite-geographix">&#x26C1;</span>
+        <span className="pl-1">GeoGraphix</span>
+      </div>
+
+      //   <Cylinder
+      //     color="lime"
+      //     className="mx-1"
+      //     size={20}
+      //     strokeWidth={3}
+      //     fill="lime"
+      //     fillOpacity="0.2"
+      //   />
     ),
   },
   petra: {
     label: "Petra",
     value: "petra",
     icon: (
-      <Cylinder
-        color="teal"
-        className="mx-1"
-        size={20}
-        strokeWidth={3}
-        fill="teal"
-        fillOpacity="0.2"
-      />
+      <div className="flex items-center h-fit w-fit">
+        <span className="text-2xl font-black suite-petra">&#x26C1;</span>
+        <span className="pl-1">Petra</span>
+      </div>
+
+      // <Cylinder
+      //   color="teal"
+      //   className="mx-1"
+      //   size={20}
+      //   strokeWidth={3}
+      //   fill="teal"
+      //   fillOpacity="0.2"
+      // />
     ),
   },
   kingdom: {
     label: "Kingdom",
     value: "kingdom",
     icon: (
-      <Cylinder
-        color="red"
-        className="mx-1"
-        size={20}
-        strokeWidth={3}
-        fill="red"
-        fillOpacity="0.2"
-      />
+      <div className="flex items-center h-fit w-fit">
+        <span className="text-2xl font-black suite-kingdom">&#x26C1;</span>
+        <span className="pl-1">Kingdom</span>
+      </div>
+      // <Cylinder
+      //   color="red"
+      //   className="mx-1"
+      //   size={20}
+      //   strokeWidth={3}
+      //   fill="red"
+      //   fillOpacity="0.2"
+      // />
     ),
   },
   las: {
     label: "LAS",
     value: "las",
     icon: (
-      <Cylinder
-        color="grey"
-        className="mx-1"
-        size={20}
-        strokeWidth={3}
-        fill="grey"
-        fillOpacity="0.2"
-      />
+      <div className="flex items-center h-fit w-fit">
+        <span className="text-2xl font-black suite-las">&#x26C1;</span>
+        <span className="pl-1">LAS</span>
+      </div>
+      // <Cylinder
+      //   color="grey"
+      //   className="mx-1"
+      //   size={20}
+      //   strokeWidth={3}
+      //   fill="grey"
+      //   fillOpacity="0.2"
+      // />
     ),
   },
 };

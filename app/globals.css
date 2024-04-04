@@ -93,38 +93,51 @@
   }
 }
 
-.purr-navbar {
-  @apply bg-slate-200;
+.suite-geographix {
+  @apply text-lime-400;
+}
+.suite-kingdom {
+  @apply text-red-500;
+}
+.suite-petra {
+  @apply text-teal-500;
+}
+.suite-las {
+  @apply text-yellow-700;
 }
 
-.purr-button {
-  /*@apply bg-slate-500 font-mono font-extrabold active:scale-95;*/
-  @apply bg-slate-500 font-bold active:scale-95;
+.purr-nav-button {
+  @apply w-24 active:scale-95 shadow font-mono font-bold;
 }
 
-.purr-navbar-button {
-  @apply w-28 bg-slate-500 font-mono font-extrabold active:scale-95;
-}
-.purr-navbar-button-active {
-  @apply w-28 bg-primary/80 font-mono font-extrabold active:scale-95;
-}
-
-.purr-activity-button {
-  @apply w-28 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
-}
-
-.purr-table-viz-toggle {
-  @apply w-32 h-20 bg-blue-500;
-}
-
-
-.purr-datatable-button {
-  @apply w-[70px] h-6 active:scale-95 
+.purr-form-button {
+  @apply active:scale-95 shadow bg-yellow-400;
 }
 
 .purr-h1 {
   @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-4xl
 }
+
+.purr-datatable-button {
+  @apply w-[70px] h-6 active:scale-95 
+}
+
+
+
+/* .purr-navbar-button-active {
+  @apply w-28 bg-primary/80 font-mono font-extrabold active:scale-95;
+} */
+
+/* .purr-activity-button {
+  @apply w-28 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
+}
+
+.purr-table-viz-toggle {
+  @apply w-32 h-20 bg-blue-500;
+} */
+
+
+
 
 /*
 .purr-suite-toggle {

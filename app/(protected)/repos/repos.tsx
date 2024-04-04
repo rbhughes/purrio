@@ -102,15 +102,15 @@ export default function Repos({
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
-        <CollapsibleTrigger asChild>
-          <div className="flex mb-4 justify-between">
-            <div className="place-self-center purr-h1">repo recon</div>
-            <Button className="purr-button">
-              <ArrowDownLeftSquare className="mx-2" />
+        <div className="flex mb-4 justify-between">
+          <div className="place-self-center purr-h1">repo recon</div>
+          <CollapsibleTrigger asChild>
+            <Button variant="secondary">
+              <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
               Discover Projects on your Network...
             </Button>
-          </div>
-        </CollapsibleTrigger>
+          </CollapsibleTrigger>
+        </div>
 
         <CollapsibleContent>
           <Card>
@@ -146,9 +146,15 @@ export default function Repos({
                                 {SUITES.map((gt: string) => {
                                   return (
                                     <SelectItem key={gt} value={gt}>
+                                      {/* <div className="flex items-center h-fit w-fit">
+                                        <span className="text-2xl font-black">
+                                          &#x26C1;
+                                        </span>
+                                        <span className="pl-1">GeoGraphix</span>
+                                      </div> */}
+
                                       <div className="flex items-center gap-1">
                                         {SuiteUI[gt].icon}
-                                        {SuiteUI[gt].label}
                                       </div>
                                     </SelectItem>
                                   );
@@ -222,7 +228,11 @@ export default function Repos({
                     {/* ---------- */}
 
                     <div className="w-1/12 mt-8 ml-10">
-                      <Button type="submit" className="purr-button">
+                      <Button
+                        type="submit"
+                        className="purr-form-button"
+                        variant="secondary"
+                      >
                         repo recon
                       </Button>
                     </div>

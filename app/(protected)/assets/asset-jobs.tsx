@@ -170,16 +170,15 @@ export default function AssetJobs({
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
-        <CollapsibleTrigger asChild>
-          <div className="flex mb-4 justify-between">
-            <div className="place-self-center purr-h1">asset collection</div>
-            {/* <div className="self-center">double-click to edit</div> */}
-            <Button className="purr-button">
-              <ArrowDownLeftSquare className="mx-2" />
+        <div className="flex mb-4 justify-between">
+          <div className="place-self-center purr-h1">asset collection</div>
+          <CollapsibleTrigger asChild>
+            <Button variant="secondary">
+              <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
               Define Asset Collection Jobs...
             </Button>
-          </div>
-        </CollapsibleTrigger>
+          </CollapsibleTrigger>
+        </div>
 
         <CollapsibleContent>
           <Card>
@@ -193,6 +192,7 @@ export default function AssetJobs({
                     id="advToggle"
                     onClick={handleToggleAdvancedForm}
                     checked={showAdvancedForm}
+                    //style={{ backgroundColor: "#facc15" }}
                   />
                 </span>
               </CardDescription>
@@ -266,7 +266,6 @@ export default function AssetJobs({
                                     <SelectItem key={gt} value={gt}>
                                       <div className="flex items-center gap-1">
                                         {SuiteUI[gt].icon}
-                                        {SuiteUI[gt].label}
                                       </div>
                                     </SelectItem>
                                   );
@@ -373,7 +372,11 @@ export default function AssetJobs({
                     {/* ---------- */}
 
                     <div className="w-1/12 mt-8 ml-10">
-                      <Button type="submit" className="purr-button">
+                      <Button
+                        type="submit"
+                        className="purr-form-button"
+                        variant="secondary"
+                      >
                         save job
                       </Button>
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -229,7 +229,7 @@ export default function Search({
   return (
     <div className="flex flex-col">
       <div className="flex mb-4 justify-between">
-        <div className="place-self-center purr-h1">asset search</div>
+        <div className="place-self-center purr-h1">search</div>
       </div>
       <Card>
         <CardHeader>
@@ -363,7 +363,11 @@ export default function Search({
 
                     {/* submit */}
                     <div className="w-1/6 mt-8 ml-10">
-                      <Button type="submit" className="purr-button">
+                      <Button
+                        type="submit"
+                        className="purr-form-button"
+                        variant="secondary"
+                      >
                         search
                       </Button>
                     </div>
@@ -406,6 +410,7 @@ export default function Search({
         {/* <ShowHits searchResults={filteredResult} /> */}
 
         {/* <ShowHits searchResults={searchResults} /> */}
+        {/* <Suspense fallback={<p>Loading search results...</p>}> */}
         <DataTable
           //data={searchResults}
           data={filteredResults}
@@ -414,6 +419,7 @@ export default function Search({
           //setShowForm={setShowForm}
           //setShowAdvancedForm={setShowAdvancedForm}
         />
+        {/* </Suspense> */}
       </Card>
     </div>
   );

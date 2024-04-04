@@ -19,12 +19,17 @@ export default async function SignInOut() {
 
   return user ? (
     <form action={signout}>
-      <Button className="purr-navbar-button rounded-full">sign out</Button>
+      <Button className="purr-nav-button rounded-full" variant="ghost">
+        sign out
+      </Button>
     </form>
   ) : (
     <Popover>
       <PopoverTrigger asChild>
-        <Button className="purr-navbar-button rounded-full data-[state=open]:opacity-[.1]">
+        <Button
+          className="purr-nav-button rounded-full data-[state=open]:opacity-[.1]"
+          variant="ghost"
+        >
           sign in
         </Button>
       </PopoverTrigger>
@@ -47,7 +52,7 @@ export default async function SignInOut() {
             required
           />
           <Button
-            className="purr-navbar-button rounded-full self-center"
+            className="purr-nav-button rounded-full self-center"
             formAction={signin}
           >
             Sign In

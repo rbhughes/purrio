@@ -78,6 +78,14 @@
   }
 }
 
+@font-face {
+  font-family: 'PT Serif', serif;
+  src: url('https://fonts.googleapis.com/css2?family=PT+Serif');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
 @layer utilities {
   .text-tiny {
     font-size: 0.66rem;

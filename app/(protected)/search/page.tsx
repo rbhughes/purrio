@@ -1,11 +1,8 @@
-import { cookies } from "next/headers";
 import Search from "./search";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 
 export default async function Page() {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
 
   const { data: searchResults } = await supabase

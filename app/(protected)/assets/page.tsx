@@ -13,8 +13,6 @@ type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
 
   const {

@@ -53,7 +53,8 @@ export default async function AppLayout({
             >
               <div className="flex  w-full items-center justify-between">
                 <div className="flex flex-row">
-                  <Logo className="mr-10" />
+                  {/* <Logo className="mr-10" /> */}
+                  <Logo variant="mdHorizontal" />
                 </div>
                 {user && <Navbar />}
                 <div className="">

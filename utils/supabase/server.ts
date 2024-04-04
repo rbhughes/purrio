@@ -45,18 +45,3 @@ export const checkUser = async (): Promise<boolean> => {
   }
   return true;
 };
-
-// Using supabase.auth.getSession() is potentially insecure as it loads data
-// directly from the storage medium (typically cookies) which may not be
-// authentic. Prefer using supabase.auth.getUser() instead. To suppress this
-// warning call supabase.auth.getUser() before you call supabase.auth.getSession().
-
-// export const sessionExists = async () => {
-//   const cookieStore = cookies();
-//   const supabase = createClient(cookieStore);
-//   const {
-//     data: { session },
-//   } = await supabase.auth.getSession();
-
-//   return session ? true : false;
-// };

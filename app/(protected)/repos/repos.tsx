@@ -105,7 +105,6 @@ export default function Repos({
         <CollapsibleTrigger asChild>
           <div className="flex mb-4 justify-between">
             <div className="place-self-center purr-h1">repo recon</div>
-            {/* <div className="self-center">{titleDesc}</div> */}
             <Button className="purr-button">
               <ArrowDownLeftSquare className="mx-2" />
               Discover Projects on your Network...

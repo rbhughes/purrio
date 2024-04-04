@@ -6,17 +6,10 @@ import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-sche
 import { SearchFormSchema } from "@/app/(protected)/search/search-form-schema";
 
 import { createClient } from "@/utils/supabase/server";
-//import { SupabaseClient } from "@supabase/supabase-js";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-
-//import { Database } from "@/lib/sb_types";
-//type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-//type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
-//import { ASSETS, SUITES } from "@/lib/purr_utils";
 
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
@@ -37,12 +30,10 @@ export interface ActionWithData {
 export async function enqueueRepoReconTask(
   formData: RepoReconFormInputs
 ): Promise<ActionWithSummary> {
-  const cookieStore = cookies();
   const zodRes = RepoReconFormSchema.safeParse(formData);
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    //const supabase = createClient(cookieStore);
     const supabase = createClient();
 
     const supRes = await supabase.from("task").insert({
@@ -66,12 +57,10 @@ export async function enqueueRepoReconTask(
 export async function enqueueAssetJobTask(
   formData: AssetJobFormInputs
 ): Promise<ActionWithSummary> {
-  const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    //const supabase = createClient(cookieStore);
     const supabase = createClient();
 
     const supRes = await supabase.from("task").insert({
@@ -95,12 +84,10 @@ export async function enqueueAssetJobTask(
 export async function enqueueSearchTask(
   formData: SearchFormInputs
 ): Promise<ActionWithData> {
-  const cookieStore = cookies();
   const zodRes = SearchFormSchema.safeParse(formData);
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
-    //const supabase = createClient(cookieStore);
     const supabase = createClient();
 
     const supRes = await supabase
@@ -153,8 +140,6 @@ export async function enqueueSearchTask(
 // }
 
 export async function enqueueAssetStats(): Promise<any> {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
 
   const supRes = await supabase.from("task").insert({
@@ -176,8 +161,6 @@ export async function enqueueAssetStats(): Promise<any> {
 }
 
 export async function deleteRepo(id: string): Promise<ActionWithData> {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
   const supRes = await supabase.from("repo").delete().eq("id", id);
   if (supRes.status !== 204) {
@@ -188,8 +171,6 @@ export async function deleteRepo(id: string): Promise<ActionWithData> {
 }
 
 export async function deleteAssetJob(id: number): Promise<ActionWithData> {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
   const supRes = await supabase.from("asset_job").delete().eq("id", id);
   if (supRes.status !== 204) {
@@ -202,13 +183,11 @@ export async function deleteAssetJob(id: number): Promise<ActionWithData> {
 export async function createAssetJob(
   formData: AssetJobFormInputs
 ): Promise<ActionWithData> {
-  const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
     delete zodRes.data.id;
-    //const supabase = createClient(cookieStore);
     const supabase = createClient();
 
     const supRes = await supabase.from("asset_job").insert(zodRes.data);
@@ -227,13 +206,11 @@ export async function createAssetJob(
 export async function updateAssetJob(
   formData: AssetJobFormInputs
 ): Promise<ActionWithData> {
-  const cookieStore = cookies();
   const zodRes = AssetJobFormSchema.safeParse(formData);
   if (!zodRes.success) {
     return { data: null, error: JSON.stringify(zodRes.error) };
   } else {
     console.log("UPDATE ASSET JOB CALLED", formData);
-    //const supabase = createClient(cookieStore);
     const supabase = createClient();
 
     const ajId = zodRes.data.id;
@@ -258,8 +235,6 @@ export async function updateAssetJob(
 // These should be "expedient"
 
 export const fetchWorkers = async (): Promise<string[]> => {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
   const supRes = await supabase.from("worker").select("hostname");
 
@@ -274,8 +249,6 @@ export const fetchWorkers = async (): Promise<string[]> => {
 
 // TODO: make this random?
 export const pickWorker = async (): Promise<string> => {
-  const cookieStore = cookies();
-  //const supabase = createClient(cookieStore);
   const supabase = createClient();
 
   const supRes = await supabase
@@ -309,12 +282,9 @@ export const pickWorker = async (): Promise<string> => {
 //   body: { asset: "well", filter: "" },
 // });
 
-export async function login(formData: FormData) {
-  console.log("LOGIN CLICKED");
+export async function signin(formData: FormData) {
   const supabase = createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
@@ -323,21 +293,17 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    console.log("LOGIN ERRRRRRR");
-    console.log(error);
-    console.log("RRRRRRRRRRRRRR");
+    console.error(error);
     redirect("/error");
   }
 
   revalidatePath("/", "layout");
-  redirect("/repos");
+  redirect("/search");
 }
 
 export async function signout() {
-  console.log("signout CLICKED");
   const supabase = createClient();
   await supabase.auth.signOut();
-  console.log("2222222 signout CLICKED");
   revalidatePath("/", "layout");
   return redirect("/");
 }

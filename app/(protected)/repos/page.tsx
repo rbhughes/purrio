@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { fetchWorkers } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
@@ -7,7 +6,6 @@ import Repos from "./repos";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  //const cookieStore = cookies();
   const supabase = createClient();
 
   const workers = await fetchWorkers();

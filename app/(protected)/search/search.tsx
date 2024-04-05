@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -26,6 +26,7 @@ import { enqueueSearchTask } from "@/lib/actions";
 
 import { Search as HourGlass } from "lucide-react";
 import { FancyMultiSelect } from "./fancy-multi-select";
+//import Select from "react-select";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -226,6 +227,15 @@ export default function Search({
     );
   };
 
+  /////////////////////////////////
+  const assetSelections: readonly { value: string; label: string }[] =
+    ASSETS.map((asset) => ({
+      value: asset,
+      label: asset,
+    }));
+
+  /////////////////////////////////
+
   return (
     <div className="flex flex-col">
       <div className="flex mb-4 justify-between">
@@ -239,7 +249,7 @@ export default function Search({
         <CardContent>
           <div className="flex flex-row gap-4">
             {/* SEARCH FORM */}
-            <div className="w-8/12 p-2">
+            <div className="w-8/12 ">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(processForm)}
@@ -250,7 +260,7 @@ export default function Search({
                     {/* <div className="w-2/6 flex-1"> */}
 
                     {/* SUITES */}
-                    <div className="">
+                    <div className="w-4/6 bg-red-100">
                       <FormField
                         control={form.control}
                         name="suites"
@@ -270,7 +280,7 @@ export default function Search({
                                   key={suite}
                                   value={suite}
                                   aria-label={suite}
-                                  className="purr-suite-toggle"
+                                  className="w-4/12"
                                 >
                                   {SuiteUI[suite].icon}
                                 </ToggleGroupItem>
@@ -283,7 +293,7 @@ export default function Search({
                     </div>
 
                     {/* TAG */}
-                    <div className="">
+                    <div className="w-2/6 bg-yellow-100">
                       <FormField
                         control={form.control}
                         name="tag"
@@ -305,14 +315,31 @@ export default function Search({
 
                   <div className="flex flex-row gap-2">
                     {/* ASSETS */}
-                    <div className="">
+                    <div className="w-full bg-green-100">
+                      {/* <Controller
+                        control={form.control}
+                        name="assets"
+                        rules={{ required: true }}
+                        render={({
+                          field: { onChange, onBlur, value, name, ref },
+                        }) => (
+                          <Select
+                            defaultValue={[assetSelections[0].value]}
+                            options={assetSelections}
+                            onChange={onChange}
+                            isMulti={true}
+                            value={value}
+                            name={name}
+                            ref={ref}
+                          />
+                        )}
+                      /> */}
                       <FormField
                         control={form.control}
                         name="assets"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Asset</FormLabel>
-
+                            <FormLabel>assets</FormLabel>
                             <FancyMultiSelect
                               items={ASSETS.map((asset) => ({
                                 value: asset,
@@ -333,16 +360,16 @@ export default function Search({
                     </div>
                   </div>
 
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-row gap-2 bg-yellow-100 ">
                     {/* terms */}
-                    <div className="">
+                    <div className="w-11/12">
                       <FormField
                         control={form.control}
                         name="terms"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              my form label
+                              search
                               <HourGlass className="absolute mt-3.5 ml-1 text-muted-foreground" />
                             </FormLabel>
                             <FormControl>
@@ -362,7 +389,7 @@ export default function Search({
                     </div>
 
                     {/* submit */}
-                    <div className="w-1/6 mt-8 ml-10">
+                    <div className="w-1/6 mt-8 ml-10 bg-red-200">
                       <Button
                         type="submit"
                         className="purr-form-button"
@@ -377,9 +404,9 @@ export default function Search({
             </div>
 
             {/* SEARCH HISTORY */}
-            <div className="flex flex-col w-4/12 p-2">
+            <div className="flex flex-col w-4/12  bg-purple-100">
               <div className="space-y-2">
-                <Label className="h-9">Search History</Label>
+                <Label className="h-9">search history</Label>
                 <Select onValueChange={handleHistorySelect}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="previous searches..." />

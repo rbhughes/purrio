@@ -6,11 +6,22 @@
 
 // (if this gets annoying, just switch to: https://react-select.com/home)
 
+// 2024-04-05 | wrapped stuff in CommandList
+//  cmdk css bugs (select, dropdown-menu, command)
+//  https://github.com/shadcn-ui/ui/pull/3037
+//  https://github.com/shadcn-ui/ui/issues/3024
+//  https://github.com/shadcn-ui/ui/pull/2945
+
 import * as React from "react";
 import { X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
+import {
+  Command,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 
 type Item = Record<"value" | "label", string>;
@@ -114,26 +125,28 @@ export function FancyMultiSelect({
       <div className="relative mt-2">
         {open && selectables.length > 0 ? (
           <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-            <CommandGroup className="h-full overflow-auto">
-              {selectables.map((item) => {
-                return (
-                  <CommandItem
-                    key={item.value}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onSelect={(value) => {
-                      setInputValue("");
-                      setSelected((prev) => [...prev, item]);
-                    }}
-                    className={"cursor-pointer"}
-                  >
-                    {item.label}
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
+            <CommandList>
+              <CommandGroup className="h-full overflow-auto">
+                {selectables.map((item) => {
+                  return (
+                    <CommandItem
+                      key={item.value}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onSelect={(value) => {
+                        setInputValue("");
+                        setSelected((prev) => [...prev, item]);
+                      }}
+                      className={"cursor-pointer"}
+                    >
+                      {item.label}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
           </div>
         ) : null}
       </div>

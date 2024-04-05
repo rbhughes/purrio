@@ -34,6 +34,12 @@ export default async function Page() {
                 broken suite filter:
                 https://github.com/shadcn-ui/ui/discussions/2976
               </li>
+              <li>
+                cmdk css bugs (select, dropdown-menu, command)
+                https://github.com/shadcn-ui/ui/pull/3037
+                https://github.com/shadcn-ui/ui/issues/3024
+                https://github.com/shadcn-ui/ui/pull/2945
+              </li>
             </ul>
           </div>
         )}

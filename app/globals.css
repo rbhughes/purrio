@@ -96,12 +96,15 @@
 .suite-geographix {
   @apply text-lime-400;
 }
+
 .suite-kingdom {
   @apply text-red-500;
 }
+
 .suite-petra {
   @apply text-teal-500;
 }
+
 .suite-las {
   @apply text-yellow-700;
 }
@@ -124,22 +127,12 @@
 
 
 
-/* .purr-navbar-button-active {
-  @apply w-28 bg-primary/80 font-mono font-extrabold active:scale-95;
-} */
-
-/* .purr-activity-button {
-  @apply w-28 h-20 rounded-lg bg-slate-500 font-mono font-extrabold;
-}
-
-.purr-table-viz-toggle {
-  @apply w-32 h-20 bg-blue-500;
-} */
 
 
 
 
 /*
+(to change background on toggle without editing source)
 .purr-suite-toggle {
   @apply data-[state=on]:bg-bluey ;
 }

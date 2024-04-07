@@ -3,6 +3,9 @@ import { fetchWorkers } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
 import Repos from "./repos";
 
+import { Suspense } from "react";
+import { Loader } from "@/components/loader";
+
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
@@ -20,30 +23,33 @@ export default async function Page() {
     .order("updated_at", { ascending: false });
 
   return (
-    user && (
-      <div>
+    <div>
+      <Suspense fallback={<Loader target="Repos" />}>
         <Repos workers={workers} repos={repos!} />
+      </Suspense>
 
-        <Toaster richColors />
+      <Toaster richColors />
 
-        {process.env.NODE_ENV === "development" && (
-          <div className="bg-red-600 mt-20 p-4 w-fit text-white">
-            TODO
-            <ul>
-              <li>
-                broken suite filter:
-                https://github.com/shadcn-ui/ui/discussions/2976
-              </li>
-              <li>
-                cmdk css bugs (select, dropdown-menu, command)
-                https://github.com/shadcn-ui/ui/pull/3037
-                https://github.com/shadcn-ui/ui/issues/3024
-                https://github.com/shadcn-ui/ui/pull/2945
-              </li>
-            </ul>
-          </div>
-        )}
-      </div>
-    )
+      {process.env.NODE_ENV === "development" && (
+        <div className="bg-red-600 mt-20 p-4 w-fit text-white">
+          TODO
+          <ul>
+            <li>
+              broken suite filter:
+              https://github.com/shadcn-ui/ui/discussions/2976
+            </li>
+            <li>
+              cmdk css bugs (select, dropdown-menu, command)
+              https://github.com/shadcn-ui/ui/pull/3037
+              https://github.com/shadcn-ui/ui/issues/3024
+              https://github.com/shadcn-ui/ui/pull/2945
+            </li>
+            <li>
+              https://shadcnui-expansions.typeart.cc/docs/multiple-selector
+            </li>
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

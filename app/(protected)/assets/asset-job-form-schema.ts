@@ -6,9 +6,6 @@ import { z } from "zod";
 
 export const AssetJobFormSchema = z.object({
   id: z.coerce.number().optional(),
-  active: z.boolean({
-    required_error: "active is required",
-  }),
   asset: z.string({
     required_error: "select an asset",
   }),
@@ -35,3 +32,6 @@ export const AssetJobFormSchema = z.object({
 
 // //last_invoked: z.date().nullable(),
 // last_invoked: z.string().datetime({ offset: true }).nullable(),
+// active: z.boolean({
+//   required_error: "active is required",
+// }),

@@ -2,6 +2,9 @@ import Search from "./search";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 
+import { Suspense } from "react";
+import { Loader } from "@/components/loader";
+
 export default async function Page() {
   const supabase = createClient();
 
@@ -15,15 +18,15 @@ export default async function Page() {
   } = await supabase.auth.getUser();
 
   return (
-    user && (
-      <div className="">
+    <div>
+      <Suspense fallback={<Loader target="AssetJobs" />}>
         <Search
-          userId={user.id}
+          userId={user!.id}
           //searchHistory={searchHistory![0].search_history}
           searchResults={searchResults!}
         />
-        <Toaster richColors />
-      </div>
-    )
+      </Suspense>
+      <Toaster richColors />
+    </div>
   );
 }

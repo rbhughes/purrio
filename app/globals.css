@@ -113,6 +113,10 @@
   @apply w-24 active:scale-95 shadow font-mono font-bold;
 }
 
+.purr-nav-button-active {
+  @apply w-24 active:scale-95 shadow font-mono font-bold bg-primary/60;
+}
+
 .purr-form-button {
   @apply active:scale-95 shadow bg-yellow-400;
 }

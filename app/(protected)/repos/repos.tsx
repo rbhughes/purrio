@@ -126,7 +126,7 @@ export default function Repos({
                   <div className="flex flex-row gap-2">
                     {/* ---------- */}
 
-                    <div className="w-2/12">
+                    <div className="w-2/12 ">
                       <FormField
                         control={form.control}
                         name="suite"
@@ -169,7 +169,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-5/12">
+                    <div className="w-6/12">
                       <FormField
                         control={form.control}
                         name="recon_root"
@@ -227,7 +227,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-1/12 mt-8 ml-10">
+                    <div className="w-2/12 mt-8 ">
                       <Button
                         type="submit"
                         className="purr-form-button"

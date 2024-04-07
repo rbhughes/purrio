@@ -82,7 +82,7 @@ export default function AssetJobs({
 
   let defaults: FormInputs = {
     id: undefined,
-    active: true,
+    //active: true,
     asset: ASSETS[0],
     tag: "",
     chunk: 100,
@@ -183,19 +183,22 @@ export default function AssetJobs({
         <CollapsibleContent>
           <Card>
             <CardHeader>
-              <CardDescription>
-                {cardDesc}
-
-                <span className="flex items-center space-x-2 float-right">
-                  <Label htmlFor="advToggle">Advanced </Label>
-                  <Switch
-                    id="advToggle"
-                    onClick={handleToggleAdvancedForm}
-                    checked={showAdvancedForm}
-                    //style={{ backgroundColor: "#facc15" }}
-                  />
-                </span>
-              </CardDescription>
+              <div className="flex flex-row">
+                <div className="w-5/6">
+                  <CardDescription>{cardDesc}</CardDescription>
+                </div>
+                <div className="w-1/6">
+                  <span className="flex items-center space-x-2 float-right">
+                    <Label htmlFor="advToggle">Advanced </Label>
+                    <Switch
+                      id="advToggle"
+                      onClick={handleToggleAdvancedForm}
+                      checked={showAdvancedForm}
+                      //style={{ backgroundColor: "#facc15" }}
+                    />
+                  </span>
+                </div>
+              </div>
             </CardHeader>
 
             <CardContent>
@@ -218,7 +221,7 @@ export default function AssetJobs({
 
                   {/* -------------------- */}
                   <div className="flex flex-row gap-2">
-                    <div className="w-1/12">
+                    {/* <div className="w-1/12">
                       <FormField
                         control={form.control}
                         name="active"
@@ -236,17 +239,17 @@ export default function AssetJobs({
                           </FormItem>
                         )}
                       />
-                    </div>
+                    </div> */}
 
                     {/* ---------- */}
 
-                    <div className="w-2/12">
+                    <div className="w-1/6">
                       <FormField
                         control={form.control}
                         name="suite" //this should match repo.suite, no?
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Suite</FormLabel>
+                            <FormLabel>suite</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
@@ -280,13 +283,13 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-3/12">
+                    <div className="w-2/6">
                       <FormField
                         control={form.control}
                         name="repo_id"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Repo</FormLabel>
+                            <FormLabel>repo</FormLabel>
 
                             <Select
                               onValueChange={field.onChange}
@@ -318,13 +321,13 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-2/12">
+                    <div className="w-1/6">
                       <FormField
                         control={form.control}
                         name="asset"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Asset</FormLabel>
+                            <FormLabel>asset</FormLabel>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
@@ -358,7 +361,7 @@ export default function AssetJobs({
                         name="tag"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Tag</FormLabel>
+                            <FormLabel>tag</FormLabel>
                             <FormControl>
                               <Input placeholder="tag" {...field} />
                             </FormControl>
@@ -371,7 +374,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/12 mt-8 ml-10">
+                    <div className="w-1/6 mt-8 ">
                       <Button
                         type="submit"
                         className="purr-form-button"

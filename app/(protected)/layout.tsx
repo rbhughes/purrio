@@ -13,6 +13,5 @@ export default async function ProtectedLayout({
     redirect("/");
   }
   console.log("protected layout ---->");
-
   return <>{children}</>;
 }

@@ -310,7 +310,7 @@ export type Database = {
       }
       search_result: {
         Row: {
-          active: boolean | null
+          active: boolean
           asset: string | null
           created_at: string
           doc: Json | null
@@ -328,7 +328,7 @@ export type Database = {
           well_id: string | null
         }
         Insert: {
-          active?: boolean | null
+          active?: boolean
           asset?: string | null
           created_at?: string
           doc?: Json | null
@@ -346,7 +346,7 @@ export type Database = {
           well_id?: string | null
         }
         Update: {
-          active?: boolean | null
+          active?: boolean
           asset?: string | null
           created_at?: string
           doc?: Json | null

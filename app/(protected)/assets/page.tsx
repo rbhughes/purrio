@@ -3,8 +3,10 @@ import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./asset-jobs";
 import AssetDBStats from "./asset-db-stats";
-
 import AssetStoreInit from "@/store/asset-store-init";
+
+import { Suspense } from "react";
+import { Loader } from "@/components/loader";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
@@ -60,25 +62,33 @@ export default async function Page() {
   const filteredAssetJobs = extantReposOnly(repos!, assetJobs!);
 
   return (
-    user && (
-      <div>
+    <div>
+      <Suspense fallback={<Loader target="AssetJobs" />}>
         <AssetJobs
           repos={repos!}
           assetJobs={filteredAssetJobs.extants}
           withMissingRepos={filteredAssetJobs.missing}
         />
+      </Suspense>
+
+      <Suspense fallback={<Loader target="AssetDBStats" />}>
         <AssetDBStats stats={stats!} />
-        <Toaster expand richColors className="flex w-6/12" />
+      </Suspense>
+
+      <Toaster expand richColors className="flex w-6/12" />
+
+      <Suspense fallback={<Loader target="AssetStoreInit" />}>
         <AssetStoreInit />
-        {process.env.NODE_ENV === "development" && (
-          <div className="bg-red-600 mt-20 p-4 w-fit text-white">
-            TODO
-            <ul>
-              <li>show current asset holdings (above form?)</li>
-            </ul>
-          </div>
-        )}
-      </div>
-    )
+      </Suspense>
+
+      {process.env.NODE_ENV === "development" && (
+        <div className="bg-red-600 mt-20 p-4 w-fit text-white">
+          TODO
+          <ul>
+            <li>show current asset holdings (above form?)</li>
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }

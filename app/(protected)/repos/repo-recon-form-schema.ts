@@ -11,9 +11,9 @@ export const RepoReconFormSchema = z.object({
   suite: z.string({
     required_error: "select a suite",
   }),
-  worker: z.string({
-    required_error: "select a hostname",
-  }),
+  // worker: z.string({
+  //   required_error: "select a hostname",
+  // }),
   ggx_host: z.union([z.string().min(4), z.string().length(0)]).optional(),
   kingdom_server: z.union([z.string().min(4), z.string().length(0)]).optional(),
   kingdom_username: z

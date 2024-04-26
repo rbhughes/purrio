@@ -131,11 +131,13 @@ export const columns: ColumnDef<AssetJob>[] = [
   },
 
   {
-    accessorKey: "filter",
+    accessorKey: "where_clause",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="filter" />
+      <DataTableColumnHeader column={column} title="where_clause" />
     ),
-    cell: ({ row }) => <div className="w-[80px]">{row.getValue("filter")}</div>,
+    cell: ({ row }) => (
+      <div className="w-[80px]">{row.getValue("where_clause")}</div>
+    ),
   },
 
   {

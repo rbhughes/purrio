@@ -169,7 +169,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-6/12">
+                    <div className="w-8/12">
                       <FormField
                         control={form.control}
                         name="recon_root"
@@ -190,7 +190,7 @@ export default function Repos({
 
                     {/* ---------- */}
 
-                    <div className="w-2/12">
+                    {/* <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="worker"
@@ -223,7 +223,7 @@ export default function Repos({
                           </FormItem>
                         )}
                       />
-                    </div>
+                    </div> */}
 
                     {/* ---------- */}
 

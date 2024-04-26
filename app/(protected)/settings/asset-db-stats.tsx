@@ -66,8 +66,10 @@ export default function AssetDBStats({ stats }: { stats: Stat[] }) {
   };
 
   return (
-    <div className="flex justify-center">
-      <Card className="mt-8 p-2 w-11/12">
+    // <div className="flex justify-center">
+    <div>
+      {/* <Card className="mt-8 p-2 w-11/12"> */}
+      <Card>
         <Table className="text-xs text-center">
           <TableHeader>
             <TableRow>

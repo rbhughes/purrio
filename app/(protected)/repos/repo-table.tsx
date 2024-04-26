@@ -26,6 +26,7 @@ export function RepoTable({
   const supabase = createClient();
   const router = useRouter();
 
+  // channel name is "repo-active-true"
   React.useEffect(() => {
     const initChannel = () => {
       const chan = liveTable<Repo>(supabase, {

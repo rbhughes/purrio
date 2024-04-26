@@ -90,13 +90,22 @@ export async function enqueueSearchTask(
   } else {
     const supabase = createClient();
 
+    // replace the asset MultipleSelector Option[] with just strings
+    let newBody = {
+      assets: zodRes.data.assets.map((o) => o.value),
+      suites: zodRes.data.suites,
+      tag: zodRes.data.tag,
+      terms: zodRes.data.terms,
+      user_id: zodRes.data.user_id,
+    };
+
     const supRes = await supabase
       .from("task")
       .insert({
         worker: await pickWorker(),
         directive: "search",
         status: "PENDING",
-        body: zodRes.data,
+        body: newBody,
       })
       .select();
 

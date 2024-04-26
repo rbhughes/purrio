@@ -17,7 +17,7 @@ export const AssetJobFormSchema = z.object({
     .int()
     .min(1),
   cron: z.any().nullable(),
-  filter: z.any().nullable(),
+  where_clause: z.any().nullable(),
   repo_fs_path: z.string().nullable(),
   suite: z.string(),
   recency: z.coerce

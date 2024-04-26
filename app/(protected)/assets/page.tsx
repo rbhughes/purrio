@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./asset-jobs";
-import AssetDBStats from "./asset-db-stats";
-import AssetStoreInit from "@/store/asset-store-init";
+//import AssetDBStats from "./asset-db-stats";
+// import AssetStoreInit from "@/store/asset-store-init";
 
 import { Suspense } from "react";
 import { Loader } from "@/components/loader";
@@ -39,10 +39,10 @@ export default async function Page() {
     .select()
     .order("updated_at", { ascending: false });
 
-  const { data: stats } = await supabase
-    .from("asset_stat")
-    .select()
-    .order("asset");
+  // const { data: stats } = await supabase
+  //   .from("asset_stat")
+  //   .select()
+  //   .order("asset");
 
   // Some AssetJobs may exist when their associated Repo is missing. Hide them.
   const extantReposOnly = (repos: Repo[], assetJobs: AssetJob[]) => {
@@ -56,7 +56,7 @@ export default async function Page() {
         missing.push(aj);
       }
     });
-    return { extants: extants, missing: missing };
+    return { extants, missing };
   };
 
   const filteredAssetJobs = extantReposOnly(repos!, assetJobs!);
@@ -71,15 +71,15 @@ export default async function Page() {
         />
       </Suspense>
 
-      <Suspense fallback={<Loader target="AssetDBStats" />}>
+      {/* <Suspense fallback={<Loader target="AssetDBStats" />}>
         <AssetDBStats stats={stats!} />
-      </Suspense>
+      </Suspense> */}
 
       <Toaster expand richColors className="flex w-6/12" />
 
-      <Suspense fallback={<Loader target="AssetStoreInit" />}>
+      {/* <Suspense fallback={<Loader target="AssetStoreInit" />}>
         <AssetStoreInit />
-      </Suspense>
+      </Suspense> */}
 
       {process.env.NODE_ENV === "development" && (
         <div className="bg-red-600 mt-20 p-4 w-fit text-white">

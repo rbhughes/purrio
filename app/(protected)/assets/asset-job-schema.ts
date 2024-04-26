@@ -6,7 +6,7 @@ export const AssetJobSchema = z.object({
   asset: z.string(),
   chunk: z.number(),
   cron: z.string().nullable(),
-  filter: z.string().nullable(),
+  where_clause: z.string().nullable(),
   last_invoked: z.string().datetime({ offset: true }).nullable(),
   repo_fs_path: z.string(),
   suite: z.string(),

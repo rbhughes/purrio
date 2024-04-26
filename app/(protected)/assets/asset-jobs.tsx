@@ -87,7 +87,7 @@ export default function AssetJobs({
     tag: "",
     chunk: 100,
     cron: "",
-    filter: "",
+    where_clause: "",
     repo_fs_path: null,
     suite: [...new Set(repos!.map((repo) => repo.suite as string))][0],
     recency: 14,
@@ -144,9 +144,9 @@ export default function AssetJobs({
     formData.suite = repo.suite!;
     formData.repo_name = repo.name;
 
-    // console.log("************");
-    // console.log(formData);
-    // console.log("************");
+    console.log("************");
+    console.log(formData);
+    console.log("************");
 
     const { data, error } =
       formData.id === 2e63
@@ -464,12 +464,15 @@ export default function AssetJobs({
                         <div className="w-2/6">
                           <FormField
                             control={form.control}
-                            name="filter"
+                            name="where_clause"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>filter</FormLabel>
+                                <FormLabel>where_clause</FormLabel>
                                 <FormControl>
-                                  <Textarea placeholder="filter" {...field} />
+                                  <Textarea
+                                    placeholder="where_clause"
+                                    {...field}
+                                  />
                                 </FormControl>
                                 <FormDescription>
                                   SQL "WHERE" clause stub

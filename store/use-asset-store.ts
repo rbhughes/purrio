@@ -20,6 +20,7 @@ const fetchAssetData = async (ggType: string) => {
         console.log("error on  ~~~ " + ggType + " ~~~ " + asset);
         console.error(error);
       } else {
+        console.log(`fetching asset data for ${asset}`);
         assets[asset] = { select: data.sql.select };
       }
     })

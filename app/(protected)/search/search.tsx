@@ -25,7 +25,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { enqueueSearchTask } from "@/lib/actions";
 
 import { Search as HourGlass } from "lucide-react";
-import { FancyMultiSelect } from "./fancy-multi-select";
 import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 
 import { columns } from "./columns";
@@ -142,14 +141,15 @@ export default function Search({
       (sr: SearchResult) => sr.search_id === searchId
     );
     setFilteredResults(filtered);
-    console.log("searchId, searchResults useEffect !!!!!!!!!!");
+    console.log("searchId, searchResults !!!!!!!!!! searchId=", searchId);
 
     //updateProfileWithSearchIds(userId);
     //updateProfileSearchHistory(userId);
   }, [searchId, searchResults]);
 
   let defaults = {
-    asset: [ASSETS[0]],
+    //asset: [ASSETS[0]],
+    assets: [{ label: ASSETS[0], value: ASSETS[0] }],
     suites: [SUITES[0]],
     tag: "",
     terms: "",
@@ -171,6 +171,15 @@ export default function Search({
         label: asset,
       }))
     );
+    console.log("inside historyselect");
+
+    let sel = sb.assets.map((asset: any) => ({
+      value: asset,
+      label: asset,
+    }));
+
+    console.log(sel);
+    form.setValue("assets", sel);
 
     form.setValue("suites", sb.suites);
     form.setValue("tag", sb.tag);
@@ -184,19 +193,18 @@ export default function Search({
     label: asset,
   }));
 
-  // 2024-03-11 | Not sure how to fully manage FancyMultiSelect with RHF
-  // Selection worked as expected, but RHF's reset() did not since "selected"
-  // is not exposed. So...I moved the useState hook here to the parent.
   const [selectedAssets, setSelectedAssets] = React.useState<Item[]>([
     items[0],
   ]);
 
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
     try {
+      // deal with getting only values from Option selection(s) in the action
       const { data, error } = await enqueueSearchTask(formData);
       if (error) {
         toast.error(error);
       } else {
+        console.log(data);
         toast.info(JSON.stringify(data));
       }
 
@@ -218,7 +226,6 @@ export default function Search({
     return (
       <div>
         {sh.updated_at}
-        {sh.search_id}
         {" | "}
         <span className="bg-yellow-300">{sh.search_body.terms}</span>
         {" | "}
@@ -233,7 +240,12 @@ export default function Search({
     label: asset,
   }));
 
-  /////////////////////////////////
+  const test = (myarg: any) => {
+    console.log("aaaaaaaaaaaa", myarg);
+    return [{ value: "well", label: "well" }];
+  };
+
+  ////////////////////////////////e
 
   return (
     <div className="flex flex-col">
@@ -248,14 +260,14 @@ export default function Search({
         <CardContent>
           <div className="flex flex-row gap-4">
             {/* SEARCH FORM */}
-            <div className="w-8/12 ">
+            <div className="w-8/12">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(processForm)}
                   className=" space-y-2 "
                 >
                   {/* --------------------------- */}
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-row gap-2 mb-4">
                     {/* <div className="w-2/6 flex-1"> */}
 
                     {/* SUITES */}
@@ -312,50 +324,24 @@ export default function Search({
                     </div>
                   </div>
 
-                  <div className="flex flex-row gap-2">
+                  <div className="flex flex-col">
                     {/* ASSETS */}
                     <div className="w-full ">
-                      {/* ____FancyMultiSelect____ */}
-                      {/* <FormField
-                        control={form.control}
-                        name="assets"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>assets</FormLabel>
-                            <FancyMultiSelect
-                              items={ASSETS.map((asset) => ({
-                                value: asset,
-                                label: asset,
-                              }))}
-                              onChange={(values) => {
-                                field.onChange(
-                                  values.map(({ value }) => value)
-                                );
-                              }}
-                              selected={selectedAssets}
-                              setSelected={setSelectedAssets}
-                            />
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      /> */}
-
                       <FormField
                         control={form.control}
                         name="assets"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>assets</FormLabel>
-                            <MultipleSelector
-                              badgeClassName="bg-orange-500"
-                              value={selectedAssets}
-                              defaultOptions={assetSelections}
-                              onChange={(values) => {
-                                field.onChange(
-                                  values.map(({ value }) => value)
-                                );
-                              }}
-                            />
+                            <FormControl>
+                              <MultipleSelector
+                                badgeClassName="bg-orange-500"
+                                value={field.value}
+                                onChange={field.onChange}
+                                defaultOptions={assetSelections}
+                                placeholder="select one or more assets..."
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -364,7 +350,7 @@ export default function Search({
                   </div>
 
                   <div className="flex flex-row gap-2  ">
-                    {/* terms */}
+                    {/* TERMS */}
                     <div className="w-full">
                       <FormField
                         control={form.control}

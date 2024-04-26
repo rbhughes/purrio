@@ -8,6 +8,8 @@ import SignInOut from "@/components/sign-in-out";
 import { Navbar } from "@/components/navbar";
 
 import { Logo } from "@/components/logo";
+//import RealtimeMessenger from "@/components/realtime-messenger";
+import { MessageFooter } from "@/components/message-footer";
 
 import "./globals.css";
 
@@ -67,12 +69,14 @@ export default async function AppLayout({
               {children}
             </main>
 
-            <footer
+            {user && <MessageFooter user={user!} />}
+            {/* <footer
               className="w-full h-[60px] border-t border-t-foreground/10 \
              flex justify-center items-center bg-gradient-to-b from-secondary"
             >
+              <RealtimeMessenger user={user!} directive={"recon"} />
               footsie
-            </footer>
+            </footer> */}
           </div>
         </ThemeProvider>
       </body>

@@ -12,6 +12,8 @@ import RepoVis from "./repo-vis";
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 
+//import Hydration from "@/store/hydration";
+
 const renderSubComponent = ({ row }: { row: any }) => {
   return <RepoVis repo={row.original as Repo} />;
 };
@@ -75,6 +77,7 @@ export function RepoTable({
 
   return (
     <Card className="border-8 border-double">
+      {/* <Hydration /> */}
       <DataTable
         data={repos}
         columns={columns}

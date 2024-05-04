@@ -3,6 +3,9 @@ import "../globals.css";
 import { redirect } from "next/navigation";
 import { checkUser } from "@/utils/supabase/server";
 
+import ZustandInit from "@/store/zustand-init";
+// import Hydration from "@/store/hydration";
+//import HydrateStore from "@/store/use-repo-table-store";
 export default async function ProtectedLayout({
   children,
 }: {
@@ -13,5 +16,12 @@ export default async function ProtectedLayout({
     redirect("/");
   }
   console.log("protected layout ---->");
-  return <>{children}</>;
+  return (
+    <>
+      {/* <HydrateStore /> */}
+      <ZustandInit />
+      {/* <Hydration /> */}
+      {children}
+    </>
+  );
 }

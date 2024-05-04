@@ -219,9 +219,8 @@ export default function Search({
   };
 
   const cardDesc = `
-  Limit search by Asset type, Suite, tag and text terms.`;
+  Limit search by Application Suite, Tag, Asset(s) and text search terms`;
 
-  // flex justify-between not working here (?)
   const formatHistoryOption = (sh: SearchHistory) => {
     return (
       <div>
@@ -258,14 +257,14 @@ export default function Search({
         </CardHeader>
 
         <CardContent>
-          <div className="flex flex-row gap-4">
-            {/* SEARCH FORM */}
-            <div className="w-8/12">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(processForm)}
-                  className=" space-y-2 "
-                >
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(processForm)}
+              className=" space-y-2 "
+            >
+              <div className="flex flex-row gap-4">
+                {/* SEARCH FORM */}
+                <div className="w-8/12">
                   {/* --------------------------- */}
                   <div className="flex flex-row gap-2 mb-4">
                     {/* <div className="w-2/6 flex-1"> */}
@@ -339,7 +338,7 @@ export default function Search({
                                 value={field.value}
                                 onChange={field.onChange}
                                 defaultOptions={assetSelections}
-                                placeholder="select one or more assets..."
+                                placeholder="select one or more assets to search..."
                               />
                             </FormControl>
                             <FormMessage />
@@ -349,71 +348,78 @@ export default function Search({
                     </div>
                   </div>
 
-                  <div className="flex flex-row gap-2  ">
-                    {/* TERMS */}
-                    <div className="w-full">
-                      <FormField
-                        control={form.control}
-                        name="terms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              search
-                              <HourGlass className="absolute mt-3.5 ml-1 text-muted-foreground" />
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="search terms"
-                                {...field}
-                                className="ml-10"
-                              />
-                            </FormControl>
-                            {/* <FormDescription>
+                  <div className="flex flex-row gap-2">{/* TERMS */}</div>
+                </div>
+
+                {/* SEARCH HISTORY */}
+                <div className="flex flex-col w-4/12 ">
+                  <div className="space-y-2">
+                    <Label className="h-9">search history</Label>
+                    <Select onValueChange={handleHistorySelect}>
+                      <SelectTrigger className="">
+                        <SelectValue placeholder="previous searches..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {history.map((o) => (
+                          <SelectItem
+                            key={o.search_id}
+                            value={JSON.stringify(o.search_body)}
+                          >
+                            {formatHistoryOption(o)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row justify-end">
+                <div className="w-fit">
+                  <HourGlass
+                    className="absolute ml-6 text-muted-foreground mt-8 h-14"
+                    size={40}
+                    strokeWidth={3}
+                  />
+                </div>
+
+                <div className="w-full mr-2">
+                  <FormField
+                    control={form.control}
+                    name="terms"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>search</FormLabel>
+                        <FormControl>
+                          <>
+                            <Input
+                              placeholder="search"
+                              {...field}
+                              className="h-14 text-2xl w-full pl-20"
+                            />
+                          </>
+                        </FormControl>
+                        {/* <FormDescription>
                               UNC or drive letter path
                             </FormDescription> */}
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-                    {/* submit */}
-                    <div className=" mt-8 ml-10 ">
-                      <Button
-                        type="submit"
-                        className="purr-form-button"
-                        variant="secondary"
-                      >
-                        search
-                      </Button>
-                    </div>
-                  </div>
-                </form>
-              </Form>
-            </div>
-
-            {/* SEARCH HISTORY */}
-            <div className="flex flex-col w-4/12 ">
-              <div className="space-y-2">
-                <Label className="h-9">search history</Label>
-                <Select onValueChange={handleHistorySelect}>
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="previous searches..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {history.map((o) => (
-                      <SelectItem
-                        key={o.search_id}
-                        value={JSON.stringify(o.search_body)}
-                      >
-                        {formatHistoryOption(o)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {/* submit */}
+                <div className="mt-8 w-[180px]">
+                  <Button
+                    type="submit"
+                    className="purr-form-button h-14 w-full"
+                    variant="secondary"
+                  >
+                    search
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
+            </form>
+          </Form>
         </CardContent>
         {/* <div>taskId = {taskId}</div> */}
         {/* <div>{JSON.stringify(result)}</div> */}

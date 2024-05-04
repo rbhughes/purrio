@@ -1,0 +1,83 @@
+import {create} from "zustand"
+import { persist, combine } from 'zustand/middleware';
+
+const defaultColumnViz = {
+  bytes: true,
+  conn: true,
+  conn_aux: false,
+  directories: false,
+  display_epsg: false,
+  display_name: false,
+  files: false,
+  fs_path: false,
+  suite: true,
+  id: false,
+  name: true,
+  repo_mod: true,
+  created_at: true,
+  touched_at: true,
+  updated_at: false,
+  storage_epsg: false,
+  storage_name: false,
+  well_count: true,
+  wells_with_completion: false,
+  wells_with_core: false,
+  wells_with_dst: false,
+  wells_with_formation: false,
+  wells_with_ip: false,
+  wells_with_perforation: false,
+  wells_with_production: false,
+  wells_with_raster_log: false,
+  wells_with_survey: false,
+  wells_with_vector_log: false,
+  wells_with_zone: false,
+};
+
+const useStore = create(
+  combine(
+    {
+      columnViz: defaultColumnViz,
+    },
+    getPersistor({
+      name: 'column-viz-store',
+      storage: {
+        getItem: async (name) => {
+          const value = localStorage.getItem(name);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: async (name, value) => {
+          localStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: async (name) => {
+          localStorage.removeItem(name);
+        },
+      },
+    })
+  )
+);
+
+const setColumnViz = (newColumnViz: typeof defaultColumnViz) =>
+  useStore.setState({ columnViz: newColumnViz });
+
+export { useStore, setColumnViz };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

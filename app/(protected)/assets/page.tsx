@@ -1,9 +1,7 @@
-import { cookies } from "next/headers";
+//import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import AssetJobs from "./asset-jobs";
-//import AssetDBStats from "./asset-db-stats";
-// import AssetStoreInit from "@/store/asset-store-init";
 
 import { Suspense } from "react";
 import { Loader } from "@/components/loader";
@@ -21,14 +19,6 @@ export default async function Page() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  ///
-  // const { data: dna, error: error } = await supabase.functions.invoke("petra", {
-  //   body: { asset: "well", filter: "" },
-  // });
-  // console.log("---------------------------------------");
-  // //console.log(dna);
-  // console.log("---------------------------------------");
-
   const { data: assetJobs } = await supabase
     .from("asset_job")
     .select()
@@ -38,11 +28,6 @@ export default async function Page() {
     .from("repo")
     .select()
     .order("updated_at", { ascending: false });
-
-  // const { data: stats } = await supabase
-  //   .from("asset_stat")
-  //   .select()
-  //   .order("asset");
 
   // Some AssetJobs may exist when their associated Repo is missing. Hide them.
   const extantReposOnly = (repos: Repo[], assetJobs: AssetJob[]) => {
@@ -71,15 +56,7 @@ export default async function Page() {
         />
       </Suspense>
 
-      {/* <Suspense fallback={<Loader target="AssetDBStats" />}>
-        <AssetDBStats stats={stats!} />
-      </Suspense> */}
-
       <Toaster expand richColors className="flex w-6/12" />
-
-      {/* <Suspense fallback={<Loader target="AssetStoreInit" />}>
-        <AssetStoreInit />
-      </Suspense> */}
 
       {process.env.NODE_ENV === "development" && (
         <div className="bg-red-600 mt-20 p-4 w-fit text-white">

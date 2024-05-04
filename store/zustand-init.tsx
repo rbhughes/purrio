@@ -8,22 +8,57 @@ import {
   ASSET_CACHE_EXPIRY_MS,
 } from "@/store/use-asset-store";
 
-export default function AssetStoreInit() {
+//import { useRepoTableStore } from "@/store/use-repo-table-store";
+
+export default function ZustandInit() {
+  //
   const setExpiry = useAssetStore((state) => state.setExpiry);
   const fetchGeographixAssets = useAssetStore(
     (state) => state.fetchGeographixAssets
   );
   const fetchPetraAssets = useAssetStore((state) => state.fetchPetraAssets);
 
+  //////
+
+  //const setVis = useRepoTableStore((state) => state.setColumnVisibility);
+
+  //
+  // const setRepoColumnVisibility = useRepoSettings(
+  //   (state) => state.setColumnVisibility
+  // );
+  // const columnVisibility = useRepoSettings((state) => state.columnVisibility);
+
+  // React.useEffect(() => {
+  //   const data = JSON.parse(localStorage.getItem("PURR_REPO_SETTINGS") || "{}");
+
+  //   if (Object.keys(data).length === 0) {
+  //     console.log("REPO SETTINGS DEFAULT");
+  //     setRepoColumnVisibility(defaults);
+  //   } else {
+  //     let cols = data.state.columnVisibility;
+  //     console.log("REPO SETTINGS FROM STORAGE");
+  //     setRepoColumnVisibility(cols);
+  //     console.log(columnVisibility);
+  //   }
+  // }, []);
+
+  // React.useEffect(() => {
+  //   setVis({});
+  //   //alert("fetch persisted");
+  // }, []);
+  // React.useEffect(() => {
+  //   useRepoTableStore.persist.rehydrate();
+  // });
+
   React.useEffect(() => {
     const cacheObj = localStorage.getItem(ASSET_CACHE_NAME);
     const cache = JSON.parse(cacheObj!);
 
     const assetFetcher = async () => {
-      console.log("fetching GeoGraphix Asset definitions...");
+      console.log("fetching GeoGraphix Asset dna...");
       await fetchGeographixAssets();
-      console.log("fetching Petra Asset definitions...");
-      await fetchPetraAssets();
+      // console.log("fetching Petra Asset dna...");
+      // await fetchPetraAssets();
     };
 
     const assetStatsFetcher = async () => {

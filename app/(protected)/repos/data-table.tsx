@@ -36,6 +36,15 @@ import {
 import { DataTablePagination } from "@/components/dt/data-table-pagination";
 import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
+import {
+  useRepoTableStore,
+  RepoColumnVisibility,
+  //repoColumnVisibilityStateToVisibilityState,
+} from "@/store/use-repo-table-store";
+//import { RepoColumnVisibility } from "@/store/use-repo-settings";
+
+///
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -46,55 +55,14 @@ interface DataTableProps<TData, TValue> {
   //setValue: any;
 }
 
-// sets which rows are selected by default
 //let rowsSelected: RowSelectionState = { "1": true };
 let rowsSelected: RowSelectionState = {};
 
-// set visible columns (commmented out means "always on")
-let colsVisible: VisibilityState = {
-  //bytes: false,
-  conn: false,
-  conn_aux: false,
-  directories: false,
-  display_epsg: false,
-  display_name: false,
-  files: false,
-  //fs_path: false,
-  //suite: false,
-  id: false,
-  //name: false,
-  //repo_mod: false,
-  //created_at: false,
-  touched_at: false,
-  updated_at: false,
-  storage_epsg: false,
-  storage_name: false,
-  //well_count: false,
-  wells_with_completion: false,
-  wells_with_core: false,
-  wells_with_dst: false,
-  wells_with_formation: false,
-  wells_with_ip: false,
-  wells_with_perforation: false,
-  wells_with_production: false,
-  wells_with_raster_log: false,
-  wells_with_survey: false,
-  wells_with_vector_log: false,
-  wells_with_zone: false,
-};
-
-//const setFormFromTable = async (setValue: any, row: any) => {};
-
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
   addMeta({
     itemRank,
   });
-
-  // Return if the item should be filtered in/out
   return itemRank.passed;
 };
 
@@ -103,16 +71,81 @@ export function DataTable<TData, TValue>({
   data,
   renderSubComponent,
   getRowCanExpand,
-}: //setValue,
-DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>) {
+  ///
+  const [hydrated, setHydrated] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    setHydrated(true);
+  }, []);
+  ///
+
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
-  const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
+
+  ///---zzz
+
+  // const zustandRepoCols = useRepoSettings(
+  //   (state) => state.columnVisibility as VisibilityState
+  // );
+
+  const setZustandColumnVisibility = useRepoTableStore(
+    (state) => state.setColumnVis
+  );
+  const fetchPersisted = useRepoTableStore((state) => state.fetchPersisted);
+
+  const regular = useRepoTableStore(
+    //(state) => state.columnVis as VisibilityState
+    (state) => state.columnVis
+  );
+
+  const [columnVisibility, setColumnVisibility] = React.useState(
+    regular as VisibilityState
+  );
+
+  React.useEffect(() => {
+    // hydrated or not...
+    let persisted = fetchPersisted();
+    setColumnVisibility(persisted);
+  }, []);
+
+  React.useEffect(() => {
+    if (hydrated) {
+      setZustandColumnVisibility(columnVisibility as RepoColumnVisibility);
+      //console.log(`(H20), regular.conn is ${JSON.stringify(regular.conn)}`);
+    } else {
+      //console.log(`(DRY), regular.conn is ${JSON.stringify(regular.conn)}`);
+    }
+
+    // if (hydrated) {
+    //   let v = columnVisibility as RepoColumnVisibility;
+    //   let vv = { ...columnVisibility, ...{ conn: columnVisibility.conn } };
+    //   console.log("HYDRATED    conn=", JSON.stringify(vv.conn, null, 2));
+    //   // let v = columnVisibility as RepoColumnVisibility;
+    //   setZustandColumnVisibility(v); //sets zustand
+    //   setColumnVisibility(v); //sets the table live
+    // } else {
+    //   let v = columnVisibility as RepoColumnVisibility;
+    //   console.log("NOT HYDRATED v  conn=", JSON.stringify(v.conn, null, 2));
+    //   console.log(
+    //     "NOT HYDRATED r  conn=",
+    //     JSON.stringify(regular.conn, null, 2)
+    //   );
+    // }
+    // if (hydrated) {
+    //   console.log("inside", JSON.stringify(columnVisibility.conn));
+    // }
+    // let c = "magenta";
+    // setColor(c);
+    // setMyStateColor(c);
+    // console.log("color=", color);
+  }, [columnVisibility]);
+
+  ///---zzz
 
   const table = useReactTable({
     data,
@@ -131,6 +164,7 @@ DataTableProps<TData, TValue>) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
+    //onColumnVisibilityChange: replacement,
     getRowCanExpand: getRowCanExpand,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -150,6 +184,15 @@ DataTableProps<TData, TValue>) {
         setGlobalFilter={setGlobalFilter}
       />
       <div className="rounded-md border">
+        {hydrated ? (
+          <div className="bg-blue-300">
+            columnVisibility.conn ={JSON.stringify(columnVisibility.conn)} |
+          </div>
+        ) : (
+          <div className="bg-yellow-300">
+            columnVisibility.conn ={JSON.stringify(columnVisibility.conn)} |
+          </div>
+        )}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

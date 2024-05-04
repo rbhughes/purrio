@@ -2,9 +2,10 @@ import SlowThing from "./test";
 import { Suspense } from "react";
 import { Loader } from "@/components/loader";
 
+import App from "./appy";
+
 import { createClient } from "@/utils/supabase/server";
 import AssetDBStats from "./asset-db-stats";
-import AssetStoreInit from "@/store/asset-store-init";
 
 export default async function Settings() {
   const supabase = createClient();
@@ -23,10 +24,7 @@ export default async function Settings() {
       <Suspense fallback={<Loader target="AssetDBStats" />}>
         <AssetDBStats stats={stats!} />
       </Suspense>
-
-      <Suspense fallback={<Loader target="AssetStoreInit" />}>
-        <AssetStoreInit />
-      </Suspense>
+      <App />
     </div>
   );
 }

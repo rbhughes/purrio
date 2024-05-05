@@ -2,8 +2,6 @@ import SlowThing from "./test";
 import { Suspense } from "react";
 import { Loader } from "@/components/loader";
 
-import App from "./appy";
-
 import { createClient } from "@/utils/supabase/server";
 import AssetDBStats from "./asset-db-stats";
 
@@ -24,7 +22,6 @@ export default async function Settings() {
       <Suspense fallback={<Loader target="AssetDBStats" />}>
         <AssetDBStats stats={stats!} />
       </Suspense>
-      <App />
     </div>
   );
 }

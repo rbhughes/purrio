@@ -37,13 +37,11 @@ import { DataTablePagination } from "@/components/dt/data-table-pagination";
 import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
 import {
-  useRepoTableStore,
+  useDataTableStore,
   RepoColumnVisibility,
-  //repoColumnVisibilityStateToVisibilityState,
-} from "@/store/use-repo-table-store";
-//import { RepoColumnVisibility } from "@/store/use-repo-settings";
+} from "@/store/use-data-table-store";
 
-///
+import { fetchPersistedState } from "@/store/use-data-table-store";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -72,12 +70,12 @@ export function DataTable<TData, TValue>({
   renderSubComponent,
   getRowCanExpand,
 }: DataTableProps<TData, TValue>) {
-  ///
+  // Ensure that Next.js is truly in "use-client" mode. See details in
+  // use-repo-settings (ignore some state if we're in SSR)
   const [hydrated, setHydrated] = React.useState<boolean>(false);
   React.useEffect(() => {
     setHydrated(true);
   }, []);
-  ///
 
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -87,65 +85,32 @@ export function DataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
 
-  ///---zzz
-
-  // const zustandRepoCols = useRepoSettings(
-  //   (state) => state.columnVisibility as VisibilityState
-  // );
-
-  const setZustandColumnVisibility = useRepoTableStore(
-    (state) => state.setColumnVis
+  /////
+  const setRepoColumnVisibility = useDataTableStore(
+    (state) => state.setRepoColumnVisibility
   );
-  const fetchPersisted = useRepoTableStore((state) => state.fetchPersisted);
 
-  const regular = useRepoTableStore(
-    //(state) => state.columnVis as VisibilityState
-    (state) => state.columnVis
+  const repoColumnVisibility = useDataTableStore(
+    (state) => state.repoColumnVisibility
   );
 
   const [columnVisibility, setColumnVisibility] = React.useState(
-    regular as VisibilityState
+    repoColumnVisibility as VisibilityState
   );
 
+  // set initial state, hydrated or not; see use-data-table-store.
   React.useEffect(() => {
-    // hydrated or not...
-    let persisted = fetchPersisted();
-    setColumnVisibility(persisted);
+    let persisted = fetchPersistedState();
+    setColumnVisibility(persisted.state.repoColumnVisibility);
   }, []);
 
+  // Ensure that localStorage (zustand) stays in sync with columnVisibility
   React.useEffect(() => {
     if (hydrated) {
-      setZustandColumnVisibility(columnVisibility as RepoColumnVisibility);
-      //console.log(`(H20), regular.conn is ${JSON.stringify(regular.conn)}`);
-    } else {
-      //console.log(`(DRY), regular.conn is ${JSON.stringify(regular.conn)}`);
+      setRepoColumnVisibility(columnVisibility as RepoColumnVisibility);
     }
-
-    // if (hydrated) {
-    //   let v = columnVisibility as RepoColumnVisibility;
-    //   let vv = { ...columnVisibility, ...{ conn: columnVisibility.conn } };
-    //   console.log("HYDRATED    conn=", JSON.stringify(vv.conn, null, 2));
-    //   // let v = columnVisibility as RepoColumnVisibility;
-    //   setZustandColumnVisibility(v); //sets zustand
-    //   setColumnVisibility(v); //sets the table live
-    // } else {
-    //   let v = columnVisibility as RepoColumnVisibility;
-    //   console.log("NOT HYDRATED v  conn=", JSON.stringify(v.conn, null, 2));
-    //   console.log(
-    //     "NOT HYDRATED r  conn=",
-    //     JSON.stringify(regular.conn, null, 2)
-    //   );
-    // }
-    // if (hydrated) {
-    //   console.log("inside", JSON.stringify(columnVisibility.conn));
-    // }
-    // let c = "magenta";
-    // setColor(c);
-    // setMyStateColor(c);
-    // console.log("color=", color);
   }, [columnVisibility]);
-
-  ///---zzz
+  /////
 
   const table = useReactTable({
     data,
@@ -164,7 +129,6 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    //onColumnVisibilityChange: replacement,
     getRowCanExpand: getRowCanExpand,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -177,85 +141,78 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
-      <div className="rounded-md border">
-        {hydrated ? (
-          <div className="bg-blue-300">
-            columnVisibility.conn ={JSON.stringify(columnVisibility.conn)} |
-          </div>
-        ) : (
-          <div className="bg-yellow-300">
-            columnVisibility.conn ={JSON.stringify(columnVisibility.conn)} |
-          </div>
-        )}
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+    hydrated && (
+      <div className="space-y-4">
+        <DataTableToolbar
+          table={table}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <React.Fragment key={row.id}>
+                    <TableRow
+                      onDoubleClick={() => {
+                        row.toggleExpanded();
+                      }}
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  <TableRow
-                    onDoubleClick={() => {
-                      row.toggleExpanded();
-                    }}
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-
-                  {row.getIsExpanded() && (
-                    <TableRow key={`${row.id + "_viz"}`}>
-                      <td colSpan={row.getVisibleCells().length}>
-                        {renderSubComponent({ row })}
-                      </td>
+                        </TableCell>
+                      ))}
                     </TableRow>
-                  )}
-                </React.Fragment>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+
+                    {row.getIsExpanded() && (
+                      <TableRow key={`${row.id + "_viz"}`}>
+                        <td colSpan={row.getVisibleCells().length}>
+                          {renderSubComponent({ row })}
+                        </td>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTablePagination table={table} defaultFileName="repos" />
       </div>
-      <DataTablePagination table={table} defaultFileName="repos" />
-    </div>
+    )
   );
 }

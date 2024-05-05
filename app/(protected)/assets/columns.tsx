@@ -168,14 +168,6 @@ export const columns: ColumnDef<AssetJob>[] = [
     ),
   },
 
-  {
-    accessorKey: "active",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="active" />
-    ),
-    cell: ({ row }) => <div>{JSON.stringify(row.getValue("active"))}</div>,
-  },
-
   // this button-based handler replaces the default DataTableRowActions
   {
     id: "actions",

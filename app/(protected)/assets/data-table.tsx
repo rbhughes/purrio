@@ -35,6 +35,13 @@ import {
 import { DataTablePagination } from "@/components/dt/data-table-pagination";
 import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
+import {
+  useDataTableStore,
+  AssetJobColumnVisibility,
+} from "@/store/use-data-table-store";
+
+import { fetchPersistedState } from "@/store/use-data-table-store";
+
 import { ASSETS } from "@/lib/purr_utils";
 
 import { Database } from "@/lib/sb_types";
@@ -51,26 +58,13 @@ interface DataTableProps<TData, TValue> {
 //let rowsSelected: RowSelectionState = { "1": true };
 let rowsSelected: RowSelectionState = {};
 
-// set visible columns (commmented out means "always on")
-let colsVisible: VisibilityState = {
-  active: false,
-  //asset: false,
-  //tag: false
-  //chunk: false,
-  cron: false,
-  //filter: false,
-  id: false,
-  last_invoked: false,
-  repo_fs_path: false,
-  //repo_suite: true,
-  repo_id: false,
-  //repo_name: false,
-  created_at: false,
-  touched_at: false,
-  updated_at: false,
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value);
+  addMeta({
+    itemRank,
+  });
+  return itemRank.passed;
 };
-
-///
 
 // setting suite resets the repo selection, so wait a bit and then apply
 const setFormFromTable = async (setValue: any, row: any) => {
@@ -92,19 +86,6 @@ const setFormFromTable = async (setValue: any, row: any) => {
 };
 ///
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value);
-
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  });
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed;
-};
-
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -112,14 +93,47 @@ export function DataTable<TData, TValue>({
   setShowForm,
   setShowAdvancedForm,
 }: DataTableProps<TData, TValue>) {
+  ///
+  const [hydrated, setHydrated] = React.useState<boolean>(false);
+  React.useEffect(() => {
+    setHydrated(true);
+  }, []);
+  ///
+
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
-  const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
 
-  const [globalFilter, setGlobalFilter] = React.useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = React.useState("");
+
+  /////
+  const setAssetJobColumnVisibility = useDataTableStore(
+    (state) => state.setAssetJobColumnVisibility
+  );
+
+  const assetJobColumnVisibility = useDataTableStore(
+    (state) => state.assetJobColumnVisibility
+  );
+
+  const [columnVisibility, setColumnVisibility] = React.useState(
+    assetJobColumnVisibility as VisibilityState
+  );
+
+  // // set initial state, hydrated or not; see use-data-table-store.
+  React.useEffect(() => {
+    let persisted = fetchPersistedState();
+    setColumnVisibility(persisted.state.assetJobColumnVisibility);
+  }, []);
+
+  // // Ensure that localStorage (zustand) stays in sync with columnVisibility
+  React.useEffect(() => {
+    if (hydrated) {
+      setAssetJobColumnVisibility(columnVisibility as AssetJobColumnVisibility);
+    }
+  }, [columnVisibility]);
+  /////
 
   const table = useReactTable({
     data,
@@ -147,79 +161,81 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      <DataTableToolbar
-        table={table}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-      />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+    hydrated && (
+      <div className="space-y-4">
+        <DataTableToolbar
+          table={table}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                ///
+                table.getRowModel().rows.map((row) => (
+                  <React.Fragment key={row.id}>
+                    <TableRow
+                      onDoubleClick={() => {
+                        setShowForm(true);
+                        setShowAdvancedForm(true);
+                        setFormFromTable(setValue, row);
+                      }}
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              ///
-              table.getRowModel().rows.map((row) => (
-                <React.Fragment key={row.id}>
-                  <TableRow
-                    onDoubleClick={() => {
-                      setShowForm(true);
-                      setShowAdvancedForm(true);
-                      setFormFromTable(setValue, row);
-                    }}
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                  {/* {row.getIsExpanded() && (
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {/* {row.getIsExpanded() && (
                     <TableRow key={`${row.id}_aj`}>
                       <td colSpan={row.getVisibleCells().length}>
                         {renderSubComponent({ row })}
                       </td>
                     </TableRow>
                   )} */}
-                </React.Fragment>
-              ))
-            ) : (
-              ///
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </React.Fragment>
+                ))
+              ) : (
+                ///
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <DataTablePagination table={table} defaultFileName="assets" />
       </div>
-      <DataTablePagination table={table} defaultFileName="assets" />
-    </div>
+    )
   );
 }

@@ -211,7 +211,7 @@ export default function AssetJobs({
                   <FormField
                     control={form.control}
                     name="id"
-                    defaultValue={2e63} //
+                    defaultValue={2e63} // intentionally huge TODO: explain
                     render={({ field }) => (
                       <FormControl>
                         <Input type="hidden" {...field} />
@@ -243,12 +243,12 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="suite" //this should match repo.suite, no?
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="w-full">
                             <FormLabel>suite</FormLabel>
                             <Select
                               onValueChange={field.onChange}
@@ -283,7 +283,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-2/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="repo_id"
@@ -312,7 +312,7 @@ export default function AssetJobs({
                                   ))}
                               </SelectContent>
                             </Select>
-                            <FormDescription>Source project</FormDescription>
+                            <FormDescription>source project</FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -321,7 +321,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="asset"
@@ -347,7 +347,9 @@ export default function AssetJobs({
                                 })}
                               </SelectContent>
                             </Select>
-                            <FormDescription>"data type"</FormDescription>
+                            <FormDescription>
+                              roughly equivalent to data type
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -355,7 +357,7 @@ export default function AssetJobs({
                     </div>
 
                     {/* ---------- */}
-                    <div className="w-1/6">
+                    <div className="w-2/12">
                       <FormField
                         control={form.control}
                         name="tag"
@@ -365,7 +367,9 @@ export default function AssetJobs({
                             <FormControl>
                               <Input placeholder="tag" {...field} />
                             </FormControl>
-                            <FormDescription></FormDescription>
+                            <FormDescription>
+                              arbitrary label attached to each asset
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -389,10 +393,8 @@ export default function AssetJobs({
                     <>
                       {/* -------------------- */}
                       <div className="flex flex-row gap-2">
-                        <div className="w-1/12"></div>
-
                         {/* ---------- */}
-                        <div className="w-1/12">
+                        <div className="flex flex-row w-2/12 gap-2">
                           <FormField
                             control={form.control}
                             name="chunk"
@@ -402,16 +404,17 @@ export default function AssetJobs({
                                 <FormControl>
                                   <Input placeholder="chunk" {...field} />
                                 </FormControl>
-                                <FormDescription></FormDescription>
+                                <FormDescription>
+                                  batch collection size
+                                </FormDescription>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-                        </div>
 
-                        {/* ---------- */}
+                          {/* ---------- */}
 
-                        {/* <div className="flex basis-1/6">
+                          {/* <div className="flex basis-1/6">
                           <FormField
                             control={form.control}
                             name="cron"
@@ -434,11 +437,9 @@ export default function AssetJobs({
                           />
                         </div> */}
 
-                        {/* ---------- */}
+                          {/* ---------- */}
 
-                        {/* <div className="w-1/12 bg-blue-100">nothing</div> */}
-
-                        <div className="w-4/12">
+                          {/* <div className="w-1/12 bg-red-100"> */}
                           <FormField
                             control={form.control}
                             name="recency"
@@ -446,14 +447,10 @@ export default function AssetJobs({
                               <FormItem>
                                 <FormLabel>Recency</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    className="w-3/12"
-                                    placeholder="days ago"
-                                    {...field}
-                                  />
+                                  <Input placeholder="days ago" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                  collect data modified n days ago
+                                  days ago to collect
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -461,7 +458,7 @@ export default function AssetJobs({
                           />
                         </div>
 
-                        <div className="w-2/6">
+                        <div className="w-5/12">
                           <FormField
                             control={form.control}
                             name="where_clause"

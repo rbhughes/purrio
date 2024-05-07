@@ -72,7 +72,8 @@ export type AssetJobColumnVisibility = {
   tag: boolean;
   chunk: boolean;
   cron: boolean;
-  filter: boolean;
+  where_clause: boolean;
+  //filter: boolean;
   id: boolean;
   last_invoked: boolean;
   repo_fs_path: boolean;
@@ -121,7 +122,8 @@ const defaultAssetJobColumnVisibility = {
   tag: false,
   chunk: true,
   cron: false,
-  filter: true,
+  where_clause: true,
+  //filter: true,
   id: false,
   last_invoked: true,
   repo_fs_path: false,

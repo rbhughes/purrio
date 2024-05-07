@@ -16,7 +16,6 @@ export type Database = {
           chunk: number
           created_at: string
           cron: string | null
-          filter: string | null
           id: number
           last_invoked: string | null
           recency: number
@@ -27,6 +26,7 @@ export type Database = {
           tag: string | null
           touched_at: string
           updated_at: string
+          where_clause: string | null
         }
         Insert: {
           active?: boolean
@@ -34,7 +34,6 @@ export type Database = {
           chunk?: number
           created_at?: string
           cron?: string | null
-          filter?: string | null
           id?: number
           last_invoked?: string | null
           recency?: number
@@ -45,6 +44,7 @@ export type Database = {
           tag?: string | null
           touched_at?: string
           updated_at?: string
+          where_clause?: string | null
         }
         Update: {
           active?: boolean
@@ -52,7 +52,6 @@ export type Database = {
           chunk?: number
           created_at?: string
           cron?: string | null
-          filter?: string | null
           id?: number
           last_invoked?: string | null
           recency?: number
@@ -63,6 +62,7 @@ export type Database = {
           tag?: string | null
           touched_at?: string
           updated_at?: string
+          where_clause?: string | null
         }
         Relationships: []
       }
@@ -425,6 +425,13 @@ export type Database = {
       }
     }
     Functions: {
+      delete_old_rows: {
+        Args: {
+          table_name: string
+          days_to_keep: number
+        }
+        Returns: undefined
+      }
       get_suite_enums: {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["suite"][]

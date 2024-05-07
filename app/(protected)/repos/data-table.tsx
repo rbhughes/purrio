@@ -83,7 +83,7 @@ export function DataTable<TData, TValue>({
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-  const [expanded, setExpanded] = React.useState<ExpandedState>({});
+  const [expanded, setExpanded] = React.useState<ExpandedState>(true);
 
   /////
   const setRepoColumnVisibility = useDataTableStore(
@@ -143,6 +143,7 @@ export function DataTable<TData, TValue>({
   return (
     hydrated && (
       <div className="space-y-4">
+        {JSON.stringify(expanded)}
         <DataTableToolbar
           table={table}
           globalFilter={globalFilter}

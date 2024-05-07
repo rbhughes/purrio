@@ -78,7 +78,7 @@ const setFormFromTable = async (setValue: any, row: any) => {
     setValue("tag", assetJob.tag || "");
     setValue("chunk", assetJob.chunk || 100);
     setValue("cron", assetJob.cron || "");
-    setValue("filter", assetJob.filter || "");
+    setValue("where_clause", assetJob.where_clause || "");
     setValue("recency", assetJob.recency ?? 14);
     setValue("repo_fs_path", assetJob.repo_fs_path || null);
     setValue("repo_name", assetJob.repo_name || null);

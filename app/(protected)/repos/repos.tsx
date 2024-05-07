@@ -104,12 +104,16 @@ export default function Repos({
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <div className="flex mb-4 justify-between">
           <div className="place-self-center purr-h1">repo recon</div>
+
+          {/* <div className="flex flex-row gap-4">
+            <ToggleExpandRows /> */}
           <CollapsibleTrigger asChild>
             <Button variant="secondary">
               <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
               Discover Projects on your Network...
             </Button>
           </CollapsibleTrigger>
+          {/* </div */}
         </div>
 
         <CollapsibleContent>

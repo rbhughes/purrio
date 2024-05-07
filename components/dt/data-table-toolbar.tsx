@@ -82,6 +82,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      <div className="mx-4" id="row-expansion"></div>
       <DataTableViewOptions table={table} />
     </div>
   );

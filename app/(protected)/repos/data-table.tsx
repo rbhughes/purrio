@@ -1,5 +1,7 @@
 "use client";
 
+import { createPortal } from "react-dom";
+
 import React from "react";
 import {
   ColumnDef,
@@ -43,6 +45,8 @@ import {
 
 import { fetchPersistedState } from "@/store/use-data-table-store";
 
+import { GeneralSwitch } from "@/components/general-switch";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -72,6 +76,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   // Ensure that Next.js is truly in "use-client" mode. See details in
   // use-repo-settings (ignore some state if we're in SSR)
+  // "hydrated" doesn't mean hydrated in the zustand sense--more like "rendered"
   const [hydrated, setHydrated] = React.useState<boolean>(false);
   React.useEffect(() => {
     setHydrated(true);
@@ -84,6 +89,8 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [expanded, setExpanded] = React.useState<ExpandedState>(true);
+  const [rowExpansionPortal, setRowExpansionPortal] =
+    React.useState<HTMLElement | null>(null);
 
   /////
   const setRepoColumnVisibility = useDataTableStore(
@@ -110,6 +117,14 @@ export function DataTable<TData, TValue>({
       setRepoColumnVisibility(columnVisibility as RepoColumnVisibility);
     }
   }, [columnVisibility]);
+
+  // beastly way to set the row-expansion Switch in the right place...
+  React.useEffect(() => {
+    const rowExpansionSwitchDiv: HTMLElement =
+      document.getElementById("row-expansion")!;
+    setRowExpansionPortal(rowExpansionSwitchDiv);
+  }, [hydrated]);
+
   /////
 
   const table = useReactTable({
@@ -143,12 +158,22 @@ export function DataTable<TData, TValue>({
   return (
     hydrated && (
       <div className="space-y-4">
-        {JSON.stringify(expanded)}
         <DataTableToolbar
           table={table}
           globalFilter={globalFilter}
           setGlobalFilter={setGlobalFilter}
         />
+
+        {rowExpansionPortal &&
+          createPortal(
+            <GeneralSwitch
+              label="row expansion"
+              checked={expanded as boolean}
+              onChange={setExpanded}
+            />,
+            rowExpansionPortal
+          )}
+
         <div className="rounded-md border">
           <Table>
             <TableHeader>

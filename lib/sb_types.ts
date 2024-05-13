@@ -134,46 +134,31 @@ export type Database = {
       }
       message: {
         Row: {
-          activity: string | null
           created_at: string
+          data: string | null
           directive: string | null
-          function: string | null
           id: number
-          level: string | null
-          message: string | null
-          params: string | null
           repo_id: string | null
-          service: string | null
-          source: string | null
           user_id: string
+          worker: string | null
         }
         Insert: {
-          activity?: string | null
           created_at?: string
+          data?: string | null
           directive?: string | null
-          function?: string | null
           id?: number
-          level?: string | null
-          message?: string | null
-          params?: string | null
           repo_id?: string | null
-          service?: string | null
-          source?: string | null
           user_id: string
+          worker?: string | null
         }
         Update: {
-          activity?: string | null
           created_at?: string
+          data?: string | null
           directive?: string | null
-          function?: string | null
           id?: number
-          level?: string | null
-          message?: string | null
-          params?: string | null
           repo_id?: string | null
-          service?: string | null
-          source?: string | null
           user_id?: string
+          worker?: string | null
         }
         Relationships: []
       }

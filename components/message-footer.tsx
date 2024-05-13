@@ -10,7 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { FilteredMessages } from "@/components/filtered-messages";
+import { FooterNotes } from "@/components/footer-notes";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
 import { User } from "@supabase/supabase-js";
@@ -29,7 +29,25 @@ export const MessageFooter = ({ user }: { user: User }) => {
 
   const pathname = usePathname();
   const [messages, setMessages] = React.useState<Message[]>([]);
-  const [activity, setActivity] = React.useState<string | null>(null);
+  //const [activity, setActivity] = React.useState<string | null>(null);
+
+  // const { data: messages } = await supabase
+  //   .from("asset_job")
+  //   .select()
+  //   .order("created_at", { ascending: false });
+  React.useEffect(() => {
+    const doit = async () => {
+      const { data: messages } = await supabase
+        .from("message")
+        .select()
+        .order("created_at", { ascending: false });
+
+      if (messages) {
+        setMessages(messages);
+      }
+    };
+    doit();
+  }, []);
 
   React.useEffect(() => {
     const channel = supabase
@@ -45,13 +63,13 @@ export const MessageFooter = ({ user }: { user: User }) => {
         (payload: any) => {
           let msg: Message = payload.new;
 
-          if (msg.directive === "activity") {
-            setActivity(msg.activity);
-          }
+          // if (msg.directive === "activity") {
+          //   setActivity(msg.activity);
+          // }
 
-          setTimeout(() => {
-            setActivity(null);
-          }, DELAY);
+          // setTimeout(() => {
+          //   setActivity(null);
+          // }, DELAY);
 
           // NOTE: the reverse to put newest item at top of array
           setMessages((prev) => [msg, ...prev]);
@@ -70,6 +88,8 @@ export const MessageFooter = ({ user }: { user: User }) => {
     };
   }, [supabase]);
 
+  console.log(messages);
+
   return (
     <Drawer shouldScaleBackground>
       <DrawerTrigger className="flex w-full">
@@ -77,13 +97,14 @@ export const MessageFooter = ({ user }: { user: User }) => {
           className="w-full h-[60px] border-t border-t-foreground/10 \
              flex justify-center items-center bg-gradient-to-b from-secondary"
         >
-          <p
+          {/* <p
             className={` transition-opacity ease-in-out duration-600 ${
               activity ? "opacity-100 ring-4 ring-amber-400" : "opacity-10"
             }`}
           >
             {activity ? activity : "(activity)"}
-          </p>
+          </p> */}
+          stuff on footer
         </footer>
       </DrawerTrigger>
       <DrawerContent>
@@ -91,7 +112,7 @@ export const MessageFooter = ({ user }: { user: User }) => {
           <DrawerTitle>Recent worker activity...</DrawerTitle>
         </DrawerHeader>
 
-        <FilteredMessages
+        <FooterNotes
           pathname={pathname.substring(1)} //remove leading slash
           messages={messages}
         />

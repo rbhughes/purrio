@@ -13,9 +13,9 @@ export default async function Page() {
 
   const workers = await fetchWorkers();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
 
   const { data: repos } = await supabase
     .from("repo")

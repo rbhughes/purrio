@@ -5,10 +5,10 @@ type Message = Database["public"]["Tables"]["message"]["Row"];
 // TODO:
 export const FooterNotes = ({
   pathname,
-  messages,
+  notes,
 }: {
   pathname: string;
-  messages: Message[];
+  notes: Message[];
 }) => {
   console.log("pathname", pathname);
   /*
@@ -27,9 +27,10 @@ export const FooterNotes = ({
     default:
   }
   */
-  return messages.map((m) => (
-    <div key={m.created_at}>
-      {m.created_at}--{m.data}===={pathname}
+  return notes.map((m) => (
+    <div key={m.id}>
+      {m.directive} {m.id} {JSON.stringify(m.data)} | {pathname} | {m.workflow}
+      {/* {m.created_at}--{JSON.parse(m.data as string).task_id}===={pathname} */}
     </div>
   ));
 

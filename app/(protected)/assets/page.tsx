@@ -15,9 +15,9 @@ export const dynamic = "force-dynamic";
 export default async function Page() {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
 
   const { data: assetJobs } = await supabase
     .from("asset_job")

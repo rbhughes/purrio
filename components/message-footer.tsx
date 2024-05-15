@@ -20,21 +20,18 @@ const DELAY = 1000 * 6000;
 
 type Message = Database["public"]["Tables"]["message"]["Row"];
 
-interface MessengerArgs {
-  new: Message;
-}
+// interface MessengerArgs {
+//   new: Message;
+// }
 
 export const MessageFooter = ({ user }: { user: User }) => {
   const supabase = createClient();
 
   const pathname = usePathname();
   const [messages, setMessages] = React.useState<Message[]>([]);
+  const [busy, setBusy] = React.useState<boolean>(false);
   //const [activity, setActivity] = React.useState<string | null>(null);
 
-  // const { data: messages } = await supabase
-  //   .from("asset_job")
-  //   .select()
-  //   .order("created_at", { ascending: false });
   React.useEffect(() => {
     const doit = async () => {
       const { data: messages } = await supabase
@@ -60,8 +57,19 @@ export const MessageFooter = ({ user }: { user: User }) => {
           table: "message",
           filter: `user_id=eq.${user.id}`,
         },
-        (payload: any) => {
+
+        async (payload: any) => {
           let msg: Message = payload.new;
+
+          if (msg.directive === "busy") {
+            let job_id = (msg.data as any).job_id;
+            setBusy(true);
+          }
+          if (msg.directive === "done") {
+            let job_id = (msg.data as any).job_id;
+            await supabase.from("message").delete().eq("data->>job_id", job_id);
+            setBusy(false);
+          }
 
           // if (msg.directive === "activity") {
           //   setActivity(msg.activity);
@@ -88,7 +96,7 @@ export const MessageFooter = ({ user }: { user: User }) => {
     };
   }, [supabase]);
 
-  console.log(messages);
+  //console.log(messages);
 
   return (
     <Drawer shouldScaleBackground>
@@ -104,6 +112,7 @@ export const MessageFooter = ({ user }: { user: User }) => {
           >
             {activity ? activity : "(activity)"}
           </p> */}
+          {busy ? <>BUSY</> : <>NOT BUSY</>}
           stuff on footer
         </footer>
       </DrawerTrigger>
@@ -114,7 +123,7 @@ export const MessageFooter = ({ user }: { user: User }) => {
 
         <FooterNotes
           pathname={pathname.substring(1)} //remove leading slash
-          messages={messages}
+          notes={messages.filter((m) => m.directive === "note")}
         />
 
         {/* <h1>recon</h1>

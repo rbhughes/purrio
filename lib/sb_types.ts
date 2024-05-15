@@ -135,30 +135,33 @@ export type Database = {
       message: {
         Row: {
           created_at: string
-          data: string | null
+          data: Json | null
           directive: string | null
           id: number
           repo_id: string | null
           user_id: string
           worker: string | null
+          workflow: string | null
         }
         Insert: {
           created_at?: string
-          data?: string | null
+          data?: Json | null
           directive?: string | null
           id?: number
           repo_id?: string | null
           user_id: string
           worker?: string | null
+          workflow?: string | null
         }
         Update: {
           created_at?: string
-          data?: string | null
+          data?: Json | null
           directive?: string | null
           id?: number
           repo_id?: string | null
           user_id?: string
           worker?: string | null
+          workflow?: string | null
         }
         Relationships: []
       }

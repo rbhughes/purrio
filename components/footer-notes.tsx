@@ -1,46 +1,32 @@
 import { Database } from "@/lib/sb_types";
+import { ScrollArea } from "./ui/scroll-area";
+//import { Separator } from "./ui/separator";
+import { relativeTimeAgo, simplifyDateString } from "@/lib/purr_utils";
 type Message = Database["public"]["Tables"]["message"]["Row"];
 
-// TODO: use pathname to filter only those messages relevant to current route
-// TODO:
-export const FooterNotes = ({
-  pathname,
-  notes,
-}: {
-  pathname: string;
-  notes: Message[];
-}) => {
-  console.log("pathname", pathname);
-  /*
-  const reposActions = ["recon"];
-  const assetsActions = ["batcher", "asset_load", "stats"];
-  const searchActions = ["search"];
+export const FooterNotes = ({ notes }: { notes: Message[] }) => {
+  return (
+    <ScrollArea>
+      <div className="m-2 p-2 font-mono">
+        {notes.map((msg: Message) => (
+          <div
+            key={msg.id}
+            className="flex flex-row w-full gap-2 pb-1 select-all"
+          >
+            <div className="flex flex-row w-2/12 gap-6">
+              <div className="text-orange-500">{msg.id}</div>
+              <div>{simplifyDateString(msg.created_at)}</div>
+            </div>
 
-  switch (pathname) {
-    case "repos":
-      return messages
-        .filter((m) => reposActions.includes(m.directive!))
-        .map((m) => <div key={m.created_at}>{JSON.stringify(m)}</div>);
-      break;
-    case "assets":
-      break;
-    default:
-  }
-  */
-  return notes.map((m) => (
-    <div key={m.id}>
-      {m.directive} {m.id} {JSON.stringify(m.data)} | {pathname} | {m.workflow}
-      {/* {m.created_at}--{JSON.parse(m.data as string).task_id}===={pathname} */}
-    </div>
-  ));
+            <div className="w-1/12">{msg.worker}</div>
+            <div className="w-7/12">{(msg.data as any).note}</div>
 
-  // return (
-  //   messages
-  //     //.filter((m) => m.directive === "load_asset")
-  //     .map((m) => (
-  //       <div key={m.created_at}>
-  //         {m.created_at}--{m.message}===={pathname}
-  //       </div>
-  //     ))
-  // );
+            <div className="w-2/12 italic">
+              {relativeTimeAgo(msg.created_at)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  );
 };

@@ -10,19 +10,39 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Badge } from "./ui/badge";
 import { FooterNotes } from "@/components/footer-notes";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
 import { User } from "@supabase/supabase-js";
 import { usePathname, useSearchParams } from "next/navigation";
 
-const DELAY = 1000 * 6000;
+const DELAY = 1000 * 60 * 30;
 
 type Message = Database["public"]["Tables"]["message"]["Row"];
 
 // interface MessengerArgs {
 //   new: Message;
 // }
+
+// there may be more note types later
+const filterNotesByPathname = (notes: Message[], pathname: string) => {
+  interface Matcher {
+    [key: string]: string;
+  }
+
+  let routeToWorkflow: Matcher = {
+    assets: "load",
+    repos: "recon",
+  };
+
+  let pn = pathname.startsWith("/") ? pathname.slice(1) : pathname;
+  let matcher = routeToWorkflow[pn];
+
+  return notes.filter(
+    (m: Message) => m.workflow === matcher && m.directive === "note"
+  );
+};
 
 export const MessageFooter = ({ user }: { user: User }) => {
   const supabase = createClient();
@@ -32,19 +52,19 @@ export const MessageFooter = ({ user }: { user: User }) => {
   const [busy, setBusy] = React.useState<boolean>(false);
   //const [activity, setActivity] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    const doit = async () => {
-      const { data: messages } = await supabase
-        .from("message")
-        .select()
-        .order("created_at", { ascending: false });
+  // React.useEffect(() => {
+  //   const doit = async () => {
+  //     const { data: messages } = await supabase
+  //       .from("message")
+  //       .select()
+  //       .order("created_at", { ascending: false });
 
-      if (messages) {
-        setMessages(messages);
-      }
-    };
-    doit();
-  }, []);
+  //     if (messages) {
+  //       setMessages(messages);
+  //     }
+  //   };
+  //   doit();
+  // }, []);
 
   React.useEffect(() => {
     const channel = supabase
@@ -71,14 +91,6 @@ export const MessageFooter = ({ user }: { user: User }) => {
             setBusy(false);
           }
 
-          // if (msg.directive === "activity") {
-          //   setActivity(msg.activity);
-          // }
-
-          // setTimeout(() => {
-          //   setActivity(null);
-          // }, DELAY);
-
           // NOTE: the reverse to put newest item at top of array
           setMessages((prev) => [msg, ...prev]);
 
@@ -97,55 +109,42 @@ export const MessageFooter = ({ user }: { user: User }) => {
   }, [supabase]);
 
   //console.log(messages);
+  // <p
+  //   className={` transition-opacity ease-in-out duration-600 ${
+  //     busy ? "opacity-100 ring-4 ring-amber-400 w-full" : "opacity-10"
+  //   }`}
+  // >
+  //   {busy && `Worker is active. Click for details`}
+  // </p>
 
   return (
     <Drawer shouldScaleBackground>
       <DrawerTrigger className="flex w-full">
         <footer
-          className="w-full h-[60px] border-t border-t-foreground/10 \
-             flex justify-center items-center bg-gradient-to-b from-secondary"
+          className={`w-full h-[60px] border-t border-t-foreground/10 \
+             flex justify-center items-center bg-gradient-to-b from-secondary ${
+               busy && "bg-yellow-400"
+             }`}
         >
-          {/* <p
-            className={` transition-opacity ease-in-out duration-600 ${
-              activity ? "opacity-100 ring-4 ring-amber-400" : "opacity-10"
+          <div
+            className={` transition-opacity ease-in-out duration-500 ${
+              busy ? "opacity-100" : "opacity-10 "
             }`}
           >
-            {activity ? activity : "(activity)"}
-          </p> */}
-          {busy ? <>BUSY</> : <>NOT BUSY</>}
-          stuff on footer
+            <p className="italic">{busy && "click for activity log"}</p>
+          </div>
         </footer>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Recent worker activity...</DrawerTitle>
+          <DrawerTitle className="ml-32 italic">
+            {busy ? "recent activity..." : "worker(s) idle"}
+          </DrawerTitle>
         </DrawerHeader>
 
-        <FooterNotes
-          pathname={pathname.substring(1)} //remove leading slash
-          notes={messages.filter((m) => m.directive === "note")}
-        />
-
-        {/* <h1>recon</h1>
-        <ul>
-          {messages
-            .filter((m) => m.directive === "recon")
-            .map((m) => (
-              <li key={m.created_at}>
-                {m.created_at}--{m.message}===={directive}
-              </li>
-            ))}
-        </ul>
-        <h1>load_asset</h1>
-        <ul>
-          {messages
-            .filter((m) => m.directive === "load_asset")
-            .map((m) => (
-              <li key={m.created_at}>
-                {m.created_at}--{m.message}===={directive}
-              </li>
-            ))}
-        </ul> */}
+        <div className="max-h-96 overflow-y-auto">
+          <FooterNotes notes={filterNotesByPathname(messages, pathname)} />
+        </div>
 
         <DrawerFooter>
           {/* <Button>Submit</Button> */}

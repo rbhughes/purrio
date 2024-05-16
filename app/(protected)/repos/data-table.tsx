@@ -101,6 +101,11 @@ export function DataTable<TData, TValue>({
     (state) => state.repoColumnVisibility
   );
 
+  const repoRowsExpanded = useDataTableStore((state) => state.repoRowsExpanded);
+  const setRepoRowsExpanded = useDataTableStore(
+    (state) => state.setRepoRowsExpanded
+  );
+
   const [columnVisibility, setColumnVisibility] = React.useState(
     repoColumnVisibility as VisibilityState
   );
@@ -109,14 +114,16 @@ export function DataTable<TData, TValue>({
   React.useEffect(() => {
     let persisted = fetchPersistedState();
     setColumnVisibility(persisted.state.repoColumnVisibility);
+    setExpanded(persisted.state.repoRowsExpanded);
   }, []);
 
   // Ensure that localStorage (zustand) stays in sync with columnVisibility
   React.useEffect(() => {
     if (hydrated) {
       setRepoColumnVisibility(columnVisibility as RepoColumnVisibility);
+      setRepoRowsExpanded(expanded as ExpandedState);
     }
-  }, [columnVisibility]);
+  }, [columnVisibility, expanded]);
 
   // beastly way to set the row-expansion Switch in the right place...
   React.useEffect(() => {

@@ -53,13 +53,14 @@ export default async function AppLayout({
               className="flex w-full border-b border-b-foreground/10 h-14 px-5 \
               bg-gradient-to-t from-secondary"
             >
-              <div className="flex  w-full items-center justify-between">
-                <div className="flex flex-row">
-                  {/* <Logo className="mr-10" /> */}
+              <div className="flex flex-row w-full content-center items-center">
+                <div className="w-2/6">
                   <Logo variant="mdHorizontal" />
                 </div>
-                {user && <Navbar />}
-                <div className="">
+                <div className="w-2/6 flex justify-center">
+                  {user && <Navbar />}
+                </div>
+                <div className="w-2/6 flex justify-end">
                   <SignInOut />
                 </div>
               </div>

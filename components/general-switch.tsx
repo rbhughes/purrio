@@ -1,39 +1,33 @@
 import { Switch } from "@/components/ui/switch";
 
 import React, { Dispatch, SetStateAction } from "react";
-import { ExpandedState } from "@tanstack/react-table";
 
-interface SwitchProps {
+interface SwitchProps<T> {
   label: string;
   checked?: boolean;
-  //onChange?: (checked: boolean) => void;
-  onChange?: Dispatch<SetStateAction<ExpandedState>>;
+  onChange?: Dispatch<SetStateAction<T>>;
 }
-
-export const GeneralSwitch: React.FC<SwitchProps> = ({
+export const GeneralSwitch = <T extends unknown>({
   label,
   checked: initialChecked = false,
   onChange,
-}) => {
+}: SwitchProps<T>) => {
   const [checked, setChecked] = React.useState<boolean>(initialChecked);
 
   const handleChange = (newChecked: boolean) => {
     setChecked(newChecked);
     if (onChange) {
-      onChange(newChecked as ExpandedState);
+      onChange(newChecked as T);
     }
-    // console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-    // console.log(checked);
-    // console.log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
   };
 
   return (
     <div className="flex items-center space-x-2">
+      <label htmlFor="switch">{label}</label>
       <Switch
         checked={checked}
         onCheckedChange={() => handleChange(!checked)}
       />
-      <label htmlFor="switch">{label}</label>
     </div>
   );
 };

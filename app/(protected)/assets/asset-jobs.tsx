@@ -44,6 +44,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { AssetJobTable } from "./asset-job-table";
 import { SuiteUI } from "@/lib/purr_ui";
+
+import { GeneralSwitch } from "@/components/general-switch";
+
 //import { createPortal } from "react-dom";
 //import TableVisSwitch from "@/components/table-vis-switch";
 import MissingReposWarning from "./missing-repos-warning";
@@ -75,10 +78,6 @@ export default function AssetJobs({
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
   //const documentVisible = useVisibilityChange();
-
-  const handleToggleAdvancedForm = () => {
-    setShowAdvancedForm(!showAdvancedForm);
-  };
 
   let defaults: FormInputs = {
     id: undefined,
@@ -170,18 +169,29 @@ export default function AssetJobs({
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
-        <div className="flex mb-4 justify-between">
-          <div className="place-self-center purr-h1">asset collection</div>
-          <CollapsibleTrigger asChild>
-            <Button variant="secondary">
-              <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
-              Define Asset Collection Jobs...
-            </Button>
-          </CollapsibleTrigger>
+        <div className="flex flex-row">
+          <div className="w-2/6"></div>
+
+          <div className="w-2/6 flex justify-center purr-h1">
+            asset collection
+          </div>
+
+          <div className="w-2/6 flex justify-end">
+            <CollapsibleTrigger asChild>
+              <Button variant="secondary">
+                <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
+                Define Asset Collection Jobs...
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+        </div>
+
+        <div className="flex justify-center mb-4 font-mono italic mt-1">
+          Index asset data from repos to your local database
         </div>
 
         <CollapsibleContent>
-          <Card>
+          <Card className="shadow-xl mx-10">
             <CardHeader>
               <div className="flex flex-row">
                 <div className="w-5/6">
@@ -189,12 +199,10 @@ export default function AssetJobs({
                 </div>
                 <div className="w-1/6">
                   <span className="flex items-center space-x-2 float-right">
-                    <Label htmlFor="advToggle">Advanced </Label>
-                    <Switch
-                      id="advToggle"
-                      onClick={handleToggleAdvancedForm}
+                    <GeneralSwitch
+                      label="Advanced"
                       checked={showAdvancedForm}
-                      //style={{ backgroundColor: "#facc15" }}
+                      onChange={setShowAdvancedForm}
                     />
                   </span>
                 </div>
@@ -498,7 +506,7 @@ export default function AssetJobs({
         </CollapsibleContent>
       </Collapsible>
 
-      <div className="my-6" />
+      <div className="mt-20" />
 
       <AssetJobTable
         assetJobs={assetJobs!}

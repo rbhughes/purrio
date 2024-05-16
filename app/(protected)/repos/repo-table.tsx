@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Card } from "@/components/ui/card";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { liveTable } from "@openartmarket/supabase-live-table";
@@ -16,13 +15,7 @@ const renderSubComponent = ({ row }: { row: any }) => {
   return <RepoVis repo={row.original as Repo} />;
 };
 
-export function RepoTable({
-  repos,
-  setValue,
-}: {
-  repos: Repo[];
-  setValue: any;
-}) {
+export function RepoTable({ repos }: { repos: Repo[] }) {
   const supabase = createClient();
   const router = useRouter();
 
@@ -74,14 +67,11 @@ export function RepoTable({
   // }, [supabase, router]);
 
   return (
-    <Card className="border-8 border-double">
-      <DataTable
-        data={repos}
-        columns={columns}
-        renderSubComponent={renderSubComponent}
-        getRowCanExpand={() => true}
-        //setValue={setValue}
-      />
-    </Card>
+    <DataTable
+      data={repos}
+      columns={columns}
+      renderSubComponent={renderSubComponent}
+      getRowCanExpand={() => true}
+    />
   );
 }

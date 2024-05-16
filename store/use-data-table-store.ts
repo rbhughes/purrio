@@ -2,6 +2,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { ExpandedState } from "@tanstack/react-table";
+
 /**
 2024-05-04 | So...using zustand to store repo columnVisibility does not work
 quite so simply as this site would suggest:
@@ -117,6 +119,8 @@ const defaultRepoColumnVisibility = {
   wells_with_zone: false,
 };
 
+const defaultRepoRowsExpanded = true as ExpandedState;
+
 const defaultAssetJobColumnVisibility = {
   asset: true,
   tag: false,
@@ -138,6 +142,7 @@ const defaultAssetJobColumnVisibility = {
 interface PurrDataTableJSON {
   state: {
     repoColumnVisibility: RepoColumnVisibility;
+    repoRowsExpanded: ExpandedState;
     assetJobColumnVisibility: AssetJobColumnVisibility;
   };
   version: 0;
@@ -150,8 +155,9 @@ export const fetchPersistedState = (): PurrDataTableJSON => {
   } else {
     return {
       state: {
-        assetJobColumnVisibility: defaultAssetJobColumnVisibility,
         repoColumnVisibility: defaultRepoColumnVisibility,
+        repoRowsExpanded: defaultRepoRowsExpanded,
+        assetJobColumnVisibility: defaultAssetJobColumnVisibility,
       },
       version: 0,
     };
@@ -160,9 +166,13 @@ export const fetchPersistedState = (): PurrDataTableJSON => {
 
 interface PurrDataTableState {
   assetJobColumnVisibility: AssetJobColumnVisibility;
-  repoColumnVisibility: RepoColumnVisibility;
   setAssetJobColumnVisibility: (cols: AssetJobColumnVisibility) => void;
+
+  repoColumnVisibility: RepoColumnVisibility;
   setRepoColumnVisibility: (cols: RepoColumnVisibility) => void;
+
+  repoRowsExpanded: ExpandedState;
+  setRepoRowsExpanded: (exp: ExpandedState) => void;
 }
 
 // to merge individual column states...if you're into that sort of thing...
@@ -171,11 +181,15 @@ interface PurrDataTableState {
 
 const dataTableStore = (set: any, get: any) => ({
   assetJobColumnVisibility: defaultAssetJobColumnVisibility,
-  repoColumnVisibility: defaultRepoColumnVisibility,
   setAssetJobColumnVisibility: (newCols: AssetJobColumnVisibility) =>
     set({ assetJobColumnVisibility: newCols }),
+
+  repoColumnVisibility: defaultRepoColumnVisibility,
   setRepoColumnVisibility: (newCols: RepoColumnVisibility) =>
     set({ repoColumnVisibility: newCols }),
+
+  repoRowsExpanded: defaultRepoRowsExpanded,
+  setRepoRowsExpanded: (exp: ExpandedState) => set({ repoRowsExpanded: exp }),
 });
 
 export const useDataTableStore = create<PurrDataTableState>()(

@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Card } from "@/components/ui/card";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { liveTable } from "@openartmarket/supabase-live-table";
@@ -76,14 +75,12 @@ export function AssetJobTable({
   // }, [supabase, router]);
 
   return (
-    <Card>
-      <DataTable
-        data={assetJobs}
-        columns={columns}
-        setValue={setValue}
-        setShowForm={setShowForm}
-        setShowAdvancedForm={setShowAdvancedForm}
-      />
-    </Card>
+    <DataTable
+      data={assetJobs}
+      columns={columns}
+      setValue={setValue}
+      setShowForm={setShowForm}
+      setShowAdvancedForm={setShowAdvancedForm}
+    />
   );
 }

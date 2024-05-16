@@ -13,10 +13,6 @@ export default async function Page() {
 
   const workers = await fetchWorkers();
 
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
-
   const { data: repos } = await supabase
     .from("repo")
     .select()
@@ -30,7 +26,7 @@ export default async function Page() {
 
       <Toaster richColors />
 
-      {process.env.NODE_ENV === "development" && (
+      {/* {process.env.NODE_ENV === "development" && (
         <div className="bg-red-600 mt-20 p-4 w-fit text-white">
           TODO
           <ul>
@@ -49,7 +45,7 @@ export default async function Page() {
             </li>
           </ul>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

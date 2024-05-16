@@ -15,6 +15,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
+import { GeneralSwitch } from "@/components/general-switch";
+
 // NOTE: The shadcn Sheet code will have an "x" button that is not functional
 // using Switch like below. Comment out lines in: @/components/ui/sheet.tsx
 
@@ -38,20 +40,10 @@ export default function AssetDNA(props: DNAProps) {
     setIsOpen(!isOpen);
   };
 
-  // TODO: sort this out if colored Switch should be a thing
-  // [data-state="open"] {
-  //   opacity: 0.1;
-  // }
   return (
     <>
       <span className="flex items-center space-x-2 float-right">
-        <Label htmlFor="sqlToggle">Show SQL </Label>
-        <Switch
-          id="sqlToggle"
-          onClick={handleToggle}
-          checked={isOpen}
-          //style={{ backgroundColor: "#facc15" }}
-        />
+        <GeneralSwitch label="Show SQL" checked={isOpen} onChange={setIsOpen} />
       </span>
 
       <Sheet modal={false} open={isOpen}>
@@ -62,9 +54,13 @@ export default function AssetDNA(props: DNAProps) {
           <SheetHeader>
             <SheetTitle className="flex justify-between">
               {suite}: {asset}
-              <Button size="sm" variant="destructive" onClick={handleToggle}>
+              {/* <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => setIsOpen(!isOpen)}
+              >
                 <X />
-              </Button>
+              </Button> */}
             </SheetTitle>
             <SheetDescription className="text-center">
               some stuff

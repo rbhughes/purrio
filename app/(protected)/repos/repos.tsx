@@ -34,20 +34,20 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import { enqueueRepoReconTask } from "@/lib/actions";
 import { toast } from "sonner";
+
 import { SUITES } from "@/lib/purr_utils";
 import { SuiteUI } from "@/lib/purr_ui";
 import { RepoReconFormSchema } from "./repo-recon-form-schema";
+import { RepoTable } from "./repo-table";
+import { ArrowDownLeftSquare } from "lucide-react";
+
+import { enqueueRepoReconTask } from "@/lib/actions";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
-import { RepoTable } from "./repo-table";
-
-import { ArrowDownLeftSquare } from "lucide-react";
 
 import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
-
 type FormInputs = z.infer<typeof RepoReconFormSchema>;
 
 export default function Repos({
@@ -96,28 +96,32 @@ export default function Repos({
   //TODO: add details how-to if repos is empty
 
   const repoFormDesc = `
-  Recursively crawl directories to locate and collect metadata inventories 
-  for project repositories (repos). `;
+  Define a network path (drive letter or UNC) for a parent folder that contains
+  project repositories`;
 
+  //<div className="bg-red-100 text-center purr-h1 ">repo recon</div>
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
-        <div className="flex mb-4 justify-between">
-          <div className="place-self-center purr-h1">repo recon</div>
+        <div className="flex flex-row mb-4">
+          <div className="w-2/6"></div>
+          <div className="w-2/6 flex justify-center purr-h1">repo recon</div>
+          <div className="w-2/6 flex justify-end">
+            <CollapsibleTrigger asChild>
+              <Button variant="secondary">
+                <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
+                Discover Projects on your Network...
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+        </div>
 
-          {/* <div className="flex flex-row gap-4">
-            <ToggleExpandRows /> */}
-          <CollapsibleTrigger asChild>
-            <Button variant="secondary">
-              <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
-              Discover Projects on your Network...
-            </Button>
-          </CollapsibleTrigger>
-          {/* </div */}
+        <div className="flex justify-center mb-4 font-mono italic mt-1">
+          Locate and collect metadata inventories from network projects
         </div>
 
         <CollapsibleContent>
-          <Card>
+          <Card className="shadow-xl mx-10">
             <CardHeader>
               <CardDescription>{repoFormDesc}</CardDescription>
             </CardHeader>
@@ -254,9 +258,9 @@ export default function Repos({
         </CollapsibleContent>
       </Collapsible>
 
-      <div className="my-6" />
+      <div className="mt-20" />
 
-      <RepoTable repos={repos} setValue={form.setValue} />
+      <RepoTable repos={repos} />
     </div>
   );
 }

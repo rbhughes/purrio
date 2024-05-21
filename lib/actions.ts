@@ -80,6 +80,39 @@ export async function enqueueAssetJobTask(
   }
 }
 
+// export async function enqueueSearchExportTask(
+
+// ): Promise<ActionWithData> {
+
+//     const supabase = createClient();
+
+//     const supRes = await supabase
+//       .from("task")
+//       .insert({
+//         worker: await pickWorker(),
+//         directive: "search",
+//         status: "PENDING",
+//         body: newBody,
+//       })
+//       .select();
+
+//     if (supRes.status !== 201) {
+//       return { data: null, error: JSON.stringify(supRes, null, 2) };
+//     } else {
+//       return {
+//         data: supRes.data,
+//         error: null,
+//       };
+//     }
+
+// }
+
+export async function enqueueSearchExportTask(o: any) {
+  console.log("xxxxxxxxxxxxxxxx");
+  console.log(o);
+  console.log("xxxxxxxxxxxxxxxx");
+}
+
 export async function enqueueSearchTask(
   formData: SearchFormInputs
 ): Promise<ActionWithData> {
@@ -96,6 +129,7 @@ export async function enqueueSearchTask(
       tag: zodRes.data.tag,
       terms: zodRes.data.terms,
       user_id: zodRes.data.user_id,
+      save_to_store: zodRes.data.save_to_store,
     };
 
     const supRes = await supabase

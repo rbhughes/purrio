@@ -1,4 +1,4 @@
-import { createClient } from "@/utils/supabase/server";
+//import { createClient } from "@/utils/supabase/server";
 import { fetchWorkers } from "@/lib/actions";
 import { Toaster } from "@/components/ui/sonner";
 import Repos from "./repos";
@@ -9,19 +9,19 @@ import { Loader } from "@/components/loader";
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const supabase = createClient();
+  //const supabase = createClient();
 
   const workers = await fetchWorkers();
 
-  const { data: repos } = await supabase
-    .from("repo")
-    .select()
-    .order("updated_at", { ascending: false });
+  // const { data: repos } = await supabase
+  //   .from("repo")
+  //   .select()
+  //   .order("updated_at", { ascending: false });
 
   return (
     <div>
       <Suspense fallback={<Loader target="Repos" />}>
-        <Repos workers={workers} repos={repos!} />
+        <Repos workers={workers} />
       </Suspense>
 
       <Toaster richColors />

@@ -8,10 +8,10 @@ import { Loader } from "@/components/loader";
 export default async function Page() {
   const supabase = createClient();
 
-  const { data: searchResults } = await supabase
-    .from("search_result")
-    .select()
-    .order("search_id", { ascending: false });
+  // const { data: searchResults } = await supabase
+  //   .from("search_result")
+  //   .select()
+  //   .order("search_id", { ascending: false });
 
   const {
     data: { user },
@@ -20,11 +20,8 @@ export default async function Page() {
   return (
     <div>
       <Suspense fallback={<Loader target="AssetJobs" />}>
-        <Search
-          userId={user!.id}
-          //searchHistory={searchHistory![0].search_history}
-          searchResults={searchResults!}
-        />
+        {/* <Search userId={user!.id} searchResults={searchResults!} /> */}
+        <Search userId={user!.id} />
       </Suspense>
       <Toaster richColors />
     </div>

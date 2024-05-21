@@ -3,10 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/dt/data-table-column-header";
-//import { DataTableRowActions } from "./data-table-row-actions";
 import { SuiteUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
-import { simplifyDateString } from "@/lib/purr_utils";
+//import { simplifyDateString } from "@/lib/purr_utils";
 
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
@@ -199,7 +198,7 @@ export const columns: ColumnDef<SearchResult>[] = [
   // {
   //   id: "actions",
   //   cell: ({ row }) => (
-  //     <AssetJobRowActions assetJob={row.original as AssetJob} />
+  //     <SearchRowActions search={row.original as AssetJob} />
   //   ),
   // },
 ];

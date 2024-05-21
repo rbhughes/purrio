@@ -301,6 +301,7 @@ export type Database = {
           active: boolean
           asset: string | null
           created_at: string
+          directive: string | null
           doc: Json | null
           id: number
           repo_id: string | null
@@ -319,6 +320,7 @@ export type Database = {
           active?: boolean
           asset?: string | null
           created_at?: string
+          directive?: string | null
           doc?: Json | null
           id?: number
           repo_id?: string | null
@@ -337,6 +339,7 @@ export type Database = {
           active?: boolean
           asset?: string | null
           created_at?: string
+          directive?: string | null
           doc?: Json | null
           id?: number
           repo_id?: string | null

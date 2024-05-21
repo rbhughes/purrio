@@ -42,8 +42,14 @@ import { AssetJobFormSchema } from "./asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { AssetJobTable } from "./asset-job-table";
+//import { AssetJobTable } from "./asset-job-table";
 import { SuiteUI } from "@/lib/purr_ui";
+///
+
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import { createClient } from "@/utils/supabase/client";
+///
 
 import { GeneralSwitch } from "@/components/general-switch";
 
@@ -66,18 +72,38 @@ let assetsPlus = ["ALL_ASSETS", ...ASSETS];
 
 export default function AssetJobs({
   repos,
-  assetJobs,
+  //assetJobs,
   withMissingRepos,
 }: {
   repos?: Repo[];
-  assetJobs?: AssetJob[];
+  //assetJobs?: AssetJob[];
   withMissingRepos?: AssetJob[];
 }) {
+  const supabase = createClient();
   //const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
   //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
+  const [assetJobs, setAssetJobs] = React.useState<AssetJob[]>([]);
   //const documentVisible = useVisibilityChange();
+
+  const getAssetJobs = async () => {
+    const { data, error } = await supabase
+      .from("asset_job")
+      .select()
+      .order("updated_at", { ascending: false });
+
+    if (!data) {
+      return;
+    } else {
+      setAssetJobs(data);
+      ///console.log(data);
+    }
+    if (error) {
+      console.error(error);
+      return;
+    }
+  };
 
   let defaults: FormInputs = {
     id: undefined,
@@ -135,6 +161,32 @@ export default function AssetJobs({
     form.setValue("repo_id", "");
     refSuite.current = watchedSuite;
   }, [watchedSuite]);
+
+  React.useEffect(() => {
+    getAssetJobs();
+
+    const channel = supabase
+      .channel("realtime repos")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "asset_job",
+        },
+
+        async (payload: any) => {
+          getAssetJobs();
+          let newAssetJob: AssetJob = payload.new;
+          setAssetJobs((prev) => [newAssetJob, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
 
   // we add repo fs_path and name here (joins not supported in subscription)
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
@@ -506,10 +558,24 @@ export default function AssetJobs({
         </CollapsibleContent>
       </Collapsible>
 
+      {Object.keys(form.control._formState.errors).length > 0 && (
+        <div className="bg-red-400">
+          {JSON.stringify(form.control._formState.errors)}
+        </div>
+      )}
+
       <div className="mt-20" />
 
-      <AssetJobTable
+      {/* <AssetJobTable
         assetJobs={assetJobs!}
+        setValue={form.setValue}
+        setShowForm={setShowForm}
+        setShowAdvancedForm={setShowAdvancedForm}
+      /> */}
+
+      <DataTable
+        data={assetJobs}
+        columns={columns}
         setValue={form.setValue}
         setShowForm={setShowForm}
         setShowAdvancedForm={setShowAdvancedForm}

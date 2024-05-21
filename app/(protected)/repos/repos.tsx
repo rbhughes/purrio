@@ -39,8 +39,18 @@ import { toast } from "sonner";
 import { SUITES } from "@/lib/purr_utils";
 import { SuiteUI } from "@/lib/purr_ui";
 import { RepoReconFormSchema } from "./repo-recon-form-schema";
-import { RepoTable } from "./repo-table";
+//import { RepoTable } from "./repo-table";
 import { ArrowDownLeftSquare } from "lucide-react";
+
+///
+
+import { createClient } from "@/utils/supabase/client";
+import { columns } from "./columns";
+import { DataTable } from "./data-table";
+
+import RepoVis from "./repo-vis";
+
+///
 
 import { enqueueRepoReconTask } from "@/lib/actions";
 import AuxGeographix from "./aux-geographix";
@@ -50,17 +60,59 @@ import { Database } from "@/lib/sb_types";
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type FormInputs = z.infer<typeof RepoReconFormSchema>;
 
-export default function Repos({
-  workers,
-  repos,
-}: {
-  workers: string[];
-  repos: Repo[];
-}) {
-  // 2024-01-18 | just skip state and reset to defaults after submit
-  //const [data, setData] = React.useState<FormInputs>();
+const renderSubComponent = ({ row }: { row: any }) => {
+  return <RepoVis repo={row.original as Repo} />;
+};
+
+export default function Repos({ workers }: { workers: string[] }) {
+  const supabase = createClient();
 
   const [showForm, setShowForm] = React.useState<boolean>(false);
+  const [repos, setRepos] = React.useState<Repo[]>([]);
+
+  const getRepos = async () => {
+    const { data, error } = await supabase
+      .from("repo")
+      .select()
+      .order("updated_at", { ascending: false });
+
+    if (!data) {
+      return;
+    } else {
+      setRepos(data);
+      ///console.log(data);
+    }
+    if (error) {
+      console.error(error);
+      return;
+    }
+  };
+
+  React.useEffect(() => {
+    getRepos();
+
+    const channel = supabase
+      .channel("realtime repos")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "repo",
+        },
+
+        async (payload: any) => {
+          getRepos();
+          let newRepo: Repo = payload.new;
+          setRepos((prev) => [newRepo, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]);
 
   let defaults = {
     suite: SUITES[0],
@@ -258,9 +310,20 @@ export default function Repos({
         </CollapsibleContent>
       </Collapsible>
 
+      {Object.keys(form.control._formState.errors).length > 0 && (
+        <div className="bg-red-400">
+          {JSON.stringify(form.control._formState.errors)}
+        </div>
+      )}
+
       <div className="mt-20" />
 
-      <RepoTable repos={repos} />
+      <DataTable
+        data={repos}
+        columns={columns}
+        renderSubComponent={renderSubComponent}
+        getRowCanExpand={() => true}
+      />
     </div>
   );
 }

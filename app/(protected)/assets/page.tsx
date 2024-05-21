@@ -51,7 +51,7 @@ export default async function Page() {
       <Suspense fallback={<Loader target="AssetJobs" />}>
         <AssetJobs
           repos={repos!}
-          assetJobs={filteredAssetJobs.extants}
+          //assetJobs={filteredAssetJobs.extants}
           withMissingRepos={filteredAssetJobs.missing}
         />
       </Suspense>

@@ -34,6 +34,7 @@ const filterNotesByPathname = (notes: Message[], pathname: string) => {
   let routeToWorkflow: Matcher = {
     assets: "load",
     repos: "recon",
+    search: "search",
   };
 
   let pn = pathname.startsWith("/") ? pathname.slice(1) : pathname;
@@ -84,11 +85,13 @@ export const MessageFooter = ({ user }: { user: User }) => {
           if (msg.directive === "busy") {
             let job_id = (msg.data as any).job_id;
             setBusy(true);
+            console.log("GOT A BUSY", job_id);
           }
           if (msg.directive === "done") {
             let job_id = (msg.data as any).job_id;
             await supabase.from("message").delete().eq("data->>job_id", job_id);
             setBusy(false);
+            console.log("GOT A DONE", job_id);
           }
 
           // NOTE: the reverse to put newest item at top of array

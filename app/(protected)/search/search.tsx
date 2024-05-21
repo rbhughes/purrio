@@ -4,13 +4,10 @@ import React from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { ASSETS, SUITES } from "@/lib/purr_utils";
 import { toast } from "sonner";
-
 import { SuiteUI } from "@/lib/purr_ui";
 
 import {
@@ -27,8 +24,13 @@ import { enqueueSearchTask } from "@/lib/actions";
 import { Search as HourGlass } from "lucide-react";
 import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 
+import { GeneralSwitch } from "@/components/general-switch";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import {
+  SearchResultStorage,
+  SearchStorageOption,
+} from "./search-result-storage";
 
 import {
   Form,
@@ -49,15 +51,16 @@ import {
 
 import { SearchFormSchema } from "./search-form-schema";
 type FormInputs = z.infer<typeof SearchFormSchema>;
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 
-import { liveTable } from "@openartmarket/supabase-live-table";
+//import { liveTable } from "@openartmarket/supabase-live-table";
 
 import { createClient } from "@/utils/supabase/client";
-import { Database } from "@/lib/sb_types";
 import { Label } from "@/components/ui/label";
-type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 
+import { Database } from "@/lib/sb_types";
+type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
+type Message = Database["public"]["Tables"]["message"]["Row"];
 type Suite = Database["public"]["Enums"]["suite"];
 
 // minor customizations in @components/ui/toggle.tsx
@@ -78,82 +81,119 @@ interface SearchHistory {
   updated_at: string;
 }
 
-export default function Search({
-  userId,
-  searchResults,
-}: {
-  userId: string;
-  searchResults: SearchResult[];
-}) {
+export default function Search({ userId }: { userId: string }) {
   const supabase = createClient();
-  const router = useRouter();
+  //const router = useRouter();
 
-  const [searchId, setSearchId] = React.useState<number>();
-  const [filteredResults, setFilteredResults] = React.useState<SearchResult[]>(
-    []
-  );
-
+  const [searchId, setSearchId] = React.useState<number>(0);
+  const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
   const [history, setHistory] = React.useState<SearchHistory[]>([]);
+  const [showAdvancedForm, setShowAdvancedForm] = React.useState(true);
+  const [storageOpts, setStorageOpts] = React.useState<Object[]>([]);
 
   ////////////////
   React.useEffect(() => {
     const initHistory = async () => {
       const { data, error } = await supabase.from("search_history").select();
+      if (error) {
+        console.error(error);
+      }
       setHistory(data as SearchHistory[]);
     };
     initHistory();
-  }, [userId, filteredResults]);
+  }, [userId, searchResults]);
   ////////////////
 
-  //console.log("^^^^^");
-  //console.log(Object.keys(searchHistory));
-  //console.log("^^^^^");
+  const purgeSearchResultsById = async (searchId: number) => {
+    const { data, error } = await supabase
+      .from("search_result")
+      .delete()
+      .eq("search_id", searchId);
 
-  // live channel subscription to search_result
+    console.log("deletedeletedeletedelete");
+    console.log(data);
+
+    if (!data) {
+      return;
+    }
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+  };
+
+  const getSearchResults = async () => {
+    const { data, error } = await supabase
+      .from("search_result")
+      .select()
+      .eq("user_id", userId)
+      .eq("search_id", searchId)
+      .order("search_id", { ascending: false });
+
+    if (!data) {
+      return;
+    }
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+  };
+
   React.useEffect(() => {
-    const initChannel = () => {
-      const chan = liveTable<SearchResult>(supabase, {
-        table: "search_result",
-        filterColumn: "active",
-        filterValue: true,
-        callback: (err) => {
-          if (err) {
-            console.error(err);
-            chan.unsubscribe().then(() => initChannel());
-            location.reload();
-            return;
-          }
-          router.refresh();
+    getSearchResults();
+
+    const channel = supabase
+      .channel("realtime search")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "search_result",
+          //filter: `user_id=eq.${userId}`,
+          filter: `search_id=eq.${searchId}`,
         },
-      });
-      return chan;
-    };
-    const channel = initChannel();
+
+        async (payload: any) => {
+          getSearchResults();
+          let newSR: SearchResult = payload.new;
+
+          if (newSR.directive === "search_result") {
+            setSearchResults((prev) => [newSR, ...prev]);
+          } else if (newSR.directive === "storage_prompt") {
+            console.log("sssssssssssssssssssssssssssss");
+
+            let so = (newSR as any).search_body;
+
+            so.user_id = userId;
+
+            if (so.length > 0) {
+              so.map((o: any) => (o.user_id = userId));
+              setStorageOpts(so);
+            }
+            //if (newSR.search_body)
+            console.log(so);
+
+            console.log("sssssssssssssssssssssssssssss");
+          }
+        }
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, router, searchId]);
-
-  // match a search request id (following enqueue) to live search_result rows
-  React.useEffect(() => {
-    let filtered = searchResults.filter(
-      (sr: SearchResult) => sr.search_id === searchId
-    );
-    setFilteredResults(filtered);
-    console.log("searchId, searchResults !!!!!!!!!! searchId=", searchId);
-
-    //updateProfileWithSearchIds(userId);
-    //updateProfileSearchHistory(userId);
-  }, [searchId, searchResults]);
+  }, [supabase, searchId]);
 
   let defaults = {
-    //asset: [ASSETS[0]],
     assets: [{ label: ASSETS[0], value: ASSETS[0] }],
     suites: [SUITES[0]],
     tag: "",
     terms: "",
     user_id: userId,
+    save_to_store: false,
   };
 
   const form = useForm<FormInputs>({
@@ -171,16 +211,13 @@ export default function Search({
         label: asset,
       }))
     );
-    console.log("inside historyselect");
 
     let sel = sb.assets.map((asset: any) => ({
       value: asset,
       label: asset,
     }));
 
-    console.log(sel);
     form.setValue("assets", sel);
-
     form.setValue("suites", sb.suites);
     form.setValue("tag", sb.tag);
     form.setValue("terms", sb.terms);
@@ -204,7 +241,10 @@ export default function Search({
       if (error) {
         toast.error(error);
       } else {
-        console.log(data);
+        await purgeSearchResultsById(searchId);
+        setSearchResults([]);
+        setStorageOpts([]);
+
         toast.info(JSON.stringify(data));
       }
 
@@ -238,22 +278,38 @@ export default function Search({
     value: asset,
     label: asset,
   }));
-
-  const test = (myarg: any) => {
-    console.log("aaaaaaaaaaaa", myarg);
-    return [{ value: "well", label: "well" }];
-  };
-
   ////////////////////////////////e
 
   return (
     <div className="flex flex-col">
-      <div className="flex mb-4 justify-between">
-        <div className="place-self-center purr-h1">search</div>
+      <div className="flex flex-row">
+        <div className="w-2/6"></div>
+
+        <div className="w-2/6 flex justify-center purr-h1">search</div>
+        <div className="w-2/6"></div>
       </div>
-      <Card>
+
+      <div className="flex justify-center mb-4 font-mono italic mt-1">
+        Search local database for indexed assets
+      </div>
+
+      <div className="mt-4" />
+      <Card className="shadow-xl mx-10">
         <CardHeader>
-          <CardDescription>{cardDesc}</CardDescription>
+          <div className="flex flex-row">
+            <div className="w-5/6">
+              <CardDescription>{cardDesc}</CardDescription>
+            </div>
+            <div className="w-1/6">
+              <span className="disabled flex items-center space-x-2 float-right">
+                <GeneralSwitch
+                  label="Advanced"
+                  checked={showAdvancedForm}
+                  onChange={setShowAdvancedForm}
+                />
+              </span>
+            </div>
+          </div>
         </CardHeader>
 
         <CardContent>
@@ -262,117 +318,119 @@ export default function Search({
               onSubmit={form.handleSubmit(processForm)}
               className=" space-y-2 "
             >
-              <div className="flex flex-row gap-4">
-                {/* SEARCH FORM */}
-                <div className="w-8/12">
-                  {/* --------------------------- */}
-                  <div className="flex flex-row gap-2 mb-4">
-                    {/* <div className="w-2/6 flex-1"> */}
+              {showAdvancedForm && (
+                <div className="flex flex-row gap-4">
+                  {/* SEARCH FORM */}
+                  <div className="w-8/12">
+                    {/* --------------------------- */}
+                    <div className="flex flex-row gap-2 mb-4">
+                      {/* <div className="w-2/6 flex-1"> */}
 
-                    {/* SUITES */}
-                    <div className="w-4/6 ">
-                      <FormField
-                        control={form.control}
-                        name="suites"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>suites</FormLabel>
-                            <ToggleGroup
-                              type="multiple"
-                              variant="outline"
-                              {...field}
-                              onValueChange={(value) =>
-                                form.setValue(field.name, value)
-                              }
-                            >
-                              {SUITES.map((suite: string) => (
-                                <ToggleGroupItem
-                                  key={suite}
-                                  value={suite}
-                                  aria-label={suite}
-                                  className="w-4/12"
-                                >
-                                  {SuiteUI[suite].icon}
-                                </ToggleGroupItem>
-                              ))}
-                            </ToggleGroup>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                      {/* SUITES */}
+                      <div className="w-4/6 ">
+                        <FormField
+                          control={form.control}
+                          name="suites"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>suites</FormLabel>
+                              <ToggleGroup
+                                type="multiple"
+                                variant="outline"
+                                {...field}
+                                onValueChange={(value) =>
+                                  form.setValue(field.name, value)
+                                }
+                              >
+                                {SUITES.map((suite: string) => (
+                                  <ToggleGroupItem
+                                    key={suite}
+                                    value={suite}
+                                    aria-label={suite}
+                                    className="w-4/12"
+                                  >
+                                    {SuiteUI[suite].icon}
+                                  </ToggleGroupItem>
+                                ))}
+                              </ToggleGroup>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
-                    {/* TAG */}
-                    <div className="w-2/6 ">
-                      <FormField
-                        control={form.control}
-                        name="tag"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>tag</FormLabel>
-                            <FormControl>
-                              <Input placeholder="tag" {...field} />
-                            </FormControl>
-                            {/* <FormDescription>
+                      {/* TAG */}
+                      <div className="w-2/6 ">
+                        <FormField
+                          control={form.control}
+                          name="tag"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>tag</FormLabel>
+                              <FormControl>
+                                <Input placeholder="tag" {...field} />
+                              </FormControl>
+                              {/* <FormDescription>
                               UNC or drive letter path
                             </FormDescription> */}
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                      {/* ASSETS */}
+                      <div className="w-full ">
+                        <FormField
+                          control={form.control}
+                          name="assets"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>assets</FormLabel>
+                              <FormControl>
+                                <MultipleSelector
+                                  badgeClassName="bg-orange-500"
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  defaultOptions={assetSelections}
+                                  placeholder="select one or more assets to search..."
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row gap-2">{/* TERMS */}</div>
+                  </div>
+
+                  {/* SEARCH HISTORY */}
+                  <div className="flex flex-col w-4/12 ">
+                    <div className="space-y-2">
+                      <Label className="h-9">search history</Label>
+                      <Select onValueChange={handleHistorySelect}>
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="previous searches..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {history.map((o) => (
+                            <SelectItem
+                              key={o.search_id}
+                              value={JSON.stringify(o.search_body)}
+                            >
+                              {formatHistoryOption(o)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-
-                  <div className="flex flex-col">
-                    {/* ASSETS */}
-                    <div className="w-full ">
-                      <FormField
-                        control={form.control}
-                        name="assets"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>assets</FormLabel>
-                            <FormControl>
-                              <MultipleSelector
-                                badgeClassName="bg-orange-500"
-                                value={field.value}
-                                onChange={field.onChange}
-                                defaultOptions={assetSelections}
-                                placeholder="select one or more assets to search..."
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row gap-2">{/* TERMS */}</div>
                 </div>
-
-                {/* SEARCH HISTORY */}
-                <div className="flex flex-col w-4/12 ">
-                  <div className="space-y-2">
-                    <Label className="h-9">search history</Label>
-                    <Select onValueChange={handleHistorySelect}>
-                      <SelectTrigger className="">
-                        <SelectValue placeholder="previous searches..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {history.map((o) => (
-                          <SelectItem
-                            key={o.search_id}
-                            value={JSON.stringify(o.search_body)}
-                          >
-                            {formatHistoryOption(o)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
+              )}
               <div className="flex flex-row justify-end">
                 <div className="w-fit">
                   <HourGlass
@@ -426,20 +484,19 @@ export default function Search({
         {/* <SearchResults searchResults={searchResults} taskId={taskId} /> */}
       </Card>
 
-      {JSON.stringify(form.control._formState.errors)}
+      {Object.keys(form.control._formState.errors).length > 0 && (
+        <div className="bg-red-400">
+          {JSON.stringify(form.control._formState.errors)}
+        </div>
+      )}
 
-      <Card>
-        {/* <ShowHits searchResults={filteredResult} /> */}
-        {/* <ShowHits searchResults={searchResults} /> */}
-        <DataTable
-          //data={searchResults}
-          data={filteredResults}
-          columns={columns}
-          //setValue={setValue}
-          //setShowForm={setShowForm}
-          //setShowAdvancedForm={setShowAdvancedForm}
-        />
-      </Card>
+      {storageOpts.length > 0 && (
+        <SearchResultStorage props={storageOpts as SearchStorageOption[]} />
+      )}
+
+      <div className="mt-20" />
+
+      <DataTable data={searchResults} columns={columns} />
     </div>
   );
 }

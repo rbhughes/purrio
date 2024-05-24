@@ -27,10 +27,7 @@ import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 import { GeneralSwitch } from "@/components/general-switch";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import {
-  SearchResultStorage,
-  SearchStorageOption,
-} from "./search-result-storage";
+import { SearchExport, SearchExportProps } from "./search-export";
 
 import {
   Form,
@@ -83,13 +80,12 @@ interface SearchHistory {
 
 export default function Search({ userId }: { userId: string }) {
   const supabase = createClient();
-  //const router = useRouter();
 
   const [searchId, setSearchId] = React.useState<number>(0);
   const [searchResults, setSearchResults] = React.useState<SearchResult[]>([]);
   const [history, setHistory] = React.useState<SearchHistory[]>([]);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(true);
-  const [storageOpts, setStorageOpts] = React.useState<Object[]>([]);
+  const [exportProps, setExportProps] = React.useState<Object[]>([]);
 
   ////////////////
   React.useEffect(() => {
@@ -128,7 +124,7 @@ export default function Search({ userId }: { userId: string }) {
       .from("search_result")
       .select()
       .eq("user_id", userId)
-      .eq("search_id", searchId)
+      //.eq("search_id", searchId)
       .order("search_id", { ascending: false });
 
     if (!data) {
@@ -139,6 +135,18 @@ export default function Search({ userId }: { userId: string }) {
       console.error(error);
       return;
     }
+    /////////////TESTING PORPOISES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // let sr = data.filter((x: SearchResult) => x.directive === "search_result");
+    // setSearchResults(sr);
+
+    // let prompts = data
+    //   .filter((x: SearchResult) => x.directive === "storage_prompt")
+    //   .map((x: any) => x.search_body);
+
+    // console.log("prompts.............");
+    // console.log(prompts);
+    // setExportProps(prompts[0]);
+    /////////////TESTING PORPOISES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   };
 
   React.useEffect(() => {
@@ -163,20 +171,17 @@ export default function Search({ userId }: { userId: string }) {
           if (newSR.directive === "search_result") {
             setSearchResults((prev) => [newSR, ...prev]);
           } else if (newSR.directive === "storage_prompt") {
-            console.log("sssssssssssssssssssssssssssss");
+            let sp = (newSR as any).search_body;
 
-            let so = (newSR as any).search_body;
+            sp.user_id = userId;
 
-            so.user_id = userId;
-
-            if (so.length > 0) {
-              so.map((o: any) => (o.user_id = userId));
-              setStorageOpts(so);
+            if (sp.length > 0) {
+              sp.map((o: any) => (o.user_id = userId));
+              setExportProps(sp);
+              console.log("SSSSSSSSSSSSSSS");
+              console.log(sp);
+              console.log("SSSSSSSSSSSSSSS");
             }
-            //if (newSR.search_body)
-            console.log(so);
-
-            console.log("sssssssssssssssssssssssssssss");
           }
         }
       )
@@ -193,7 +198,6 @@ export default function Search({ userId }: { userId: string }) {
     tag: "",
     terms: "",
     user_id: userId,
-    save_to_store: false,
   };
 
   const form = useForm<FormInputs>({
@@ -243,7 +247,7 @@ export default function Search({ userId }: { userId: string }) {
       } else {
         await purgeSearchResultsById(searchId);
         setSearchResults([]);
-        setStorageOpts([]);
+        setExportProps([]);
 
         toast.info(JSON.stringify(data));
       }
@@ -294,7 +298,7 @@ export default function Search({ userId }: { userId: string }) {
       </div>
 
       <div className="mt-4" />
-      <Card className="shadow-xl mx-10">
+      <Card className="rounded mx-10">
         <CardHeader>
           <div className="flex flex-row">
             <div className="w-5/6">
@@ -478,6 +482,11 @@ export default function Search({ userId }: { userId: string }) {
               </div>
             </form>
           </Form>
+
+          {exportProps.length > 0 && (
+            <SearchExport props={exportProps as SearchExportProps[]} />
+            // <SearchExport />
+          )}
         </CardContent>
         {/* <div>taskId = {taskId}</div> */}
         {/* <div>{JSON.stringify(result)}</div> */}
@@ -490,9 +499,10 @@ export default function Search({ userId }: { userId: string }) {
         </div>
       )}
 
-      {storageOpts.length > 0 && (
-        <SearchResultStorage props={storageOpts as SearchStorageOption[]} />
-      )}
+      {/* {exportProps.length > 0 && (
+        <SearchExport props={exportProps as SearchExportProps[]} />
+        // <SearchExport />
+      )} */}
 
       <div className="mt-20" />
 

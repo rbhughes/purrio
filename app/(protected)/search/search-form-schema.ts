@@ -12,5 +12,4 @@ export const SearchFormSchema = z.object({
   tag: z.string().optional(),
   terms: z.string(),
   user_id: z.string(),
-  save_to_store: z.boolean().optional(),
 });

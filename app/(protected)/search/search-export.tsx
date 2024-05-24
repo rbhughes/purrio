@@ -1,49 +1,7 @@
-/*
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { enqueueSearchExportTask } from "@/lib/actions";
-
-export interface SearchExportProps {
-  asset: string;
-  sql: string;
-  total_hits: number;
-  user_id: string;
-  file_format: string;
-}
-
-export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
- //const [selectedFormat, setSelectedFormat] = React.useState<string>("json");
-
-
-  return (
-    <div>
-      <h1>Query returns</h1>
-      {props.map((o) => (
-        <div key={o.asset}>
-          <div>
-            {o.total_hits} hits for asset: {o.asset}
-          </div>
-          <Button onClick={() => enqueueSearchExportTask(o)}>export</Button>
-        </div>
-      ))}
-    </div>
-  );
-
-};
-*/
 "use client";
 
 import React from "react";
 import { enqueueExportTask } from "@/lib/actions";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  //CardTitle,
-} from "@/components/ui/card";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -55,9 +13,7 @@ import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -71,10 +27,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { toast } from "@/components/ui/use-toast";
-import { Separator } from "@/components/ui/separator";
 
-export interface SearchExportProps {
+export interface ExportTask {
   asset: string;
   sql: string;
   total_hits: number;
@@ -88,12 +42,8 @@ const FormSchema = z.object({
   }),
 });
 
-//export function RadioGroupForm() {
-
-export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
-  const [selectedItems, setSelectedItems] = React.useState<SearchExportProps[]>(
-    []
-  );
+export const SearchExport = ({ props }: { props: ExportTask[] }) => {
+  const [selectedItems, setSelectedItems] = React.useState<ExportTask[]>([]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -103,9 +53,7 @@ export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
     selectedItems.forEach(async (item) => {
-      console.log(item);
       await enqueueExportTask({
         asset: item.asset,
         sql: item.sql,
@@ -130,7 +78,7 @@ export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
             control={form.control}
             name="type"
             render={({ field }) => (
-              <div className="flex flex-row">
+              <div className="flex flex-row mt-4">
                 <div className="w-8/12 ">
                   <Table>
                     <TableHeader>
@@ -175,7 +123,7 @@ export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
 
                 <div className="w-2/12"></div>
 
-                <div className="justify-between items-center flex flex-col w-2/12">
+                <div className="justify-end gap-10 items-center flex flex-row w-2/12">
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -197,12 +145,11 @@ export const SearchExport = ({ props }: { props: SearchExportProps[] }) => {
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
-                  <Button type="submit">Submit</Button>
+                  <Button type="submit">Export</Button>
                 </div>
 
                 <FormMessage />
               </div>
-              // </FormItem>
             )}
           />
         </form>

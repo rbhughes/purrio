@@ -1,15 +1,25 @@
 "use client";
 
 import React from "react";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ASSETS, SUITES } from "@/lib/purr_utils";
-import { toast } from "sonner";
-import { SuiteUI } from "@/lib/purr_ui";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
 import {
   Select,
   SelectContent,
@@ -17,53 +27,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { enqueueSearchTask } from "@/lib/actions";
 
 import { Search as HourGlass } from "lucide-react";
-import MultipleSelector, { Option } from "@/components/ui/multiple-selector";
+import { toast } from "sonner";
+import { useForm, SubmitHandler } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { GeneralSwitch } from "@/components/general-switch";
+import { SuiteUI } from "@/lib/purr_ui";
+import { ASSETS, SUITES, simplifyDateString } from "@/lib/purr_utils";
+import { enqueueSearchTask } from "@/lib/actions";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import { SearchExport, SearchExportProps } from "./search-export";
-
-import {
-  Form,
-  FormControl,
-  //FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  //CardTitle,
-} from "@/components/ui/card";
-
-import { SearchFormSchema } from "./search-form-schema";
-type FormInputs = z.infer<typeof SearchFormSchema>;
-//import { useRouter } from "next/navigation";
-
-//import { liveTable } from "@openartmarket/supabase-live-table";
-
+import { SearchExport, ExportTask } from "./search-export";
 import { createClient } from "@/utils/supabase/client";
-import { Label } from "@/components/ui/label";
-
+import { SearchFormSchema } from "./search-form-schema";
 import { Database } from "@/lib/sb_types";
+
+type FormInputs = z.infer<typeof SearchFormSchema>;
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
-type Message = Database["public"]["Tables"]["message"]["Row"];
 type Suite = Database["public"]["Enums"]["suite"];
 
 // minor customizations in @components/ui/toggle.tsx
 // data-[state=on]:bg-slate-200    data-[state=on]:border-slate-400
 
-// matches purr_worker
+// should match purr_worker
 interface SearchBody {
   assets: string[];
   search_id: number;
@@ -90,7 +80,11 @@ export default function Search({ userId }: { userId: string }) {
   ////////////////
   React.useEffect(() => {
     const initHistory = async () => {
-      const { data, error } = await supabase.from("search_history").select();
+      const { data, error } = await supabase
+        .from("search_history")
+        .select()
+        .order("updated_at", { ascending: false })
+        .limit(5);
       if (error) {
         console.error(error);
       }
@@ -105,9 +99,6 @@ export default function Search({ userId }: { userId: string }) {
       .from("search_result")
       .delete()
       .eq("search_id", searchId);
-
-    console.log("deletedeletedeletedelete");
-    console.log(data);
 
     if (!data) {
       return;
@@ -136,6 +127,7 @@ export default function Search({ userId }: { userId: string }) {
       return;
     }
     /////////////TESTING PORPOISES !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //// (just shows whatever is in search_result without filter)
     // let sr = data.filter((x: SearchResult) => x.directive === "search_result");
     // setSearchResults(sr);
 
@@ -173,14 +165,9 @@ export default function Search({ userId }: { userId: string }) {
           } else if (newSR.directive === "storage_prompt") {
             let sp = (newSR as any).search_body;
 
-            sp.user_id = userId;
-
             if (sp.length > 0) {
               sp.map((o: any) => (o.user_id = userId));
               setExportProps(sp);
-              console.log("SSSSSSSSSSSSSSS");
-              console.log(sp);
-              console.log("SSSSSSSSSSSSSSS");
             }
           }
         }
@@ -240,7 +227,6 @@ export default function Search({ userId }: { userId: string }) {
 
   const processForm: SubmitHandler<FormInputs> = async (formData) => {
     try {
-      // deal with getting only values from Option selection(s) in the action
       const { data, error } = await enqueueSearchTask(formData);
       if (error) {
         toast.error(error);
@@ -262,13 +248,10 @@ export default function Search({ userId }: { userId: string }) {
     }
   };
 
-  const cardDesc = `
-  Limit search by Application Suite, Tag, Asset(s) and text search terms`;
-
-  const formatHistoryOption = (sh: SearchHistory) => {
+  const formatHistoryRow = (sh: SearchHistory) => {
     return (
       <div>
-        {sh.updated_at}
+        {simplifyDateString(sh.updated_at)}
         {" | "}
         <span className="bg-yellow-300">{sh.search_body.terms}</span>
         {" | "}
@@ -286,14 +269,7 @@ export default function Search({ userId }: { userId: string }) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row">
-        <div className="w-2/6"></div>
-
-        <div className="w-2/6 flex justify-center purr-h1">search</div>
-        <div className="w-2/6"></div>
-      </div>
-
-      <div className="flex justify-center mb-4 font-mono italic mt-1">
+      <div className="flex justify-center mb-4 font-mono italic mt-1 text-lg">
         Search local database for indexed assets
       </div>
 
@@ -302,9 +278,13 @@ export default function Search({ userId }: { userId: string }) {
         <CardHeader>
           <div className="flex flex-row">
             <div className="w-5/6">
-              <CardDescription>{cardDesc}</CardDescription>
+              <CardDescription>
+                Limit search by Application Suite, Tag, Asset(s) and text search
+                terms
+              </CardDescription>
             </div>
-            <div className="w-1/6">
+            {/* HIDE ADVANCED FOR NOW. REMOVE LATER? */}
+            <div className="w-1/6 hidden">
               <span className="disabled flex items-center space-x-2 float-right">
                 <GeneralSwitch
                   label="Advanced"
@@ -426,7 +406,7 @@ export default function Search({ userId }: { userId: string }) {
                               key={o.search_id}
                               value={JSON.stringify(o.search_body)}
                             >
-                              {formatHistoryOption(o)}
+                              {formatHistoryRow(o)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -484,13 +464,9 @@ export default function Search({ userId }: { userId: string }) {
           </Form>
 
           {exportProps.length > 0 && (
-            <SearchExport props={exportProps as SearchExportProps[]} />
-            // <SearchExport />
+            <SearchExport props={exportProps as ExportTask[]} />
           )}
         </CardContent>
-        {/* <div>taskId = {taskId}</div> */}
-        {/* <div>{JSON.stringify(result)}</div> */}
-        {/* <SearchResults searchResults={searchResults} taskId={taskId} /> */}
       </Card>
 
       {Object.keys(form.control._formState.errors).length > 0 && (
@@ -499,14 +475,13 @@ export default function Search({ userId }: { userId: string }) {
         </div>
       )}
 
-      {/* {exportProps.length > 0 && (
-        <SearchExport props={exportProps as SearchExportProps[]} />
-        // <SearchExport />
-      )} */}
-
       <div className="mt-20" />
 
-      <DataTable data={searchResults} columns={columns} />
+      {searchResults.length === 0 ? (
+        <div className="mx-auto">...</div>
+      ) : (
+        <DataTable data={searchResults} columns={columns} />
+      )}
     </div>
   );
 }

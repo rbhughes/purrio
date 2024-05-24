@@ -1,27 +1,16 @@
-import Search from "./search";
-import { createClient } from "@/utils/supabase/server";
-import { Toaster } from "@/components/ui/sonner";
-
 import { Suspense } from "react";
+import { Toaster } from "@/components/ui/sonner";
 import { Loader } from "@/components/loader";
+import { fetchUserId } from "@/lib/actions";
+import Search from "./search";
 
 export default async function Page() {
-  const supabase = createClient();
-
-  // const { data: searchResults } = await supabase
-  //   .from("search_result")
-  //   .select()
-  //   .order("search_id", { ascending: false });
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const userId = await fetchUserId();
 
   return (
     <div>
       <Suspense fallback={<Loader target="AssetJobs" />}>
-        {/* <Search userId={user!.id} searchResults={searchResults!} /> */}
-        <Search userId={user!.id} />
+        <Search userId={userId} />
       </Suspense>
       <Toaster richColors />
     </div>

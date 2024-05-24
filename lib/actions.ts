@@ -1,15 +1,16 @@
 "use server";
 
-import { z } from "zod";
-import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
-import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
-import { SearchFormSchema } from "@/app/(protected)/search/search-form-schema";
-
-import { createClient } from "@/utils/supabase/server";
-
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { createClient } from "@/utils/supabase/server";
+
+import { RepoReconFormSchema } from "@/app/(protected)/repos/repo-recon-form-schema";
+import { AssetJobFormSchema } from "@/app/(protected)/assets/asset-job-form-schema";
+import { SearchFormSchema } from "@/app/(protected)/search/search-form-schema";
+import { ExportTask } from "@/app/(protected)/search/search-export";
+
+import { z } from "zod";
 type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 type SearchFormInputs = z.infer<typeof SearchFormSchema>;
@@ -80,38 +81,8 @@ export async function enqueueAssetJobTask(
   }
 }
 
-// export async function enqueueSearchExportTask(
-
-// ): Promise<ActionWithData> {
-
-//     const supabase = createClient();
-
-//     const supRes = await supabase
-//       .from("task")
-//       .insert({
-//         worker: await pickWorker(),
-//         directive: "search",
-//         status: "PENDING",
-//         body: newBody,
-//       })
-//       .select();
-
-//     if (supRes.status !== 201) {
-//       return { data: null, error: JSON.stringify(supRes, null, 2) };
-//     } else {
-//       return {
-//         data: supRes.data,
-//         error: null,
-//       };
-//     }
-
-// }
-
-export async function enqueueExportTask(task: any) {
+export async function enqueueExportTask(task: ExportTask) {
   const supabase = createClient();
-  console.log("TTTTTTTTTTTTT");
-  console.log(task);
-
   const supRes = await supabase
     .from("task")
     .insert({
@@ -305,6 +276,15 @@ export const fetchWorkers = async (): Promise<string[]> => {
     const workers: string[] = supRes.data!.map((x) => String(x.hostname));
     return workers;
   }
+};
+
+export const fetchUserId = async (): Promise<string> => {
+  // assumes a user is signed in, should fail otherwise
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user!.id;
 };
 
 // TODO: make this random?

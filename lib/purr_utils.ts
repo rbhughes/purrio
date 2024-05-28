@@ -192,3 +192,67 @@ export const handleFileExport = async (args: FileExportProps) => {
     saveAs(new Blob([buf]), `${filename}.csv`);
   }
 };
+
+export function getExcerptFromJSON(doc: object, term: string): string {
+  // Stringify the JSON document
+  const jsonString = JSON.stringify(doc);
+
+  // Create a regular expression pattern for case-insensitive search
+  const pattern = new RegExp(term, "i");
+
+  // Find the index of the first occurrence of the term using regex
+  const match = pattern.exec(jsonString);
+  if (!match) {
+    // Term not found in the JSON document
+    return "";
+  }
+
+  const termIndex = match.index;
+  const termLength = match[0].length;
+
+  // Calculate the start and end indices for the excerpt
+  const startIndex = Math.max(0, termIndex - 20);
+  const endIndex = Math.min(jsonString.length, termIndex + termLength + 20);
+
+  // Extract the excerpt from the JSON string
+  const excerpt = jsonString.substring(startIndex, endIndex);
+
+  return excerpt;
+}
+
+export function getExcerptsFromJSON(doc: object, terms: string[]): string[] {
+  // Stringify the JSON document
+  const jsonString = JSON.stringify(doc);
+
+  // Initialize an empty array to store the matches
+  const matches: string[] = [];
+
+  // Iterate over each term
+  for (const term of terms) {
+    // Create a regular expression pattern for case-insensitive search
+    const pattern = new RegExp(term, "ig");
+
+    // Find all occurrences of the term using regex
+    const match = jsonString.matchAll(pattern);
+    for (const m of match) {
+      const termIndex = m.index;
+      const termLength = m.length;
+
+      // Calculate the start and end indices for the excerpt
+      const startIndex = Math.max(0, termIndex - 20);
+      const endIndex = Math.min(jsonString.length, termIndex + termLength + 20);
+
+      // Extract the excerpt from the JSON string
+      let excerpt = jsonString.substring(startIndex, endIndex);
+
+      // Replace the matched term with a highlighted version
+      const highlightedTerm = `<span class="hilight">${m[0]}</span>`;
+      excerpt = excerpt.replace(m[0], highlightedTerm);
+
+      // Add the excerpt to the matches array
+      matches.push(excerpt);
+    }
+  }
+
+  return matches;
+}

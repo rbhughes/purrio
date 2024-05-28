@@ -1,18 +1,20 @@
 "use client";
 
 import React from "react";
-import { useForm, useWatch, SubmitHandler } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
 } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Form,
   FormControl,
@@ -22,6 +24,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -29,63 +33,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-
-import { createAssetJob, updateAssetJob } from "@/lib/actions";
-import { toast } from "sonner";
-import { ASSETS, SUITES } from "@/lib/purr_utils";
-import { AssetJobFormSchema } from "./asset-job-form-schema";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-//import { AssetJobTable } from "./asset-job-table";
-import { SuiteUI } from "@/lib/purr_ui";
-///
-
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { createClient } from "@/utils/supabase/client";
-///
-
-import { GeneralSwitch } from "@/components/general-switch";
-
-//import { createPortal } from "react-dom";
-//import TableVisSwitch from "@/components/table-vis-switch";
-import MissingReposWarning from "./missing-repos-warning";
-//import { useVisibilityChange } from "@uidotdev/usehooks";
-
-import AssetDNA from "./asset-dna";
 
 import { ArrowDownLeftSquare, Globe } from "lucide-react";
+import { toast } from "sonner";
+import { useForm, useWatch, SubmitHandler } from "react-hook-form";
 
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { GeneralSwitch } from "@/components/general-switch";
+import { createClient } from "@/utils/supabase/client";
+import { createAssetJob, updateAssetJob } from "@/lib/actions";
+import { ASSETS, SUITES } from "@/lib/purr_utils";
+import { SuiteUI } from "@/lib/purr_ui";
+import { AssetJobFormSchema } from "./asset-job-form-schema";
+import { DataTable } from "./data-table";
+import { columns } from "./columns";
+import MissingReposWarning from "./missing-repos-warning";
+import AssetDNA from "./asset-dna";
 import { Database } from "@/lib/sb_types";
+
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
-
 type FormInputs = z.infer<typeof AssetJobFormSchema>;
 
 let assetsPlus = ["ALL_ASSETS", ...ASSETS];
 
 export default function AssetJobs({
   repos,
-  //assetJobs,
   withMissingRepos,
 }: {
   repos?: Repo[];
-  //assetJobs?: AssetJob[];
   withMissingRepos?: AssetJob[];
 }) {
   const supabase = createClient();
-  //const [tableVizElement, setTableVizElement] = React.useState<HTMLElement>();
-  //const [showTable, setShowTable] = React.useState<boolean>(true);
   const [showForm, setShowForm] = React.useState<boolean>(false);
   const [showAdvancedForm, setShowAdvancedForm] = React.useState(false);
   const [assetJobs, setAssetJobs] = React.useState<AssetJob[]>([]);
-  //const documentVisible = useVisibilityChange();
 
   const getAssetJobs = async () => {
     const { data, error } = await supabase
@@ -97,7 +81,6 @@ export default function AssetJobs({
       return;
     } else {
       setAssetJobs(data);
-      ///console.log(data);
     }
     if (error) {
       console.error(error);
@@ -195,10 +178,6 @@ export default function AssetJobs({
     formData.suite = repo.suite!;
     formData.repo_name = repo.name;
 
-    console.log("************");
-    console.log(formData);
-    console.log("************");
-
     const { data, error } =
       formData.id === 2e63
         ? await createAssetJob(formData)
@@ -213,22 +192,17 @@ export default function AssetJobs({
     form.reset();
   };
 
-  const cardDesc = `
-  Define Asset Collection Jobs for a specific Repo and asset type. For advanced
-  usage, add an (optional) SQL "WHERE" clause to limit results. View the SQL if
-  you would like to see specific fields/columns.`;
-
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
-        <div className="flex flex-row">
-          <div className="w-2/6"></div>
+        <div className="flex flex-row mb-4">
+          <div className="w-1/6"></div>
 
-          <div className="w-2/6 flex justify-center purr-h1">
-            asset collection
+          <div className="w-4/6 flex justify-center mb-4 font-mono italic mt-1 text-lg">
+            Index asset data from repos to your local database
           </div>
 
-          <div className="w-2/6 flex justify-end">
+          <div className="w-1/6 flex justify-end">
             <CollapsibleTrigger asChild>
               <Button variant="secondary">
                 <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
@@ -238,16 +212,17 @@ export default function AssetJobs({
           </div>
         </div>
 
-        <div className="flex justify-center mb-4 font-mono italic mt-1">
-          Index asset data from repos to your local database
-        </div>
-
         <CollapsibleContent>
           <Card className="shadow-xl mx-10">
             <CardHeader>
               <div className="flex flex-row">
                 <div className="w-5/6">
-                  <CardDescription>{cardDesc}</CardDescription>
+                  <CardDescription>
+                    Define Asset Collection Jobs for a specific Repo and asset
+                    type. For advanced usage, add an (optional) SQL "WHERE"
+                    clause to limit results. View the SQL if you would like to
+                    see specific fields/columns.
+                  </CardDescription>
                 </div>
                 <div className="w-1/6">
                   <span className="flex items-center space-x-2 float-right">
@@ -564,7 +539,7 @@ export default function AssetJobs({
         </div>
       )}
 
-      <div className="mt-20" />
+      <div className="mt-12" />
 
       {/* <AssetJobTable
         assetJobs={assetJobs!}

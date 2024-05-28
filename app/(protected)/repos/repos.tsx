@@ -32,32 +32,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { ArrowDownLeftSquare } from "lucide-react";
+
+import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
 import { useForm, useWatch, SubmitHandler } from "react-hook-form";
+
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { toast } from "sonner";
-
 import { SUITES } from "@/lib/purr_utils";
 import { SuiteUI } from "@/lib/purr_ui";
 import { RepoReconFormSchema } from "./repo-recon-form-schema";
-import { ArrowDownLeftSquare } from "lucide-react";
-
-///
-
-import { createClient } from "@/utils/supabase/client";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-
-import RepoVis from "./repo-vis";
-
-///
-
-import { enqueueRepoReconTask } from "@/lib/actions";
 import AuxGeographix from "./aux-geographix";
 import AuxKingdom from "./aux-kingdom";
-
+import RepoVis from "./repo-vis";
 import { Database } from "@/lib/sb_types";
+import { enqueueRepoReconTask } from "@/lib/actions";
+
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type FormInputs = z.infer<typeof RepoReconFormSchema>;
 
@@ -81,7 +74,6 @@ export default function Repos({ workers }: { workers: string[] }) {
       return;
     } else {
       setRepos(data);
-      ///console.log(data);
     }
     if (error) {
       console.error(error);
@@ -146,20 +138,15 @@ export default function Repos({ workers }: { workers: string[] }) {
     form.reset();
   };
 
-  //TODO: add details how-to if repos is empty
-
-  const repoFormDesc = `
-  Define a network path (drive letter or UNC) for a parent folder that contains
-  project repositories`;
-
-  //<div className="bg-red-100 text-center purr-h1 ">repo recon</div>
   return (
     <div>
       <Collapsible open={showForm} onOpenChange={setShowForm}>
         <div className="flex flex-row mb-4">
-          <div className="w-2/6"></div>
-          <div className="w-2/6 flex justify-center purr-h1">repo recon</div>
-          <div className="w-2/6 flex justify-end">
+          <div className="w-1/6"></div>
+          <div className="w-4/6 flex justify-center mb-4 font-mono italic mt-1 text-lg">
+            Locate and collect metadata inventories from network projects
+          </div>
+          <div className="w-1/6 flex justify-end">
             <CollapsibleTrigger asChild>
               <Button variant="secondary">
                 <ArrowDownLeftSquare className="mx-2 bg-yellow-400 text-orange-500" />
@@ -169,14 +156,13 @@ export default function Repos({ workers }: { workers: string[] }) {
           </div>
         </div>
 
-        <div className="flex justify-center mb-4 font-mono italic mt-1">
-          Locate and collect metadata inventories from network projects
-        </div>
-
         <CollapsibleContent>
-          <Card className="shadow-xl mx-10">
+          <Card className="rounded mx-10">
             <CardHeader>
-              <CardDescription>{repoFormDesc}</CardDescription>
+              <CardDescription>
+                Define a network path (drive letter or UNC) for a parent folder
+                that contains project repositories
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -207,13 +193,6 @@ export default function Repos({ workers }: { workers: string[] }) {
                                 {SUITES.map((gt: string) => {
                                   return (
                                     <SelectItem key={gt} value={gt}>
-                                      {/* <div className="flex items-center h-fit w-fit">
-                                        <span className="text-2xl font-black">
-                                          &#x26C1;
-                                        </span>
-                                        <span className="pl-1">GeoGraphix</span>
-                                      </div> */}
-
                                       <div className="flex items-center gap-1">
                                         {SuiteUI[gt].icon}
                                       </div>
@@ -297,7 +276,6 @@ export default function Repos({ workers }: { workers: string[] }) {
                         repo recon
                       </Button>
                     </div>
-                    {/* <div className="w-1/12"></div> */}
                   </div>
 
                   {watchedSuite === "geographix" && (
@@ -317,7 +295,7 @@ export default function Repos({ workers }: { workers: string[] }) {
         </div>
       )}
 
-      <div className="mt-20" />
+      <div className="mt-12" />
 
       <DataTable
         data={repos}

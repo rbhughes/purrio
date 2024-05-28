@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/dt/data-table-column-header";
 import { SuiteUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
-//import { simplifyDateString } from "@/lib/purr_utils";
+import { getExcerptFromJSON, getExcerptsFromJSON } from "@/lib/purr_utils";
 
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
@@ -125,10 +125,45 @@ export const columns: ColumnDef<SearchResult>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="doc" />
     ),
+    cell: ({ row }) => {
+      //const terms = row.getValue("search_body").terms;
+      let terms: string[] = [];
+      try {
+        const sb = row.getValue("search_body") as any;
+        let termString = sb.terms;
+        if (termString) {
+          terms = termString.split(" ");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+      console.log("^^^^^^^^");
+      console.log(typeof terms);
+      console.log(terms);
+      console.log("^^^^^^^^");
+
+      return (
+        terms.length > 0 && (
+          <div>{getExcerptsFromJSON(row.getValue("doc"), terms)}</div>
+        )
+      );
+
+      // <div className="w-[200px] h-[200px] overflow-auto">
+      //   {getExcerptFromJSON(row.getValue("doc"), "morgan")}
+      //   {/* {JSON.stringify(row.getValue("doc"), null, 2)} */}
+      // </div>
+    },
+  },
+
+  {
+    accessorKey: "search_body",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="search_body" />
+    ),
     cell: ({ row }) => (
-      <div className="w-[200px] h-[200px] overflow-auto">
-        //click for doc?
-        {JSON.stringify(row.getValue("doc"), null, 2)}
+      <div className="w-[80px]">
+        {JSON.stringify(row.getValue("search_body"))}
       </div>
     ),
   },

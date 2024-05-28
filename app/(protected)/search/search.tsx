@@ -68,6 +68,11 @@ interface SearchHistory {
   updated_at: string;
 }
 
+const renderSubComponent = ({ row }: { row: any }) => {
+  //return <RepoVis repo={row.original as Repo} />;
+  return <div>{JSON.stringify(row)}</div>;
+};
+
 export default function Search({ userId }: { userId: string }) {
   const supabase = createClient();
 
@@ -249,11 +254,13 @@ export default function Search({ userId }: { userId: string }) {
   };
 
   const formatHistoryRow = (sh: SearchHistory) => {
+    let terms = sh.search_body.terms || [];
+
     return (
       <div>
         {simplifyDateString(sh.updated_at)}
         {" | "}
-        <span className="bg-yellow-300">{sh.search_body.terms}</span>
+        <span className="bg-yellow-300">{terms}</span>
         {" | "}
         <i>{sh.search_body.assets.join(", ")}</i>
       </div>
@@ -389,7 +396,7 @@ export default function Search({ userId }: { userId: string }) {
                       </div>
                     </div>
 
-                    <div className="flex flex-row gap-2">{/* TERMS */}</div>
+                    <div className="flex flex-row gap-2"></div>
                   </div>
 
                   {/* SEARCH HISTORY */}
@@ -480,7 +487,12 @@ export default function Search({ userId }: { userId: string }) {
       {searchResults.length === 0 ? (
         <div className="mx-auto">...</div>
       ) : (
-        <DataTable data={searchResults} columns={columns} />
+        <DataTable
+          data={searchResults}
+          columns={columns}
+          renderSubComponent={renderSubComponent}
+          getRowCanExpand={() => true}
+        />
       )}
     </div>
   );

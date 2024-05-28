@@ -221,7 +221,6 @@ export function DataTable<TData, TValue>({
                         </TableCell>
                       ))}
                     </TableRow>
-
                     {row.getIsExpanded() && (
                       <TableRow key={`${row.id + "_viz"}`}>
                         <td colSpan={row.getVisibleCells().length}>

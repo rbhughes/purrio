@@ -1,23 +1,15 @@
-//import { cookies } from "next/headers";
+import { Suspense } from "react";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
-import AssetJobs from "./asset-jobs";
-
-import { Suspense } from "react";
 import { Loader } from "@/components/loader";
-
+import AssetJobs from "./asset-jobs";
 import { Database } from "@/lib/sb_types";
+
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
-export const dynamic = "force-dynamic";
-
 export default async function Page() {
   const supabase = createClient();
-
-  // const {
-  //   data: { user },
-  // } = await supabase.auth.getUser();
 
   const { data: assetJobs } = await supabase
     .from("asset_job")
@@ -51,21 +43,10 @@ export default async function Page() {
       <Suspense fallback={<Loader target="AssetJobs" />}>
         <AssetJobs
           repos={repos!}
-          //assetJobs={filteredAssetJobs.extants}
           withMissingRepos={filteredAssetJobs.missing}
         />
       </Suspense>
-
       <Toaster expand richColors className="flex w-6/12" />
-
-      {process.env.NODE_ENV === "development" && (
-        <div className="bg-red-600 mt-20 p-4 w-fit text-white">
-          TODO
-          <ul>
-            <li>show current asset holdings (above form?)</li>
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

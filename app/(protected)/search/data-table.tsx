@@ -9,6 +9,7 @@ import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
+  ExpandedState,
   //getExpandedRowModel, ///
   getFacetedRowModel,
   getFacetedUniqueValues,
@@ -35,7 +36,7 @@ import {
 import { DataTablePagination } from "@/components/dt/data-table-pagination";
 import { DataTableToolbar } from "@/components/dt/data-table-toolbar";
 
-import { ASSETS } from "@/lib/purr_utils";
+//import { ASSETS } from "@/lib/purr_utils";
 
 import { Database } from "@/lib/sb_types";
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
@@ -44,6 +45,8 @@ type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  renderSubComponent: any;
+  getRowCanExpand: any;
   //setValue: any;
   //setShowForm: any;
   //setShowAdvancedForm: any;
@@ -114,10 +117,9 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 export function DataTable<TData, TValue>({
   columns,
   data,
-}: //setValue,
-//setShowForm,
-//setShowAdvancedForm,
-DataTableProps<TData, TValue>) {
+  renderSubComponent,
+  getRowCanExpand,
+}: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState(rowsSelected);
   const [columnVisibility, setColumnVisibility] = React.useState(colsVisible);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -180,15 +182,11 @@ DataTableProps<TData, TValue>) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              ///
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
                   <TableRow
                     onDoubleClick={() => {
-                      console.log("double clicked for some reason");
-                      //setShowForm(true);
-                      //setShowAdvancedForm(true);
-                      //setFormFromTable(setValue, row);
+                      row.toggleExpanded();
                     }}
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -202,17 +200,16 @@ DataTableProps<TData, TValue>) {
                       </TableCell>
                     ))}
                   </TableRow>
-                  {/* {row.getIsExpanded() && (
-                    <TableRow key={`${row.id}_aj`}>
+                  {row.getIsExpanded() && (
+                    <TableRow key={`${row.id}j`}>
                       <td colSpan={row.getVisibleCells().length}>
                         {renderSubComponent({ row })}
                       </td>
                     </TableRow>
-                  )} */}
+                  )}
                 </React.Fragment>
               ))
             ) : (
-              ///
               <TableRow>
                 <TableCell
                   colSpan={columns.length}

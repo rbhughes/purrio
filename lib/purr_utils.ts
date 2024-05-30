@@ -193,66 +193,64 @@ export const handleFileExport = async (args: FileExportProps) => {
   }
 };
 
-export function getExcerptFromJSON(doc: object, term: string): string {
-  // Stringify the JSON document
-  const jsonString = JSON.stringify(doc);
+// export function getExcerptFromJSON(doc: object, term: string): string {
+//   // Stringify the JSON document
+//   const jsonString = JSON.stringify(doc);
 
-  // Create a regular expression pattern for case-insensitive search
-  const pattern = new RegExp(term, "i");
+//   // Create a regular expression pattern for case-insensitive search
+//   const pattern = new RegExp(term, "i");
 
-  // Find the index of the first occurrence of the term using regex
-  const match = pattern.exec(jsonString);
-  if (!match) {
-    // Term not found in the JSON document
-    return "";
-  }
+//   // Find the index of the first occurrence of the term using regex
+//   const match = pattern.exec(jsonString);
+//   if (!match) {
+//     // Term not found in the JSON document
+//     return "";
+//   }
 
-  const termIndex = match.index;
-  const termLength = match[0].length;
+//   const termIndex = match.index;
+//   const termLength = match[0].length;
 
-  // Calculate the start and end indices for the excerpt
-  const startIndex = Math.max(0, termIndex - 20);
-  const endIndex = Math.min(jsonString.length, termIndex + termLength + 20);
+//   // Calculate the start and end indices for the excerpt
+//   const startIndex = Math.max(0, termIndex - 20);
+//   const endIndex = Math.min(jsonString.length, termIndex + termLength + 20);
 
-  // Extract the excerpt from the JSON string
-  const excerpt = jsonString.substring(startIndex, endIndex);
+//   // Extract the excerpt from the JSON string
+//   const excerpt = jsonString.substring(startIndex, endIndex);
 
-  return excerpt;
+//   return excerpt;
+// }
+
+interface TermHighlight {
+  left: string;
+  match: string;
+  right: string;
 }
+export const getExcerptsFromJSON = (
+  doc: object,
+  terms: string[]
+): TermHighlight[] => {
+  const o = JSON.stringify(doc);
 
-export function getExcerptsFromJSON(doc: object, terms: string[]): string[] {
-  // Stringify the JSON document
-  const jsonString = JSON.stringify(doc);
+  const matches: TermHighlight[] = [];
 
-  // Initialize an empty array to store the matches
-  const matches: string[] = [];
-
-  // Iterate over each term
   for (const term of terms) {
-    // Create a regular expression pattern for case-insensitive search
     const pattern = new RegExp(term, "ig");
 
-    // Find all occurrences of the term using regex
-    const match = jsonString.matchAll(pattern);
+    const match = o.matchAll(pattern);
     for (const m of match) {
       const termIndex = m.index;
-      const termLength = m.length;
+      const termLength = m[0].length;
 
-      // Calculate the start and end indices for the excerpt
       const startIndex = Math.max(0, termIndex - 20);
-      const endIndex = Math.min(jsonString.length, termIndex + termLength + 20);
+      const endIndex = Math.min(o.length, termIndex + termLength + 20);
 
-      // Extract the excerpt from the JSON string
-      let excerpt = jsonString.substring(startIndex, endIndex);
+      let left = o.substring(startIndex, termIndex);
+      let match = m[0];
+      let right = o.substring(termIndex + termLength, endIndex);
 
-      // Replace the matched term with a highlighted version
-      const highlightedTerm = `<span class="hilight">${m[0]}</span>`;
-      excerpt = excerpt.replace(m[0], highlightedTerm);
-
-      // Add the excerpt to the matches array
-      matches.push(excerpt);
+      matches.push({ left, match, right });
     }
   }
 
   return matches;
-}
+};

@@ -1,14 +1,22 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/utils/supabase/server";
 import { Toaster } from "@/components/ui/sonner";
 import { Loader } from "@/components/loader";
 import AssetJobs from "./asset-jobs";
+import { fetchWorkers } from "@/lib/actions";
 import { Database } from "@/lib/sb_types";
 
 type Repo = Database["public"]["Tables"]["repo"]["Row"];
 type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 
 export default async function Page() {
+  const workers = await fetchWorkers();
+
+  if (workers.length < 1) {
+    redirect("/settings");
+  }
+
   const supabase = createClient();
 
   const { data: assetJobs } = await supabase

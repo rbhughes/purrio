@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/dt/data-table-column-header";
 import { SuiteUI } from "@/lib/purr_ui";
 import { Database } from "@/lib/sb_types";
-import { getExcerptFromJSON, getExcerptsFromJSON } from "@/lib/purr_utils";
+import { getExcerptsFromJSON } from "@/lib/purr_utils";
 
 //type AssetJob = Database["public"]["Tables"]["asset_job"]["Row"];
 type SearchResult = Database["public"]["Tables"]["search_result"]["Row"];
@@ -77,31 +77,6 @@ export const columns: ColumnDef<SearchResult>[] = [
     cell: ({ row }) => <div className="w-[80px]">{row.getValue("asset")}</div>,
   },
 
-  // {
-  //   accessorKey: "repo_fs_path",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="repo_fs_path" />
-  //   ),
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="flex space-x-2">
-  //         <pre>
-  //           <span className="max-w-[500px] truncate font-medium">
-  //             {row.getValue("repo_fs_path")}
-  //           </span>
-  //         </pre>
-  //       </div>
-  //     );
-  //   },
-  // },
-
-  // {
-  //   accessorKey: "id",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="id" />
-  //   ),
-  //   cell: ({ row }) => <div>{row.getValue("id")}</div>,
-  // },
   {
     accessorKey: "tag",
     header: ({ column }) => (
@@ -126,7 +101,6 @@ export const columns: ColumnDef<SearchResult>[] = [
       <DataTableColumnHeader column={column} title="doc" />
     ),
     cell: ({ row }) => {
-      //const terms = row.getValue("search_body").terms;
       let terms: string[] = [];
       try {
         const sb = row.getValue("search_body") as any;
@@ -138,21 +112,17 @@ export const columns: ColumnDef<SearchResult>[] = [
         console.log(error);
       }
 
-      console.log("^^^^^^^^");
-      console.log(typeof terms);
-      console.log(terms);
-      console.log("^^^^^^^^");
-
-      return (
-        terms.length > 0 && (
-          <div>{getExcerptsFromJSON(row.getValue("doc"), terms)}</div>
-        )
-      );
-
-      // <div className="w-[200px] h-[200px] overflow-auto">
-      //   {getExcerptFromJSON(row.getValue("doc"), "morgan")}
-      //   {/* {JSON.stringify(row.getValue("doc"), null, 2)} */}
-      // </div>
+      let excerpts = getExcerptsFromJSON(row.getValue("doc"), terms);
+      return excerpts.map((e, i) => {
+        let x = (
+          <div key={row.original.id + i}>
+            <span>{e.left}</span>
+            <span className="bg-yellow-300">{e.match}</span>
+            <span>{e.right}</span>
+          </div>
+        );
+        return x;
+      });
     },
   },
 
@@ -167,73 +137,4 @@ export const columns: ColumnDef<SearchResult>[] = [
       </div>
     ),
   },
-
-  // {
-  //   accessorKey: "recency",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="recency" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div className="w-[80px]">{row.getValue("recency")}</div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "chunk",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="chunk" />
-  //   ),
-  //   cell: ({ row }) => <div>{JSON.stringify(row.getValue("chunk"))}</div>,
-  // },
-
-  // {
-  //   accessorKey: "filter",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="filter" />
-  //   ),
-  //   cell: ({ row }) => <div className="w-[80px]">{row.getValue("filter")}</div>,
-  // },
-
-  // {
-  //   accessorKey: "created_at",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="created_at" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div>{simplifyDateString(row.getValue("created_at"))}</div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "updated_at",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="updated_at" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div>{simplifyDateString(row.getValue("updated_at"))}</div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "touched_at",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="touched_at" />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <div>{simplifyDateString(row.getValue("touched_at"))}</div>
-  //   ),
-  // },
-
-  // {
-  //   accessorKey: "active",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="active" />
-  //   ),
-  //   cell: ({ row }) => <div>{JSON.stringify(row.getValue("active"))}</div>,
-  // },
-
-  // this button-based handler replaces the default DataTableRowActions
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => (
-  //     <SearchRowActions search={row.original as AssetJob} />
-  //   ),
-  // },
 ];

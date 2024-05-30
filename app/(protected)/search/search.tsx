@@ -68,12 +68,40 @@ interface SearchHistory {
   updated_at: string;
 }
 
+// some janky stuff to render two-column json on double-click
 const renderSubComponent = ({ row }: { row: any }) => {
-  //return <RepoVis repo={row.original as Repo} />;
-  return <div>{JSON.stringify(row)}</div>;
+  const jsonString = JSON.stringify(row.getValue("doc"), null, 2);
+  const jsonArray = jsonString.split("\n");
+  const middleIndex = Math.ceil(jsonArray.length / 2);
+
+  const left = jsonArray.slice(0, middleIndex).join("\n");
+  const right = jsonArray.slice(middleIndex).join("\n");
+
+  return (
+    <div className="p-4 font-bold max-w-full overflow-hidden">
+      <div className="flex flex-col md:flex-row md:space-x-4">
+        <div className="w-full md:w-1/2 p-2 max-w-full overflow-auto rounded-md bg-secondary">
+          <pre className="whitespace-pre-wrap break-all p-2">
+            <code>{left}</code>
+          </pre>
+        </div>
+        <div className="w-full md:w-1/2 p-2 max-w-full overflow-auto rounded-md bg-accent mt-4 md:mt-0">
+          <pre className="whitespace-pre-wrap break-all p-2">
+            <code>{right}</code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default function Search({ userId }: { userId: string }) {
+export default function Search({
+  userId,
+  workerSuites,
+}: {
+  userId: string;
+  workerSuites: Suite[];
+}) {
   const supabase = createClient();
 
   const [searchId, setSearchId] = React.useState<number>(0);
@@ -186,7 +214,8 @@ export default function Search({ userId }: { userId: string }) {
 
   let defaults = {
     assets: [{ label: ASSETS[0], value: ASSETS[0] }],
-    suites: [SUITES[0]],
+    //suites: [SUITES[0]],
+    suites: [workerSuites[0]],
     tag: "",
     terms: "",
     user_id: userId,
@@ -333,7 +362,7 @@ export default function Search({ userId }: { userId: string }) {
                                   form.setValue(field.name, value)
                                 }
                               >
-                                {SUITES.map((suite: string) => (
+                                {workerSuites.map((suite: string) => (
                                   <ToggleGroupItem
                                     key={suite}
                                     value={suite}

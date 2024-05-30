@@ -10,27 +10,22 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Badge } from "./ui/badge";
 import { FooterNotes } from "@/components/footer-notes";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/lib/sb_types";
 import { User } from "@supabase/supabase-js";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const DELAY = 1000 * 60 * 30;
 
 type Message = Database["public"]["Tables"]["message"]["Row"];
 
-// interface MessengerArgs {
-//   new: Message;
-// }
-
-// there may be more note types later
 const filterNotesByPathname = (notes: Message[], pathname: string) => {
   interface Matcher {
     [key: string]: string;
   }
 
+  // there's also the workflow type "any" that matches anything
   let routeToWorkflow: Matcher = {
     assets: "load",
     repos: "recon",
@@ -41,7 +36,8 @@ const filterNotesByPathname = (notes: Message[], pathname: string) => {
   let matcher = routeToWorkflow[pn];
 
   return notes.filter(
-    (m: Message) => m.workflow === matcher && m.directive === "note"
+    (m: Message) =>
+      (m.workflow === matcher || m.workflow === "any") && m.directive === "note"
   );
 };
 
@@ -81,6 +77,13 @@ export const MessageFooter = ({ user }: { user: User }) => {
 
         async (payload: any) => {
           let msg: Message = payload.new;
+
+          if (msg.workflow === "any") {
+            setBusy(true);
+            setTimeout(() => {
+              setBusy(false);
+            }, 5000);
+          }
 
           if (msg.directive === "busy") {
             let job_id = (msg.data as any).job_id;

@@ -57,6 +57,7 @@ let rowsSelected: RowSelectionState = {};
 
 // set visible columns (commmented out means "always on")
 let colsVisible: VisibilityState = {
+  search_body: false,
   //active: false,
   //asset: false,
   //tag: false

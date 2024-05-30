@@ -15,6 +15,9 @@ type RepoReconFormInputs = z.infer<typeof RepoReconFormSchema>;
 type AssetJobFormInputs = z.infer<typeof AssetJobFormSchema>;
 type SearchFormInputs = z.infer<typeof SearchFormSchema>;
 
+import { Database } from "@/lib/sb_types";
+type Worker = Database["public"]["Tables"]["worker"]["Row"];
+
 export interface ActionWithSummary {
   data?: string | null;
   error?: string | null;
@@ -265,19 +268,6 @@ export async function updateAssetJob(
 ///////////////////////////////////////////////////////////////////////////////
 // These should be "expedient"
 
-export const fetchWorkers = async (): Promise<string[]> => {
-  const supabase = createClient();
-  const supRes = await supabase.from("worker").select("hostname");
-
-  if (supRes.status !== 200) {
-    console.error(supRes);
-    return [];
-  } else {
-    const workers: string[] = supRes.data!.map((x) => String(x.hostname));
-    return workers;
-  }
-};
-
 export const fetchUserId = async (): Promise<string> => {
   // assumes a user is signed in, should fail otherwise
   const supabase = createClient();
@@ -302,6 +292,18 @@ export const pickWorker = async (): Promise<string> => {
     return "locahost";
   } else {
     return supRes.data!.hostname;
+  }
+};
+
+export const fetchWorkers = async (): Promise<Worker[]> => {
+  const supabase = createClient();
+  const supRes = await supabase.from("worker").select("*");
+
+  if (supRes.status !== 200) {
+    console.error(supRes);
+    return [] as Worker[];
+  } else {
+    return supRes.data as Worker[];
   }
 };
 

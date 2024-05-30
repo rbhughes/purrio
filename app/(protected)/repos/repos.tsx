@@ -58,7 +58,11 @@ const renderSubComponent = ({ row }: { row: any }) => {
   return <RepoVis repo={row.original as Repo} />;
 };
 
-export default function Repos({ workers }: { workers: string[] }) {
+export default function Repos({
+  workerHostnames,
+}: {
+  workerHostnames: string[];
+}) {
   const supabase = createClient();
 
   const [showForm, setShowForm] = React.useState<boolean>(false);
@@ -110,7 +114,7 @@ export default function Repos({ workers }: { workers: string[] }) {
   let defaults = {
     suite: SUITES[0],
     recon_root: "",
-    worker: workers[0],
+    worker: workerHostnames[0],
     ggx_host: "",
   };
 

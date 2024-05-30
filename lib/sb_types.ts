@@ -296,6 +296,24 @@ export type Database = {
         }
         Relationships: []
       }
+      search_history: {
+        Row: {
+          search_body: Json | null
+          search_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          search_body?: Json | null
+          search_id: number
+          updated_at?: string | null
+        }
+        Update: {
+          search_body?: Json | null
+          search_id?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       search_result: {
         Row: {
           active: boolean
@@ -384,21 +402,21 @@ export type Database = {
         Row: {
           created_at: string
           hostname: string
-          test: string | null
+          suite: Database["public"]["Enums"]["suite"]
           touched_at: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           hostname: string
-          test?: string | null
+          suite: Database["public"]["Enums"]["suite"]
           touched_at?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           hostname?: string
-          test?: string | null
+          suite?: Database["public"]["Enums"]["suite"]
           touched_at?: string
           updated_at?: string
         }
@@ -406,14 +424,7 @@ export type Database = {
       }
     }
     Views: {
-      search_history: {
-        Row: {
-          search_body: Json | null
-          search_id: number | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       delete_old_rows: {

@@ -39,6 +39,19 @@ export async function enqueueRepoReconTask(
   } else {
     const supabase = createClient();
 
+    if (zodRes.data.suite === "geographix") {
+      delete zodRes.data.kingdom_server;
+      delete zodRes.data.kingdom_username;
+      delete zodRes.data.kingdom_password;
+    } else if (zodRes.data.suite === "kingdom") {
+      delete zodRes.data.ggx_host;
+    } else if (zodRes.data.suite === "petra") {
+      delete zodRes.data.ggx_host;
+      delete zodRes.data.kingdom_server;
+      delete zodRes.data.kingdom_username;
+      delete zodRes.data.kingdom_password;
+    }
+
     const supRes = await supabase.from("task").insert({
       worker: await pickWorker(),
       directive: "recon",

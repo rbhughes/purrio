@@ -213,7 +213,7 @@ export default function AssetJobs({
         </div>
 
         <CollapsibleContent>
-          <Card className="shadow-xl mx-10">
+          <Card className="rounded mx-10">
             <CardHeader>
               <div className="flex flex-row">
                 <div className="w-5/6">
@@ -318,7 +318,7 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-2/12">
+                    <div className="w-3/12">
                       <FormField
                         control={form.control}
                         name="repo_id"
@@ -413,23 +413,24 @@ export default function AssetJobs({
 
                     {/* ---------- */}
 
-                    <div className="w-1/6 mt-8 ">
-                      <Button
-                        type="submit"
-                        className="purr-form-button"
-                        variant="secondary"
-                      >
-                        save job
-                      </Button>
-                    </div>
+                    {!showAdvancedForm && (
+                      <div className="w-1/6 mt-8">
+                        <Button
+                          type="submit"
+                          className="purr-form-button"
+                          variant="secondary"
+                        >
+                          save job
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   {showAdvancedForm && (
                     <>
-                      {/* -------------------- */}
                       <div className="flex flex-row gap-2">
-                        {/* ---------- */}
-                        <div className="flex flex-row w-2/12 gap-2">
+                        {/* -------------------- */}
+                        <div className="w-1/12 ">
                           <FormField
                             control={form.control}
                             name="chunk"
@@ -446,35 +447,9 @@ export default function AssetJobs({
                               </FormItem>
                             )}
                           />
+                        </div>
 
-                          {/* ---------- */}
-
-                          {/* <div className="flex basis-1/6">
-                          <FormField
-                            control={form.control}
-                            name="cron"
-                            render={({ field }) => (
-                              <FormItem className="w-full">
-                                <FormLabel>cron</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="cron"
-                                    disabled
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormDescription>
-                                  cron expression
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div> */}
-
-                          {/* ---------- */}
-
-                          {/* <div className="w-1/12 bg-red-100"> */}
+                        <div className="w-1/12">
                           <FormField
                             control={form.control}
                             name="recency"
@@ -493,7 +468,7 @@ export default function AssetJobs({
                           />
                         </div>
 
-                        <div className="w-5/12">
+                        <div className="w-7/12">
                           <FormField
                             control={form.control}
                             name="where_clause"
@@ -514,10 +489,20 @@ export default function AssetJobs({
                             )}
                           />
                         </div>
+                        {showAdvancedForm && (
+                          <div className="w-2/12 ml-2 mt-8">
+                            <Button
+                              type="submit"
+                              className="purr-form-button"
+                              variant="secondary"
+                            >
+                              save job
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* -------------------- */}
                       </div>
-
-                      {/* -------------------- */}
-
                       <div className="flex flex-row gap-2">
                         <div className="w-1/12"></div>
                         <div className="w-11/12">

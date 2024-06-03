@@ -10,6 +10,7 @@ export const ASSET_CACHE_NAME = "PURR_ASSET_CACHE";
 const supabase = createClient();
 
 const fetchAssetData = async (suite: string) => {
+  console.log("TRYING TO FETCH ASSETS FOR ", suite);
   const assets: AssetDNA = {};
   await Promise.all(
     ASSETS.map(async (asset) => {
@@ -56,9 +57,6 @@ const assetStore = (set: any) => ({
 
   fetchGeographixAssets: async () => {
     let assets = await fetchAssetData("geographix");
-    console.log("--assets---");
-    console.log(assets);
-
     set(() => ({
       geographixAssets: assets,
     }));

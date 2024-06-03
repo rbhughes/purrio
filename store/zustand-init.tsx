@@ -57,8 +57,8 @@ export default function ZustandInit() {
     const assetFetcher = async () => {
       console.log("fetching GeoGraphix Asset dna...");
       await fetchGeographixAssets();
-      // console.log("fetching Petra Asset dna...");
-      // await fetchPetraAssets();
+      console.log("fetching Petra Asset dna...");
+      await fetchPetraAssets();
     };
 
     const assetStatsFetcher = async () => {
